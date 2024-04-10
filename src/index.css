@@ -1,0 +1,73 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Open+Sans:ital,wdth,wght@0,75..100,300..800;1,75..100,300..800&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+    font-family: "Inter", sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    font-variation-settings: "wdth" 75;
+}
+
+/* Swiper JS */
+.bullet {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border-radius: 999px;
+    cursor: pointer;
+    margin-right: 4px;
+    background-color: #fff;
+    border: 1px solid #000;
+    transition: all 0.3s;
+    opacity: 1;
+}
+
+.bullet:hover {
+    background-color: #000;
+}
+.bullet.swiper-pagination-bullet-active {
+    background-color: #000;
+}
+
+/* Animation */
+.hover-text-effect {
+    display: inline-block;
+    position: relative;
+}
+.hover-text-effect::before,
+.hover-text-effect::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    height: 1px;
+    background: #000;
+    transition: all 0.3s;
+}
+.hover-text-effect::before {
+    width: 100%;
+    right: 0;
+}
+.hover-text-effect::after {
+    width: 0;
+    left: 0;
+}
+.hover-text-effect:hover::before {
+    width: 0;
+}
+.hover-text-effect:hover::after {
+    width: 100%;
+    transition-delay: 0.3s;
+}
+
+
+@keyframes pulsenew {
+    from {
+        transform: translateY(-50px);
+    }
+    to {
+        transform: translateY(50px);
+    }
+}
