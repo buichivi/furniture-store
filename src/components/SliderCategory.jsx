@@ -6,25 +6,53 @@ const SliderCategory = () => {
         <Swiper
             slidesPerView={4}
             spaceBetween={30}
+            loop={true}
             autoplay={{
-                delay: 5000,
+                delay: 3000,
             }}
+            loopAdditionalSlides={1}
         >
-            {[1, 2, 3, 4, 5, 6].map((item, index) => (
+            {[
+                {
+                    url: "https://nooni-be87.kxcdn.com/nooni/wp-content/uploads/2023/04/bed-310x310.jpg",
+                    type: "Bed",
+                    number_of_products: 7,
+                },
+                {
+                    url: "https://nooni-be87.kxcdn.com/nooni/wp-content/uploads/2023/04/lamp-1-310x310.jpg",
+                    type: "Lamp",
+                    number_of_products: 5,
+                },
+                {
+                    url: "https://nooni-be87.kxcdn.com/nooni/wp-content/uploads/2023/04/table-310x310.jpg",
+                    type: "Table",
+                    number_of_products: 10,
+                },
+                {
+                    url: "https://nooni-be87.kxcdn.com/nooni/wp-content/uploads/2023/04/chair-1-310x310.jpg",
+                    type: "Chair",
+                    number_of_products: 12,
+                },
+            ].map(({ url, type, number_of_products }, index) => (
                 <SwiperSlide key={index}>
-                    <div className="h-[120px] flex items-center">
-                        <Link className="w-[120px] h-[120px] mr-[25px] relative group overflow-hidden rounded-full ">
+                    <div className="flex h-[120px] items-center">
+                        <Link className="group relative mr-[25px] h-[120px] w-[120px] overflow-hidden rounded-full ">
                             <img
-                                src="https://nooni-be87.kxcdn.com/nooni/wp-content/uploads/2023/04/lamp-1-310x310.jpg"
+                                src={url}
                                 alt=""
-                                className="w-full h-full object-contain"
+                                className="h-full w-full object-contain transition-all duration-500 group-hover:scale-110"
                             />
-                            <div className="group-hover:bg-[#3337] transition-colors w-full h-full absolute z-1 top-0 left-0"></div>
-                            <i className="fa-regular fa-link-simple rotate-[145deg] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 group-hover:block hidden text-white"></i>
+                            <div className="z-1 absolute left-0 top-0 h-full w-full transition-colors duration-500 group-hover:bg-[#3337]"></div>
+                            <i className="fa-regular fa-link-simple absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rotate-[145deg] text-white opacity-0 duration-500 group-hover:opacity-100"></i>
                         </Link>
                         <div>
-                            <Link className="font-bold hover:text-[#D10202] transition-colors">Chair</Link>
-                            <p>5 products</p>
+                            <Link className="font-bold transition-colors hover:text-[#D10202]">
+                                {type}
+                            </Link>
+                            <p>
+                                {number_of_products} product
+                                {number_of_products > 2 && "s"}
+                            </p>
                         </div>
                     </div>
                 </SwiperSlide>

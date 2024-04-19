@@ -1,3 +1,10 @@
 export { default as MenuHeader } from "./MenuHeader";
 export { default as Slider } from "./Slider";
 export { default as SliderCategory } from "./SliderCategory";
+export { default as HomeBanner } from "./HomeBanner";
+export { default as Coupon } from "./Coupon";
+export { default as ProductCard } from "./ProductCard";
+export { default as SliderBlog } from "./SliderBlog";
+export { default as SearchItem } from "./SearchItem";
+export { default as Navigation } from "./Navigation";
+export { default as MultipleRange } from "./MultipleRange";

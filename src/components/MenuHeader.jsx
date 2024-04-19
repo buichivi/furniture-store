@@ -1,6 +1,6 @@
 const MenuHeader = () => {
     return (
-        <div className="flex items-center flex-1 font-[500] gap-10 text-lg">
+        <div className="font-[500] gap-10 text-2xl">
             <div>Home</div>
             <div>Product</div>
             <div>Collection</div>

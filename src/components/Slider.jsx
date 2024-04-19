@@ -1,6 +1,6 @@
 /* eslint-disable react/no-unescaped-entities */
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination } from "swiper/modules";
+import { Pagination, Autoplay } from "swiper/modules";
 import { Link } from "react-router-dom";
 import { EffectFade } from "swiper/modules";
 
@@ -8,14 +8,18 @@ const Slider = () => {
     return (
         <Swiper
             pagination={{
+                el: ".swiper-pagination",
                 clickable: true,
                 renderBullet: (_, className) => {
                     return `<span class="bullet ${className}"></span>`;
                 },
             }}
-            modules={[Pagination, EffectFade]}
+            modules={[Pagination, EffectFade, Autoplay]}
             effect="fade"
             className="h-full w-full"
+            autoplay={{
+                delay: 5000,
+            }}
         >
             {[
                 {
@@ -47,37 +51,37 @@ const Slider = () => {
                     <SwiperSlide key={index} className="">
                         {({ isActive }) => (
                             <div
-                                className={`w-full h-full flex items-center relative transition-all cursor-pointer ${
+                                className={`relative flex h-full w-full cursor-pointer items-center transition-all ${
                                     !isActive && "opacity-0"
                                 }`}
                             >
                                 <div
-                                    className={`w-full absolute top-[35%] left-0 ${
+                                    className={`absolute left-0 top-[35%] w-full ${
                                         isActive
                                             ? "translate-x-0 opacity-100"
-                                            : "-translate-x-full opacity-1"
+                                            : "opacity-1 -translate-x-full"
                                     } transition-all duration-1000`}
                                 >
-                                    <h4 className="font-inter mb-4 uppercase">
+                                    <h4 className="mb-4 font-inter uppercase">
                                         {title}
                                     </h4>
                                     <h2 className="w-[40%] text-[48px] font-medium tracking-wider ">
                                         {heading}
                                     </h2>
-                                    <p className="text-base font-normal">
+                                    <p className="text-lg font-normal">
                                         {des}{" "}
                                         <span className="font-bold">
                                             {des_focus}
                                         </span>
                                     </p>
-                                    <Link className="mt-10 hover-text-effect">
+                                    <Link className="hover-text-effect mt-10">
                                         SHOP NOW
                                     </Link>
                                 </div>
                                 <img
                                     src={url_img}
                                     alt=""
-                                    className={`slide-img w-1/2 h-auto absolute top-[25%] right-0 transition-all duration-1000 ${
+                                    className={`slide-img absolute right-0 top-[25%] h-auto w-1/2 transition-all duration-1000 ${
                                         isActive
                                             ? "translate-x-0 opacity-100"
                                             : "translate-x-full opacity-0"
@@ -88,6 +92,7 @@ const Slider = () => {
                     </SwiperSlide>
                 );
             })}
+            <div className="swiper-pagination absolute bottom-0 left-0 m-0 !w-auto"></div>
         </Swiper>
     );
 };
