@@ -69,11 +69,11 @@ const Footer = () => {
                             className="h-full flex-1 border-none bg-[#ededed] px-6 caret-slate-400 outline-none placeholder:text-[#868686]"
                             placeholder="Your e-mail address"
                         />
-                        <button className="h-full w-[150px] shrink-0 bg-black py-3 text-base font-bold uppercase tracking-widest text-white transition-colors hover:bg-[#D10202]">
+                        <button className="h-full w-[150px] shrink-0 bg-black py-3 text-sm font-bold uppercase tracking-widest text-white transition-colors hover:bg-[#D10202]">
                             Subcribe
                         </button>
                     </div>
-                    <div className="flex gap-8 [&>*]:text-2xl [&>*]:hover:cursor-pointer">
+                    <div className="flex gap-8 [&>*]:text-xl [&>*]:hover:cursor-pointer">
                         <Link className="inline-block w-fit transition-colors hover:text-[#D10202]">
                             <i className="fa-brands fa-facebook-f"></i>
                         </Link>

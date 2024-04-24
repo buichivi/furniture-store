@@ -36,7 +36,7 @@ const SliderCategory = () => {
             ].map(({ url, type, number_of_products }, index) => (
                 <SwiperSlide key={index}>
                     <div className="flex h-[120px] items-center">
-                        <Link className="group relative mr-[25px] h-[120px] w-[120px] overflow-hidden rounded-full ">
+                        <Link className="group relative mr-[25px] h-[120px] w-[120px] shrink-0 overflow-hidden rounded-full ">
                             <img
                                 src={url}
                                 alt=""
@@ -46,9 +46,7 @@ const SliderCategory = () => {
                             <i className="fa-regular fa-link-simple absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rotate-[145deg] text-white opacity-0 duration-500 group-hover:opacity-100"></i>
                         </Link>
                         <div>
-                            <Link className="font-bold transition-colors hover:text-[#D10202]">
-                                {type}
-                            </Link>
+                            <Link className="font-bold transition-colors hover:text-[#D10202]">{type}</Link>
                             <p>
                                 {number_of_products} product
                                 {number_of_products > 2 && "s"}

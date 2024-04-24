@@ -8,7 +8,7 @@ const SliderBlog = () => {
     const nextRef = useRef(null);
     return (
         <div>
-            <h3 className="mb-[30px] text-3xl font-bold capitalize ">
+            <h3 className="mb-[30px] text-2xl font-bold capitalize ">
                 Our blog
             </h3>
             <Swiper
@@ -33,7 +33,7 @@ const SliderBlog = () => {
                         <SwiperSlide key={index}>
                             <div className="group/blog-slide flex h-[450px] items-center justify-between gap-14">
                                 <div className="group/blog-slide-image relative h-full shrink-0 basis-3/5 overflow-hidden">
-                                    <span className="absolute left-0 top-0 z-10 m-8 bg-white px-3 py-1 text-base">
+                                    <span className="absolute left-0 top-0 z-10 m-8 bg-white px-3 py-1 text-sm">
                                         APR 9, 2023
                                     </span>
                                     <img
@@ -56,7 +56,7 @@ const SliderBlog = () => {
                                             (type, index) => {
                                                 return (
                                                     <div key={index}>
-                                                        <Link className="text-base uppercase text-[#848484] transition-colors hover:text-[#D10202]">
+                                                        <Link className="text-sm uppercase text-[#848484] transition-colors hover:text-[#D10202]">
                                                             {type}
                                                         </Link>
                                                         {index <=
@@ -70,11 +70,11 @@ const SliderBlog = () => {
                                             },
                                         )}
                                     </div>
-                                    <Link className="mb-4 inline-block text-4xl transition-colors hover:text-[#D10202]">
+                                    <Link className="mb-4 inline-block text-3xl transition-colors hover:text-[#D10202]">
                                         What is Feng Shui and How Can I Use It
                                         When I Decorate?
                                     </Link>
-                                    <p className="mb-3 text-xl leading-[1.5] tracking-wide text-[#848484]">
+                                    <p className="mb-3 text-base leading-[1.5] tracking-wide text-[#848484]">
                                         Nunc ut sem ut ex sollicitudin commodo.
                                         Suspendisse non enim felis. Nam nec diam
                                         ultricies, malesuada

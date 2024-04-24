@@ -6,7 +6,7 @@ const HomeBanner = () => {
             <div className="flex flex-1 shrink-0 flex-col">
                 <Link className="group/banner_1 relative block h-full overflow-hidden">
                     <div className="absolute left-0 top-1/3 z-[1]">
-                        <h3 className="mb-8 w-2/3 text-5xl capitalize tracking-wider">
+                        <h3 className="mb-8 w-2/3 text-4xl capitalize tracking-wider">
                             Up to 40% off top lamp brands
                         </h3>
                         <span className="relative font-bold uppercase before:absolute before:bottom-0 before:right-0 before:h-[1px] before:w-full before:bg-black before:transition-all before:duration-500 before:content-[''] after:absolute after:bottom-0 after:left-0 after:h-[1px] after:w-0 after:bg-black after:transition-all after:delay-500 after:duration-500 after:content-[''] group-hover/banner_1:before:w-0 group-hover/banner_1:after:w-full">
@@ -30,7 +30,7 @@ const HomeBanner = () => {
                         <h5 className="mb-2 text-[16px] font-normal uppercase text-black">
                             New products
                         </h5>
-                        <h3 className="mb-6 text-4xl font-bold capitalize tracking-wider">
+                        <h3 className="mb-6 text-3xl font-semibold capitalize tracking-wider">
                             Up to 25% off cabinets
                         </h3>
                         <span className="relative font-bold uppercase before:absolute before:bottom-0 before:right-0 before:h-[1px] before:w-full before:bg-black before:transition-all before:duration-500 before:content-[''] after:absolute after:bottom-0 after:left-0 after:h-[1px] after:w-0 after:bg-black after:transition-all after:delay-500 after:duration-500 after:content-[''] group-hover/banner_2:before:w-0 group-hover/banner_2:after:w-full">
@@ -55,7 +55,7 @@ const HomeBanner = () => {
                         <h5 className="mb-6 text-center text-2xl uppercase text-white">
                             Big sale
                         </h5>
-                        <h2 className="mx-auto mb-10 w-[90%] text-wrap text-center text-6xl capitalize text-white">
+                        <h2 className="mx-auto mb-10 w-[90%] text-wrap text-center text-5xl capitalize text-white">
                             Up to 70% off furniture & decor
                         </h2>
                         <div className="text-center">

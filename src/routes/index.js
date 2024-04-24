@@ -1,4 +1,4 @@
-import { Home, Shop } from "../pages";
+import { Home, Shop, Product } from "../pages";
 
 const public_routes = [
     {
@@ -8,6 +8,10 @@ const public_routes = [
     {
         path: "/shop",
         element: Shop,
+    },
+    {
+        path: "/product",
+        element: Product,
     },
 ];
 

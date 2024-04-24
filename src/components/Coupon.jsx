@@ -2,9 +2,9 @@ const Coupon = () => {
     return (
         <div className="group/coupon relative h-[200px]">
             <div className="absolute left-0 top-0 flex h-full w-full items-center gap-[40px] p-[40px]">
-                <span className="text-[70px] font-bold">10%</span>
+                <span className="text-6xl font-bold">10%</span>
                 <div className="flex flex-col justify-between">
-                    <h3 className="text-4xl font-normal capitalize tracking-wider">
+                    <h3 className="text-3xl font-normal capitalize tracking-wider">
                         Get more pay less
                     </h3>
                     <p className="text-xl">

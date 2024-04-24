@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { MenuHeader, SearchItem } from "../../components";
+import { SearchItem } from "../../components";
 import { Link } from "react-router-dom";
 import CartItemMini from "../../components/CartItemMini";
 const Header = () => {
@@ -27,16 +27,14 @@ const Header = () => {
                 className="fixed left-0 top-0 z-50 flex h-[90px] w-full items-center justify-center bg-main transition-shadow duration-700"
             >
                 <div className="container flex items-center justify-between gap-8 px-5">
-                    <div className="relative flex items-center gap-10">
+                    <div className="relative flex items-center gap-4">
                         <input
                             type="checkbox"
                             id="menu"
                             className="peer/menu hidden [&+div_a.menu-link]:translate-y-1/2 [&+div_a.menu-link]:opacity-0 [&:checked+div_a.menu-link]:translate-y-0 [&:checked+div_a.menu-link]:opacity-100"
                             onChange={(e) => {
                                 const isOpen = e.currentTarget.checked;
-                                const logo =
-                                    e.currentTarget.parentElement
-                                        .nextElementSibling.children[0];
+                                const logo = e.currentTarget.parentElement.nextElementSibling.children[0];
                                 if (isOpen) {
                                     logo.classList.add("invert");
                                 } else {
@@ -46,109 +44,49 @@ const Header = () => {
                         />
                         <div
                             className="menu-clip-path fixed left-0 top-0 z-20 size-full bg-black peer-checked/menu:bg-[#191f22]"
-                            // style={{
-                            //     background:
-                            //         "url('https://plus.unsplash.com/premium_photo-1661962952618-031d218dd040?q=80&w=1496&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')",
-                            //     backgroundOrigin: "center",
-                            //     backgroundPosition: "center"
-                            // }}
                         >
                             <div className="container relative mx-auto flex h-fit items-start px-5 pt-[10%]">
                                 <div className="flex shrink-0 basis-[50%] flex-col gap-5 text-white [&>*]:relative [&>*]:w-fit [&>*]:py-2 [&>*]:font-lora [&>*]:text-5xl [&>*]:before:absolute [&>*]:before:bottom-0 [&>*]:before:left-0 [&>*]:before:-z-10 [&>*]:before:h-full [&>*]:before:w-full [&>*]:before:origin-right [&>*]:before:scale-x-0 [&>*]:before:bg-white [&>*]:before:transition-[transform] [&>*]:before:duration-[200]">
-                                    {[
-                                        "Home",
-                                        "Light",
-                                        "Table",
-                                        "Chair",
-                                        "Blog",
-                                        "Contact us",
-                                    ].map((menuItem, index) => {
-                                        return (
-                                            <Link
-                                                key={index}
-                                                className="menu-link ease-[cubic-bezier(0.86, 0, 0.07, 1)] transition-all duration-700 hover:px-3 hover:text-black hover:before:origin-left hover:before:scale-x-100"
-                                                style={{
-                                                    transitionDelay:
-                                                        (index + 1) * 0.05 +
-                                                        "s",
-                                                }}
-                                            >
-                                                {menuItem}
-                                            </Link>
-                                        );
-                                    })}
+                                    {["Home", "Light", "Table", "Chair", "Blog", "Contact us"].map(
+                                        (menuItem, index) => {
+                                            return (
+                                                <Link
+                                                    key={index}
+                                                    className="menu-link ease-[cubic-bezier(0.86, 0, 0.07, 1)] transition-all duration-700 hover:px-3 hover:text-black hover:before:origin-left hover:before:scale-x-100"
+                                                    style={{
+                                                        transitionDelay: (index + 1) * 0.05 + "s",
+                                                    }}
+                                                >
+                                                    {menuItem}
+                                                </Link>
+                                            );
+                                        },
+                                    )}
                                 </div>
-                                {/* <div className="h-full w-full flex-1">
-                                    <img
-                                        src="https://plus.unsplash.com/premium_photo-1661962952618-031d218dd040?q=80&w=1496&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                                        alt=""
-                                        className="h-full w-full object-cover"
-                                    />
-                                </div> */}
                             </div>
                         </div>
                         <div className="cross menu--1 relative size-10 overflow-hidden">
                             <label
-                                className="absolute -left-[30px] top-1/2 z-50 size-24 -translate-y-1/2 cursor-pointer"
+                                className="absolute -left-[30px] hover:opacity-70 top-1/2 z-50 size-20 -translate-y-1/2 cursor-pointer"
                                 htmlFor="menu"
                                 aria-checked="false"
                                 onClick={(e) => {
-                                    const isOpen =
-                                        e.currentTarget.getAttribute(
-                                            "aria-checked",
-                                        );
+                                    const isOpen = e.currentTarget.getAttribute("aria-checked");
                                     if (isOpen === "false") {
-                                        e.currentTarget.setAttribute(
-                                            "aria-checked",
-                                            "true",
-                                        );
+                                        e.currentTarget.setAttribute("aria-checked", "true");
                                     } else {
-                                        e.currentTarget.setAttribute(
-                                            "aria-checked",
-                                            "false",
-                                        );
+                                        e.currentTarget.setAttribute("aria-checked", "false");
                                     }
                                 }}
                             >
-                                <svg
-                                    viewBox="0 0 100 100"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                >
-                                    <path
-                                        className="line--1"
-                                        d="M0 40h62c13 0 6 28-4 18L35 35"
-                                    />
+                                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path className="line--1" d="M0 40h62c13 0 6 28-4 18L35 35" />
                                     <path className="line--2" d="M0 50h70" />
-                                    <path
-                                        className="line--3"
-                                        d="M0 60h62c13 0 6-28-4-18L35 65"
-                                    />
+                                    <path className="line--3" d="M0 60h62c13 0 6-28-4-18L35 65" />
                                 </svg>
                             </label>
-                            {/* Menu */}
-                            {/* <input
-                                type="checkbox"
-                                className="peer/menu hidden [&:checked~div>div]:translate-x-0 [&:checked~div>label]:opacity-100"
-                                id="menu"
-                                onChange={(e) => {
-                                    if (e.currentTarget.checked) {
-                                        e.currentTarget.previousElementSibling.setAttribute(
-                                            "aria-checked",
-                                            "true",
-                                        );
-                                    } else {
-                                        e.currentTarget.previousElementSibling.setAttribute(
-                                            "aria-checked",
-                                            "false",
-                                        );
-                                    }
-                                }}
-                            /> */}
                         </div>
-                        <label
-                            className="cursor-pointer text-2xl hover:opacity-70"
-                            htmlFor="search-short-form"
-                        >
+                        <label className="cursor-pointer text-xl hover:opacity-70" htmlFor="search-short-form">
                             <i className="fa-light fa-magnifying-glass"></i>
                         </label>
                     </div>
@@ -162,19 +100,19 @@ const Header = () => {
                             className="w-full object-fill transition-all duration-700"
                         />
                     </Link>
-                    <div className="flex items-center gap-8 [&>*>i]:cursor-pointer [&>*>i]:text-2xl">
+                    <div className="flex items-center gap-8 [&>*>i]:cursor-pointer [&>*>i]:text-xl">
                         <Link className="hover:opacity-70">
                             <i className="fa-light fa-user"></i>
                         </Link>
                         <Link className="relative">
                             <i className="fa-light fa-heart hover:opacity-70"></i>
-                            <div className="absolute -right-[45%] -top-[35%] flex size-6 items-center justify-center rounded-full bg-black text-white">
+                            <div className="absolute -right-[45%] -top-[35%] flex size-5 items-center justify-center rounded-full bg-black text-white">
                                 <span className="text-sm">0</span>
                             </div>
                         </Link>
                         <label className="relative" htmlFor="cart-short-form">
                             <i className="fa-light fa-cart-shopping hover:opacity-70"></i>
-                            <div className="absolute -right-[30%] -top-[35%] flex size-6 items-center justify-center rounded-full bg-black text-white">
+                            <div className="absolute -right-[30%] -top-[35%] flex size-5 items-center justify-center rounded-full bg-black text-white">
                                 <span className="text-sm">0</span>
                             </div>
                         </label>
@@ -193,13 +131,10 @@ const Header = () => {
                     htmlFor="search-short-form"
                     className="block h-full w-full bg-[#3f3f3f80] opacity-0 transition-all duration-500"
                 ></label>
-                <div className="absolute right-0 top-0 h-full w-[30%] translate-x-full overflow-y-auto bg-white p-[30px] transition-all duration-500 2xl:w-1/5">
+                <div className="absolute right-0 top-0 h-full w-[30%] translate-x-full overflow-y-auto [scrollbar-width:thin] bg-white p-[30px] transition-all duration-500 2xl:w-1/5">
                     <div className="mb-8 flex items-center justify-between">
                         <h4>Search for products (0)</h4>
-                        <label
-                            htmlFor="search-short-form"
-                            className="cursor-pointer text-2xl"
-                        >
+                        <label htmlFor="search-short-form" className="cursor-pointer text-2xl">
                             <i className="fa-light fa-xmark"></i>
                         </label>
                     </div>
@@ -240,15 +175,12 @@ const Header = () => {
                 <div className="absolute right-0 top-0 flex h-full w-[30%] translate-x-full flex-col overflow-y-hidden bg-white p-[30px] transition-all duration-500 2xl:w-1/5">
                     <div className="mb-8 flex shrink-0 items-center justify-between">
                         <h4 className="tracking-wider">Cart (0)</h4>
-                        <label
-                            htmlFor="cart-short-form"
-                            className="cursor-pointer text-2xl"
-                        >
+                        <label htmlFor="cart-short-form" className="cursor-pointer text-2xl">
                             <i className="fa-light fa-xmark"></i>
                         </label>
                     </div>
                     <div className="flex h-full flex-1 flex-col">
-                        <div className="cart-list-short flex h-[60%] flex-col gap-8 overflow-y-auto pr-1">
+                        <div className="cart-list-short flex h-[55%] flex-col gap-8 overflow-y-auto pr-1">
                             {[1, 2, 3].map((item, index) => {
                                 return <CartItemMini key={index} />;
                             })}

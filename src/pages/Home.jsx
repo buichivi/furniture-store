@@ -1,11 +1,4 @@
-import {
-    Coupon,
-    HomeBanner,
-    ProductCard,
-    Slider,
-    SliderBlog,
-    SliderCategory,
-} from "../components";
+import { Coupon, HomeBanner, ProductCard, Slider, SliderBlog, SliderCategory } from "../components";
 import { Link } from "react-router-dom";
 
 const Home = () => {
@@ -17,9 +10,7 @@ const Home = () => {
                 </div>
             </div>
             <div className="container mx-auto mb-20 px-5">
-                <h3 className="mb-[30px] text-3xl font-bold uppercase">
-                    Shop by category
-                </h3>
+                <h3 className="mb-[30px] text-xl font-bold uppercase">Shop by category</h3>
                 <SliderCategory />
             </div>
             <div className="container mx-auto mb-[30px] px-5">
@@ -30,17 +21,15 @@ const Home = () => {
             </div>
             <div className="container mx-auto mb-10 px-5">
                 <div className="mb-[30px] flex items-center justify-between">
-                    <h4 className="text-center text-3xl font-medium">
-                        Best Modern Furniture
-                    </h4>
+                    <h4 className="text-center text-2xl font-medium">Best Modern Furniture</h4>
                     <div className="text-center">
-                        <Link className="text-lg transition-colors hover:text-[#D10202]">
+                        <Link className="text-base transition-colors hover:text-[#D10202]">
                             See all {">"}
                             {">"}
                         </Link>
                     </div>
                 </div>
-                <div className="grid grid-cols-4 gap-8">
+                <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
                     {[1, 1, 1, 1, 1, 1, 1, 1].map((item, index) => {
                         return <ProductCard key={index} />;
                     })}

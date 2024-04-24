@@ -1,35 +1,104 @@
 import { Link } from "react-router-dom";
 import Tippy from "@tippyjs/react";
+import PropType from "prop-types";
+import { useRef } from "react";
+import { numberWithCommas } from "../utils";
+import ProductQuickView from "./ProductQuickView";
 
-const ProductCard = ({ isDisplayGrid = true }) => {
+const productDemo = {
+    id: 1,
+    is_trend: true,
+    is_valid: true,
+    name: "Wood Outdoor Adirondack Chair",
+    short_description: `Phasellus vitae imperdiet felis. Nam non condimentumerat. Lorem ipsum dolor sit amet, consecteturadipiscing elit. Nulla tortor arcu, consectetureleifend commodo at, consectetur eu justo.`,
+    discount: 50,
+    prices: [
+        {
+            price: 1099,
+            currency: "$",
+        },
+        {
+            price: 22000000,
+            currency: "vnd",
+        },
+    ],
+    review: {
+        average_star: 3.4,
+        number_of_review: 9,
+    },
+    colors: [
+        {
+            name: "black",
+            color_thumb: "https://demo.theme-sky.com/nooni/wp-content/uploads/2023/05/black-46x46.jpg",
+            images: [
+                "https://cdn.arhaus.com/product/StandardV2/201032CHMBLK_A210923.jpg?preset=ProductGrande",
+                "https://cdn.arhaus.com/product/StandardV2/201032CHMBLK_B210923.jpg?preset=ProductGrande",
+                "https://cdn.arhaus.com/product/StandardV2/201032CHMBLK_D210923.jpg?preset=ProductGrande",
+                "https://cdn.arhaus.com/product/StandardV2/201032CHMBLK_CD210511.jpg?preset=ProductGrande",
+            ],
+        },
+        {
+            name: "green",
+            color_thumb: "https://demo.theme-sky.com/nooni/wp-content/uploads/2023/05/green-46x46.jpg",
+            images: [
+                "https://cdn.arhaus.com/product/StandardV2/40HATTIECABEB_B210311.jpg?preset=ProductGrande",
+                "https://cdn.arhaus.com/product/StandardV2/40HATTIECABEB_A210311.jpg?preset=ProductGrande",
+                "https://cdn.arhaus.com/product/StandardV2/40HATTIECABEB_C210311.jpg?preset=ProductGrande",
+                "https://cdn.arhaus.com/product/StandardV2/40HATTIECABEB_D210311.jpg?preset=ProductGrande",
+            ],
+        },
+        {
+            name: "gray",
+            color_thumb: "https://demo.theme-sky.com/nooni/wp-content/uploads/2023/05/grey-46x46.jpg",
+            images: [
+                "https://cdn.arhaus.com/product/StandardV2/1072838SWBF_DS231016.jpg?preset=ProductGrande",
+                "https://cdn.arhaus.com/product/StandardV2/1072838SWBF_DP231016.jpg?preset=ProductGrande",
+                "https://cdn.arhaus.com/product/StandardV2/1072838SWBF_DQ231016.jpg?preset=ProductGrande",
+                "https://cdn.arhaus.com/product/StandardV2/1072838SWBF_DT231016.jpg?preset=ProductGrande",
+            ],
+        },
+        {
+            name: "teak",
+            color_thumb: "https://demo.theme-sky.com/nooni/wp-content/uploads/2023/05/teak-46x46.jpg",
+            images: [
+                "https://nooni-be87.kxcdn.com/nooni/wp-content/uploads/2022/12/01-450x572.jpg",
+                "https://nooni-be87.kxcdn.com/nooni/wp-content/uploads/2023/04/01-2-450x572.jpg",
+                "https://demo.theme-sky.com/nooni/wp-content/uploads/2023/04/01-3-450x572.jpg",
+                "https://demo.theme-sky.com/nooni/wp-content/uploads/2023/04/01-5-450x572.jpg",
+            ],
+        },
+    ],
+};
+
+const ProductCard = ({ product = productDemo, isDisplayGrid = true }) => {
+    const cb_quickView = useRef();
+
     return (
-        <div
-            className={`group/product w-full ${!isDisplayGrid && "flex items-center gap-[50px]"}`}
-        >
+        <div className={`group/product w-full ${!isDisplayGrid && "flex items-center gap-[50px]"}`}>
             <Link
                 to="/product"
                 className={`group/product-img relative w-full shrink-0 overflow-hidden ${!isDisplayGrid && "basis-[40%]"}`}
             >
                 <img
-                    src="https://nooni-be87.kxcdn.com/nooni/wp-content/uploads/2022/12/01-450x572.jpg"
+                    src={product?.colors[3]?.images[0]}
                     alt=""
-                    className="w-full object-contain transition-all duration-500 group-hover/product-img:opacity-0"
+                    className="h-[350px] w-full object-cover transition-all duration-500 group-hover/product-img:opacity-0"
                 />
                 <img
-                    src="https://nooni-be87.kxcdn.com/nooni/wp-content/uploads/2023/04/01-2-450x572.jpg"
+                    src={product?.colors[3]?.images[1]}
                     alt=""
-                    className="absolute left-0 top-0 -z-10 w-full object-contain"
+                    className="absolute left-0 top-0 -z-10 h-[350px] w-full object-cover"
                 />
                 <div className="absolute left-0 top-0 z-10 h-full w-full p-4">
-                    <span className="mr-1 bg-[#D10202] px-3 py-[2px] text-sm uppercase text-white">
-                        Hot
-                    </span>
-                    <span className="mr-1 bg-[#000] px-3 py-[2px] text-sm uppercase text-white">
-                        Sale
-                    </span>
-                    <span className="bg-[#919191] px-3 py-[2px] text-sm uppercase text-white">
-                        Sold out
-                    </span>
+                    {product?.is_trend && (
+                        <span className="mr-1 bg-[#D10202] px-3 py-[2px] text-xs uppercase text-white">Hot</span>
+                    )}
+                    {product?.discount > 0 && (
+                        <span className="mr-1 bg-[#000] px-3 py-[2px] text-xs uppercase text-white">Sale</span>
+                    )}
+                    {product?.is_valid && (
+                        <span className="bg-[#919191] px-3 py-[2px] text-xs uppercase text-white">Sold out</span>
+                    )}
                 </div>
                 <div className="absolute right-0 top-0 z-10 h-full w-full">
                     <div className="absolute left-0 top-0 flex h-full w-full flex-col">
@@ -37,11 +106,14 @@ const ProductCard = ({ isDisplayGrid = true }) => {
                             <Tippy
                                 content="Quick view"
                                 placement="left"
-                                className="!bg-[#D10202] px-3 !text-base [&.tippy-box[data-placement^=left]>.tippy-arrow:before]:border-l-[#D10202]"
+                                className="!bg-[#D10202] px-3 !text-sm [&.tippy-box[data-placement^=left]>.tippy-arrow:before]:border-l-[#D10202]"
                             >
                                 <div
-                                    className="flex size-10 translate-y-3 cursor-pointer items-center justify-center rounded-full bg-white text-xl opacity-0 transition-all delay-100  hover:bg-[#D10202] hover:text-white group-hover/product:translate-y-0 group-hover/product:opacity-100"
-                                    onClick={(e) => e.preventDefault()}
+                                    className="flex size-9 translate-y-3 cursor-pointer items-center justify-center rounded-full bg-white text-base opacity-0 transition-all delay-100  hover:bg-[#D10202] hover:text-white group-hover/product:translate-y-0 group-hover/product:opacity-100"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        cb_quickView.current.checked = !cb_quickView.current.checked;
+                                    }}
                                 >
                                     <i className="fa-light fa-magnifying-glass"></i>
                                 </div>
@@ -49,10 +121,11 @@ const ProductCard = ({ isDisplayGrid = true }) => {
                             <Tippy
                                 content="Compare"
                                 placement="left"
-                                className="!bg-[#D10202] px-3 !text-base [&.tippy-box[data-placement^=left]>.tippy-arrow:before]:border-l-[#D10202]"
+                                className="!bg-[#D10202] px-3 !text-sm [&.tippy-box[data-placement^=left]>.tippy-arrow:before]:border-l-[#D10202]"
+                                hideOnClick={false}
                             >
                                 <div
-                                    className="flex size-10 translate-y-3 cursor-pointer items-center justify-center rounded-full bg-white text-xl opacity-0 transition-all delay-[50]  hover:bg-[#D10202] hover:text-white group-hover/product:translate-y-0 group-hover/product:opacity-100"
+                                    className="flex size-9 translate-y-3 cursor-pointer items-center justify-center rounded-full bg-white text-base opacity-0 transition-all delay-[50]  hover:bg-[#D10202] hover:text-white group-hover/product:translate-y-0 group-hover/product:opacity-100"
                                     onClick={(e) => e.preventDefault()}
                                 >
                                     <i className="fa-light fa-code-compare"></i>
@@ -61,10 +134,11 @@ const ProductCard = ({ isDisplayGrid = true }) => {
                             <Tippy
                                 content="Wishlist"
                                 placement="left"
-                                className="!bg-[#D10202] px-3 !text-base [&.tippy-box[data-placement^=left]>.tippy-arrow:before]:border-l-[#D10202]"
+                                className="!bg-[#D10202] px-3 !text-sm [&.tippy-box[data-placement^=left]>.tippy-arrow:before]:border-l-[#D10202]"
+                                hideOnClick={false}
                             >
                                 <div
-                                    className="flex size-10 translate-y-3 cursor-pointer items-center justify-center rounded-full bg-white text-xl opacity-0 transition-all  hover:bg-[#D10202] 
+                                    className="flex size-9 translate-y-3 cursor-pointer items-center justify-center rounded-full bg-white text-base opacity-0 transition-all  hover:bg-[#D10202] 
                             hover:text-white group-hover/product:translate-y-0 group-hover/product:opacity-100"
                                     onClick={(e) => e.preventDefault()}
                                 >
@@ -74,7 +148,7 @@ const ProductCard = ({ isDisplayGrid = true }) => {
                         </div>
                         <div
                             to="/product"
-                            className={`w-full translate-y-3 bg-white py-4 text-center text-base font-medium uppercase text-black opacity-0 transition-all ease-out hover:bg-[#D10202] hover:text-white group-hover/product:translate-y-0 group-hover/product:opacity-100 ${!isDisplayGrid && "hidden"}`}
+                            className={`w-full translate-y-3 bg-white py-3 text-center text-sm font-semibold uppercase text-black opacity-0 transition-all ease-out hover:bg-[#D10202] hover:text-white group-hover/product:translate-y-0 group-hover/product:opacity-100 ${!isDisplayGrid && "hidden"}`}
                             onClick={(e) => e.preventDefault()}
                         >
                             Select options
@@ -89,32 +163,39 @@ const ProductCard = ({ isDisplayGrid = true }) => {
             </Link>
             <div className="mt-4">
                 <Link
-                    className={`mb-3 inline-block cursor-pointer text-lg tracking-wide transition-colors hover:text-[#D10202] ${!isDisplayGrid && "!text-2xl font-medium"}`}
+                    className={`mb-3 line-clamp-2 cursor-pointer text-base tracking-wide transition-colors hover:text-[#D10202] ${!isDisplayGrid && "!text-2xl font-medium"}`}
                 >
-                    Wood Outdoor Adirondack Chair
+                    {product?.name}
                 </Link>
-                <div
-                    className={`flex items-center gap-4 text-lg tracking-wide ${!isDisplayGrid && "text-xl"}`}
-                >
-                    <span className="font-bold">$1,009</span>
-                    <span className="text-[#959595] line-through">$1,259</span>
+                <div className={`flex items-center gap-4 text-base tracking-wide ${!isDisplayGrid && "text-xl"}`}>
+                    <span className="font-bold">
+                        <span>{product?.prices[0].currency}</span>
+                        <span>
+                            {numberWithCommas(Math.floor((product?.prices[0].price * (100 - product?.discount)) / 100))}
+                        </span>
+                    </span>
+                    <span className="text-[#959595] line-through">
+                        <span>{product?.prices[0].currency}</span>
+                        <span>{numberWithCommas(product?.prices[0].price)}</span>
+                    </span>
                 </div>
                 {!isDisplayGrid && (
                     <>
-                        <p className="mt-6 text-[#848484]">
-                            Phasellus vitae imperdiet felis. Nam non condimentum
-                            erat. Lorem ipsum dolor sit amet, consectetur
-                            adipiscing elit. Nulla tortor arcu, consectetur
-                            eleifend commodo at, consectetur eu justo.
-                        </p>
+                        <p className="mt-6 text-[#848484]">{product?.short_description}</p>
                         <button className="mt-6 bg-black px-24 py-4 text-base font-bold uppercase tracking-wider text-white transition-colors hover:bg-[#D10202]">
                             Add to cart
                         </button>
                     </>
                 )}
             </div>
+            <ProductQuickView product={product} ref={cb_quickView} />
         </div>
     );
+};
+
+ProductCard.propTypes = {
+    product: PropType.object,
+    isDisplayGrid: PropType.bool,
 };
 
 export default ProductCard;
