@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from "react";
+import PhotoSwipeLightbox from "photoswipe/lightbox";
+
 import PropTypes from "prop-types";
 const init = [
     "https://swiperjs.com/demos/images/nature-2.jpg",
@@ -9,9 +11,35 @@ const init = [
     "https://swiperjs.com/demos/images/nature-7.jpg",
 ];
 
-const SliderProductImages = ({ imageGallery = init }) => {
-    const imgThumbs = useRef([]);
+const SliderProductImages = ({ thumbWidth = "15%", imageGallery = init, viewFullScreen = true }) => {
+    const imgThumbs = useRef();
+    const galleryFullScreen = useRef();
     const [selectedImg, setSelectedImg] = useState(null);
+
+    useEffect(() => {
+        if (viewFullScreen) {
+            let lightbox = new PhotoSwipeLightbox({
+                gallery: "#galleryFullScreen",
+                children: "a",
+                wheelToZoom: true,
+                pswpModule: () => import("photoswipe"),
+                initialZoomLevel: "fit",
+                secondaryZoomLevel: 2,
+                maxZoomLevel: 1,
+                showHideAnimationType: "none",
+                arrowPrevSVG: `<i class="fa-light fa-angle-left text-white text-2xl"></i>`,
+                arrowNextSVG: `<i class="fa-light fa-angle-right text-white text-2xl"></i>`,
+                closeSVG: `<i class="fa-light fa-xmark text-2xl text-white"></i>`,
+                zoomSVG: `<i class="fa-light fa-magnifying-glass-plus text-xl text-white"></i>`,
+                bgOpacity: 1
+            });
+            lightbox.init();
+            return () => {
+                lightbox.destroy();
+                lightbox = null;
+            };
+        }
+    }, [viewFullScreen]);
 
     useEffect(() => {
         setSelectedImg(imageGallery[0]);
@@ -19,64 +47,103 @@ const SliderProductImages = ({ imageGallery = init }) => {
     }, [imageGallery]);
 
     return (
-        <div className="flex h-full w-full gap-4">
-            <div className="flex basis-[15%] flex-col gap-2 overflow-y-auto transition-all duration-1000 [&::-webkit-scrollbar]:hidden">
-                {imageGallery.map((img_url, index) => {
-                    return (
-                        <img
-                            key={index}
-                            src={img_url}
-                            className={`cursor-pointer object-contain transition-opacity hover:opacity-50 ${selectedImg == img_url && "opacity-50"}`}
-                            onClick={() => {
-                                setSelectedImg(img_url);
-                                imgThumbs.current[index].scrollIntoView({
-                                    behavior: "smooth",
-                                    block: "end",
-                                    inline: "nearest",
-                                });
-                            }}
-                        ></img>
-                    );
-                })}
-            </div>
-            <div className="relative flex-1">
-                <div className="absolute left-[3%] top-[3%] z-10 [&_span]:px-3 [&_span]:py-1 [&_span]:text-xs [&_span]:uppercase [&_span]:text-white">
-                    <span className="bg-[#d10202] mr-1">Hot</span>
-                    <span className="bg-black mr-1">Sale</span>
-                    <span className="bg-[#919191]">Sold out</span>
-                </div>
-                <div className="flex gap-1 overflow-hidden">
+        <>
+            <div className="flex h-full w-full gap-2">
+                <div
+                    className="flex shrink-0 flex-col gap-2 overflow-y-auto transition-all duration-1000 [&::-webkit-scrollbar]:hidden"
+                    style={{
+                        flexBasis: thumbWidth,
+                    }}
+                >
                     {imageGallery.map((img_url, index) => {
                         return (
                             <img
-                                ref={(el) => (imgThumbs.current[index] = el)}
                                 key={index}
                                 src={img_url}
-                                alt=""
-                                className="h-full w-full cursor-zoom-in object-cover transition-transform duration-500"
-                                onMouseMove={(e) => {
-                                    const rect = e.target.parentElement.getBoundingClientRect();
-                                    const x = e.clientX - rect.left;
-                                    const y = e.clientY - rect.top;
-                                    e.target.style.transformOrigin = `${(x * 100) / rect.width}% ${(y * 100) / rect.height}%`;
+                                className={`cursor-pointer object-contain transition-opacity hover:opacity-50 ${selectedImg == img_url && "opacity-50"}`}
+                                onClick={() => {
+                                    setSelectedImg(img_url);
+                                    const wrapperWidth = imgThumbs.current.children[0].clientWidth;
+                                    console.dir(wrapperWidth);
+                                    console.log(-(index * wrapperWidth) + "px");
+                                    imgThumbs.current.style.left = -(index * wrapperWidth) + "px";
                                 }}
-                                onMouseEnter={(e) => {
-                                    e.target.style.transform = "scale(2)";
-                                }}
-                                onMouseLeave={(e) => {
-                                    e.target.style.transform = "scale(1)";
-                                }}
-                            />
+                            ></img>
                         );
                     })}
                 </div>
+                <div className="relative h-full flex-1">
+                    <div className="absolute left-[3%] top-[3%] z-10 [&_span]:px-3 [&_span]:py-1 [&_span]:text-xs [&_span]:uppercase [&_span]:text-white">
+                        <span className="mr-1 bg-[#d10202]">Hot</span>
+                        <span className="mr-1 bg-black">Sale</span>
+                        <span className="bg-[#919191]">Sold out</span>
+                    </div>
+                    {viewFullScreen && (
+                        <span
+                            className="absolute right-[3%] top-[3%] z-10 flex size-10 cursor-pointer items-center justify-center rounded-full bg-white text-lg transition-colors hover:bg-[#d10202] hover:text-white"
+                            onClick={() => {
+                                const index = (selectedImg && imageGallery.indexOf(selectedImg)) || 0;
+                                galleryFullScreen.current.children[index].click();
+                            }}
+                        >
+                            <i className="fa-light fa-magnifying-glass"></i>
+                        </span>
+                    )}
+                    <div className="relative h-full w-full overflow-hidden">
+                        <div
+                            className="relative left-0 top-0 flex h-full w-auto transition-all duration-500 ease-[cubic-bezier(.795,-.035,0,1)]"
+                            ref={imgThumbs}
+                        >
+                            {imageGallery.map((img_url, index) => {
+                                return (
+                                    <img
+                                        key={index}
+                                        src={img_url}
+                                        alt=""
+                                        className="relative top-0 h-full w-full flex-auto shrink-0 cursor-zoom-in object-cover object-top transition-transform duration-500"
+                                        onMouseMove={(e) => {
+                                            const rect = e.target.getBoundingClientRect();
+                                            const x = e.clientX - rect.left;
+                                            const y = e.clientY - rect.top;
+                                            e.target.style.transformOrigin = `${(x * 100) / rect.width}% ${(y * 100) / rect.height}%`;
+                                        }}
+                                        onMouseEnter={(e) => {
+                                            e.target.style.transform = "scale(2)";
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            e.target.style.transform = "scale(1)";
+                                        }}
+                                    />
+                                );
+                            })}
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
+            {viewFullScreen && (
+                <div className="pswp-gallery fixed" id="galleryFullScreen" ref={galleryFullScreen}>
+                    {imageGallery.map((image, index) => (
+                        <a
+                            href={image}
+                            data-pswp-width="450"
+                            data-pswp-height="550"
+                            key={"galleryFullScreen" + "-" + index}
+                            target="_blank"
+                            rel="noreferrer"
+                        >
+                            <img src={image} alt="" className="size-full py-4 object-cover" />
+                        </a>
+                    ))}
+                </div>
+            )}
+        </>
     );
 };
 
 SliderProductImages.propTypes = {
     imageGallery: PropTypes.array,
+    thumbWidth: PropTypes.string,
+    viewFullScreen: PropTypes.bool,
 };
 
 export default SliderProductImages;

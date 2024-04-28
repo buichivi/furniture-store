@@ -1,9 +1,8 @@
 import { Link } from "react-router-dom";
 import Tippy from "@tippyjs/react";
 import PropType from "prop-types";
-import { useRef } from "react";
 import { numberWithCommas } from "../utils";
-import ProductQuickView from "./ProductQuickView";
+import { useProductQuickViewStore } from "../store/productQuickViewStore";
 
 const productDemo = {
     id: 1,
@@ -71,125 +70,130 @@ const productDemo = {
 };
 
 const ProductCard = ({ product = productDemo, isDisplayGrid = true }) => {
-    const cb_quickView = useRef();
+    const { setProduct, toggleOpen } = useProductQuickViewStore();
 
     return (
-        <div className={`group/product w-full ${!isDisplayGrid && "flex items-center gap-[50px]"}`}>
-            <Link
-                to="/product"
-                className={`group/product-img relative w-full shrink-0 overflow-hidden ${!isDisplayGrid && "basis-[40%]"}`}
-            >
-                <img
-                    src={product?.colors[3]?.images[0]}
-                    alt=""
-                    className="h-[350px] w-full object-cover transition-all duration-500 group-hover/product-img:opacity-0"
-                />
-                <img
-                    src={product?.colors[3]?.images[1]}
-                    alt=""
-                    className="absolute left-0 top-0 -z-10 h-[350px] w-full object-cover"
-                />
-                <div className="absolute left-0 top-0 z-10 h-full w-full p-4">
-                    {product?.is_trend && (
-                        <span className="mr-1 bg-[#D10202] px-3 py-[2px] text-xs uppercase text-white">Hot</span>
-                    )}
-                    {product?.discount > 0 && (
-                        <span className="mr-1 bg-[#000] px-3 py-[2px] text-xs uppercase text-white">Sale</span>
-                    )}
-                    {product?.is_valid && (
-                        <span className="bg-[#919191] px-3 py-[2px] text-xs uppercase text-white">Sold out</span>
-                    )}
-                </div>
-                <div className="absolute right-0 top-0 z-10 h-full w-full">
-                    <div className="absolute left-0 top-0 flex h-full w-full flex-col">
-                        <div className="flex flex-1 flex-col items-end justify-end gap-4 p-4">
-                            <Tippy
-                                content="Quick view"
-                                placement="left"
-                                className="!bg-[#D10202] px-3 !text-sm [&.tippy-box[data-placement^=left]>.tippy-arrow:before]:border-l-[#D10202]"
-                            >
-                                <div
-                                    className="flex size-9 translate-y-3 cursor-pointer items-center justify-center rounded-full bg-white text-base opacity-0 transition-all delay-100  hover:bg-[#D10202] hover:text-white group-hover/product:translate-y-0 group-hover/product:opacity-100"
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        cb_quickView.current.checked = !cb_quickView.current.checked;
-                                    }}
+        <>
+            <div className={`group/product w-full ${!isDisplayGrid && "flex items-center gap-[50px]"}`}>
+                <Link
+                    to="/product"
+                    className={`group/product-img relative w-full shrink-0 overflow-hidden ${!isDisplayGrid && "basis-[40%]"}`}
+                >
+                    <img
+                        src={product?.colors[3]?.images[0]}
+                        alt=""
+                        className="h-[350px] w-full object-cover transition-all duration-500 group-hover/product-img:opacity-0"
+                    />
+                    <img
+                        src={product?.colors[3]?.images[1]}
+                        alt=""
+                        className="absolute left-0 top-0 -z-10 h-[350px] w-full object-cover"
+                    />
+                    <div className="absolute left-0 top-0 z-10 h-full w-full p-4">
+                        {product?.is_trend && (
+                            <span className="mr-1 bg-[#D10202] px-3 py-[2px] text-xs uppercase text-white">Hot</span>
+                        )}
+                        {product?.discount > 0 && (
+                            <span className="mr-1 bg-[#000] px-3 py-[2px] text-xs uppercase text-white">Sale</span>
+                        )}
+                        {product?.is_valid && (
+                            <span className="bg-[#919191] px-3 py-[2px] text-xs uppercase text-white">Sold out</span>
+                        )}
+                    </div>
+                    <div className="absolute right-0 top-0 z-10 h-full w-full">
+                        <div className="absolute left-0 top-0 z-20 flex h-full w-full flex-col">
+                            <div className="flex flex-1 flex-col items-end justify-end gap-4 p-4">
+                                <Tippy
+                                    content="Quick view"
+                                    placement="left"
+                                    className="!bg-[#D10202] px-3 !text-sm [&.tippy-box[data-placement^=left]>.tippy-arrow:before]:border-l-[#D10202]"
                                 >
-                                    <i className="fa-light fa-magnifying-glass"></i>
-                                </div>
-                            </Tippy>
-                            <Tippy
-                                content="Compare"
-                                placement="left"
-                                className="!bg-[#D10202] px-3 !text-sm [&.tippy-box[data-placement^=left]>.tippy-arrow:before]:border-l-[#D10202]"
-                                hideOnClick={false}
-                            >
-                                <div
-                                    className="flex size-9 translate-y-3 cursor-pointer items-center justify-center rounded-full bg-white text-base opacity-0 transition-all delay-[50]  hover:bg-[#D10202] hover:text-white group-hover/product:translate-y-0 group-hover/product:opacity-100"
-                                    onClick={(e) => e.preventDefault()}
+                                    <div
+                                        className="flex size-9 translate-y-3 cursor-pointer items-center justify-center rounded-full bg-white text-base opacity-0 transition-all delay-100  hover:bg-[#D10202] hover:text-white group-hover/product:translate-y-0 group-hover/product:opacity-100"
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            setProduct(product);
+                                            toggleOpen(true);
+                                        }}
+                                    >
+                                        <label htmlFor={"product-quick-view-" + product?.id}></label>
+                                        <i className="fa-light fa-magnifying-glass"></i>
+                                    </div>
+                                </Tippy>
+                                <Tippy
+                                    content="Compare"
+                                    placement="left"
+                                    className="!bg-[#D10202] px-3 !text-sm [&.tippy-box[data-placement^=left]>.tippy-arrow:before]:border-l-[#D10202]"
+                                    hideOnClick={false}
                                 >
-                                    <i className="fa-light fa-code-compare"></i>
-                                </div>
-                            </Tippy>
-                            <Tippy
-                                content="Wishlist"
-                                placement="left"
-                                className="!bg-[#D10202] px-3 !text-sm [&.tippy-box[data-placement^=left]>.tippy-arrow:before]:border-l-[#D10202]"
-                                hideOnClick={false}
-                            >
-                                <div
-                                    className="flex size-9 translate-y-3 cursor-pointer items-center justify-center rounded-full bg-white text-base opacity-0 transition-all  hover:bg-[#D10202] 
-                            hover:text-white group-hover/product:translate-y-0 group-hover/product:opacity-100"
-                                    onClick={(e) => e.preventDefault()}
+                                    <div
+                                        className="flex size-9 translate-y-3 cursor-pointer items-center justify-center rounded-full bg-white text-base opacity-0 transition-all delay-[50]  hover:bg-[#D10202] hover:text-white group-hover/product:translate-y-0 group-hover/product:opacity-100"
+                                        onClick={(e) => e.preventDefault()}
+                                    >
+                                        <i className="fa-light fa-code-compare"></i>
+                                    </div>
+                                </Tippy>
+                                <Tippy
+                                    content="Wishlist"
+                                    placement="left"
+                                    className="!bg-[#D10202] px-3 !text-sm [&.tippy-box[data-placement^=left]>.tippy-arrow:before]:border-l-[#D10202]"
+                                    hideOnClick={false}
                                 >
-                                    <i className="fa-sharp fa-light fa-heart"></i>
-                                </div>
-                            </Tippy>
+                                    <div
+                                        className="flex size-9 translate-y-3 cursor-pointer items-center justify-center rounded-full bg-white text-base opacity-0 transition-all  hover:bg-[#D10202] 
+                                hover:text-white group-hover/product:translate-y-0 group-hover/product:opacity-100"
+                                        onClick={(e) => e.preventDefault()}
+                                    >
+                                        <i className="fa-sharp fa-light fa-heart"></i>
+                                    </div>
+                                </Tippy>
+                            </div>
+                            <div
+                                to="/product"
+                                className={`w-full translate-y-3 bg-white py-3 text-center text-sm font-semibold uppercase text-black opacity-0 transition-all ease-out hover:bg-[#D10202] hover:text-white group-hover/product:translate-y-0 group-hover/product:opacity-100 ${!isDisplayGrid && "hidden"}`}
+                                onClick={(e) => e.preventDefault()}
+                            >
+                                Select options
+                            </div>
                         </div>
                         <div
-                            to="/product"
-                            className={`w-full translate-y-3 bg-white py-3 text-center text-sm font-semibold uppercase text-black opacity-0 transition-all ease-out hover:bg-[#D10202] hover:text-white group-hover/product:translate-y-0 group-hover/product:opacity-100 ${!isDisplayGrid && "hidden"}`}
-                            onClick={(e) => e.preventDefault()}
+                            className={`absolute bottom-0 right-4 flex size-10 items-center justify-center text-xl opacity-100 transition-all duration-500 group-hover/product:pointer-events-none group-hover/product:opacity-0 ${!isDisplayGrid && "bottom-4"}`}
                         >
-                            Select options
+                            <i className="fa-sharp fa-light fa-heart "></i>
                         </div>
                     </div>
-                    <div
-                        className={`absolute bottom-0 right-4 flex size-10 items-center justify-center text-xl opacity-100 transition-all duration-500 group-hover/product:pointer-events-none group-hover/product:opacity-0 ${!isDisplayGrid && "bottom-4"}`}
-                    >
-                        <i className="fa-sharp fa-light fa-heart "></i>
-                    </div>
-                </div>
-            </Link>
-            <div className="mt-4">
-                <Link
-                    className={`mb-3 line-clamp-2 cursor-pointer text-base tracking-wide transition-colors hover:text-[#D10202] ${!isDisplayGrid && "!text-2xl font-medium"}`}
-                >
-                    {product?.name}
                 </Link>
-                <div className={`flex items-center gap-4 text-base tracking-wide ${!isDisplayGrid && "text-xl"}`}>
-                    <span className="font-bold">
-                        <span>{product?.prices[0].currency}</span>
-                        <span>
-                            {numberWithCommas(Math.floor((product?.prices[0].price * (100 - product?.discount)) / 100))}
+                <div className="mt-4">
+                    <Link
+                        className={`mb-3 line-clamp-2 cursor-pointer text-base tracking-wide transition-colors hover:text-[#D10202] ${!isDisplayGrid && "!text-2xl font-medium"}`}
+                    >
+                        {product?.name}
+                    </Link>
+                    <div className={`flex items-center gap-4 text-base tracking-wide ${!isDisplayGrid && "text-xl"}`}>
+                        <span className="font-bold">
+                            <span>{product?.prices[0].currency}</span>
+                            <span>
+                                {numberWithCommas(
+                                    Math.floor((product?.prices[0].price * (100 - product?.discount)) / 100),
+                                )}
+                            </span>
                         </span>
-                    </span>
-                    <span className="text-[#959595] line-through">
-                        <span>{product?.prices[0].currency}</span>
-                        <span>{numberWithCommas(product?.prices[0].price)}</span>
-                    </span>
+                        <span className="text-[#959595] line-through">
+                            <span>{product?.prices[0].currency}</span>
+                            <span>{numberWithCommas(product?.prices[0].price)}</span>
+                        </span>
+                    </div>
+                    {!isDisplayGrid && (
+                        <>
+                            <p className="mt-6 text-[#848484]">{product?.short_description}</p>
+                            <button className="mt-6 bg-black px-24 py-4 text-base font-bold uppercase tracking-wider text-white transition-colors hover:bg-[#D10202]">
+                                Add to cart
+                            </button>
+                        </>
+                    )}
                 </div>
-                {!isDisplayGrid && (
-                    <>
-                        <p className="mt-6 text-[#848484]">{product?.short_description}</p>
-                        <button className="mt-6 bg-black px-24 py-4 text-base font-bold uppercase tracking-wider text-white transition-colors hover:bg-[#D10202]">
-                            Add to cart
-                        </button>
-                    </>
-                )}
             </div>
-            <ProductQuickView product={product} ref={cb_quickView} />
-        </div>
+        </>
     );
 };
 

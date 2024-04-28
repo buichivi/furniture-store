@@ -13,6 +13,9 @@ import "swiper/css/navigation";
 // Tippy react css
 import "tippy.js/dist/tippy.css";
 
+// Photoswipe css
+import "photoswipe/style.css";
+
 ReactDOM.createRoot(document.getElementById("root")).render(
     <React.StrictMode>
         <BrowserRouter>

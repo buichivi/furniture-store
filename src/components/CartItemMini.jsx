@@ -14,7 +14,7 @@ const CartItemMini = () => {
                 />
             </div>
             <div className="flex-1">
-                <Link className="mb-4 inline-block text-lg tracking-wide transition-colors hover:text-[#d10202]">
+                <Link className="mb-4 inline-block text-base tracking-wide transition-colors hover:text-[#d10202]">
                     Led Steel Floor Lamp
                 </Link>
                 <div className="mb-2 w-full">

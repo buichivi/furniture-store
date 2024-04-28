@@ -24,7 +24,7 @@ const Header = () => {
         <>
             <div
                 ref={header_el}
-                className="fixed left-0 top-0 z-50 flex h-[90px] w-full items-center justify-center bg-main transition-shadow duration-700"
+                className="fixed left-0 top-0 z-50 flex h-[90px] w-full items-center justify-center bg-transparent transition-shadow duration-700"
             >
                 <div className="container flex items-center justify-between gap-8 px-5">
                     <div className="relative flex items-center gap-4">
@@ -142,9 +142,9 @@ const Header = () => {
                         <input
                             type="text"
                             placeholder="Search for products..."
-                            className="h-[50px] w-full border border-gray-400 py-3 pl-8 pr-14 outline-none"
+                            className="h-[50px] w-full border border-gray-400 py-3 pl-4 pr-14 outline-none"
                         />
-                        <span className="absolute right-6 top-1/2 -translate-y-1/2 cursor-pointer text-2xl">
+                        <span className="absolute right-6 top-1/2 -translate-y-1/2 cursor-pointer text-lg">
                             <i className="fa-light fa-magnifying-glass"></i>
                         </span>
                     </div>
@@ -186,15 +186,15 @@ const Header = () => {
                             })}
                         </div>
                         <div>
-                            <div className="flex items-center justify-between py-8 text-xl font-bold tracking-wider">
+                            <div className="flex items-center justify-between py-8 text-lg font-bold tracking-wider">
                                 <h4>Subtotal</h4>
                                 <span>$5,000</span>
                             </div>
                             <div>
-                                <Link className="mb-3 block py-4 text-center text-base font-bold uppercase ring-1 ring-black transition-colors hover:text-[#d10202] hover:ring-[#d10202]">
+                                <Link className="mb-3 block py-4 text-center text-sm font-bold uppercase ring-1 ring-black transition-colors hover:text-[#d10202] hover:ring-[#d10202]">
                                     View cart
                                 </Link>
-                                <Link className="block bg-black py-4 text-center text-base font-bold uppercase text-white transition-colors hover:bg-[#d10202]">
+                                <Link className="block bg-black py-4 text-center text-sm font-bold uppercase text-white transition-colors hover:bg-[#d10202]">
                                     Check out
                                 </Link>
                             </div>

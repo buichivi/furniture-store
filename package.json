@@ -12,10 +12,13 @@
   "dependencies": {
     "@tippyjs/react": "^4.2.6",
     "classnames": "^2.5.1",
+    "framer-motion": "^11.1.7",
+    "photoswipe": "^5.4.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.22.3",
-    "swiper": "^11.1.0"
+    "swiper": "^11.1.0",
+    "zustand": "^4.5.2"
   },
   "devDependencies": {
     "@types/react": "^18.2.66",

@@ -1,3 +1,4 @@
+import { ScrollToTop } from "./components";
 import MainLayout from "./layouts/MainLayout";
 import { public_routes } from "./routes";
 import { Routes, Route } from "react-router-dom";
@@ -11,7 +12,10 @@ function App() {
                         path={path}
                         element={
                             <MainLayout>
-                                <Element />
+                                <>
+                                    <ScrollToTop />
+                                    <Element />
+                                </>
                             </MainLayout>
                         }
                     />

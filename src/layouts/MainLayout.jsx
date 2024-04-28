@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { Header, Footer } from "./components";
 import PropTypes from "prop-types";
+import { ProductQuickView } from "../components";
 
 const MainLayout = ({ children }) => {
     const scroll_to_top = useRef();
@@ -26,11 +27,12 @@ const MainLayout = ({ children }) => {
                 ref={scroll_to_top}
                 className="fixed bottom-0 right-0 flex size-14 translate-x-full cursor-pointer items-center justify-center bg-black text-white transition-all duration-500"
                 onClick={() => {
-                    window.scrollTo(0, 0);
+                    window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
                 }}
             >
                 <i className="fa-light fa-arrow-up"></i>
             </div>
+            <ProductQuickView />
         </div>
     );
 };

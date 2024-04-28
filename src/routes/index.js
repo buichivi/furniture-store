@@ -1,4 +1,5 @@
 import { Home, Shop, Product } from "../pages";
+// import TryZustand from "../pages/TryZustand";
 
 const public_routes = [
     {
@@ -13,6 +14,10 @@ const public_routes = [
         path: "/product",
         element: Product,
     },
+    // {
+    //     path: "/test",
+    //     element: TryZustand,
+    // },
 ];
 
 export { public_routes };

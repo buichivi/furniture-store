@@ -12,3 +12,7 @@ export { default as Filter } from "./Filter";
 export { default as SliderProductImages } from "./SliderProductImages";
 export { default as ReviewStars } from "./ReviewStars";
 export { default as ProductQuickView } from "./ProductQuickView";
+export { default as ScrollToTop } from "./ScrollToTop";
+export { default as ReviewItem } from "./ReviewItem";
+export { default as UserReview } from "./UserReview";
+export { default as RelatedProducts } from "./RelatedProducts";

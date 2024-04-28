@@ -4,46 +4,46 @@ import ReviewStars from "./ReviewStars";
 import { forwardRef, useEffect, useState } from "react";
 import { numberWithCommas } from "../utils";
 import PropType from "prop-types";
+import { useProductQuickViewStore } from "../store/productQuickViewStore";
 
-const ProductQuickView = forwardRef(function ProductQuickView({ product = {} }, ref) {
-    const [images, setImages] = useState([]);
+const ProductQuickView = forwardRef(function ProductQuickView() {
     const [selectedColor, setSelectedColor] = useState();
+    const { product, isOpen, toggleOpen } = useProductQuickViewStore();
 
     useEffect(() => {
-        if (product?.colors.length > 0) {
-            setImages(product?.colors[3]?.images);
-        }
-    }, [product]);
+        setSelectedColor();
+    }, [isOpen]);
 
     return (
-        <div>
+        <>
             {/* Quick view */}
-            <input
-                type="checkbox"
-                ref={ref}
-                id={"product-quick-view-" + product?.id}
-                className="hidden [&:checked+div>div:last-child]:-translate-y-1/2 [&:checked+div]:pointer-events-auto [&:checked+div]:opacity-100 [&:checked+div_div]:opacity-100"
-            />
-            <div className="pointer-events-none fixed left-0 top-0 z-[60] h-screen w-screen opacity-0 transition-all">
-                <label
-                    htmlFor={"product-quick-view-" + product?.id}
+            <div
+                className={`fixed left-0 top-0 z-[60] h-screen w-screen ${isOpen ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"} transition-all`}
+            >
+                <span
                     className="absolute left-0 top-0 block h-full w-full bg-[#000000ce]"
-                ></label>
-                <div className="absolute left-1/2 top-1/2 flex h-[600px] min-w-[940px] -translate-x-1/2 -translate-y-10 items-center gap-8 bg-white p-8 opacity-0 transition-all delay-300">
-                    <label
-                        htmlFor={"product-quick-view-" + product?.id}
+                    onClick={() => toggleOpen(false)}
+                ></span>
+                <div
+                    className={`absolute left-1/2 top-1/2 flex h-[600px] min-w-[1000px] -translate-x-1/2 ${isOpen ? "-translate-y-1/2 opacity-100" : "-translate-y-10 opacity-0"} items-center gap-8 bg-white p-8  transition-all delay-300`}
+                >
+                    <span
                         className="absolute right-0 top-0 flex size-8 cursor-pointer items-center justify-center bg-black text-white"
+                        onClick={() => toggleOpen(false)}
                     >
                         <i className="fa-light fa-xmark"></i>
-                    </label>
+                    </span>
                     <div className="h-full basis-[55%]">
-                        <SliderProductImages imageGallery={images} />
+                        <SliderProductImages
+                            imageGallery={selectedColor?.images || product?.colors[3]?.images}
+                            viewFullScreen={false}
+                        />
                     </div>
                     <div className="absolute bottom-[5%] right-0 top-[10%] max-h-full w-[42%] overflow-y-auto pr-8 [scrollbar-width:thin]">
                         <h3 className="mb-8 text-3xl tracking-wider">{product?.name}</h3>
                         <div className="mb-7 flex items-center gap-12">
                             <div className="flex items-center gap-2">
-                                <ReviewStars stars={product?.review?.average_star} />
+                                <ReviewStars stars={product?.review?.average_star} size="15px" />
                                 <span>({product?.review?.number_of_review})</span>
                             </div>
                             <div className="text-base">
@@ -72,16 +72,20 @@ const ProductQuickView = forwardRef(function ProductQuickView({ product = {} }, 
                         </div>
                         <p className="mb-7 line-clamp-3 text-base text-[#959595]">{product?.short_description}</p>
                         {product?.colors.length > 0 && (
-                            <div className="mb-10">
-                                <h3 className="mb-5 text-lg font-semibold">COLOR:</h3>
+                            <div className={`mb-10 ${selectedColor && "mb-8"}`}>
+                                <div className="mb-5 flex items-center gap-2">
+                                    <h3 className="text-lg font-semibold">COLOR:</h3>
+                                    {selectedColor && (
+                                        <span className="font-light capitalize">{selectedColor?.name}</span>
+                                    )}
+                                </div>
                                 <div className="flex items-center gap-2">
                                     {product?.colors.map((color, index) => (
                                         <div
                                             key={index}
-                                            className={`relative size-10 cursor-pointer border border-[#969696] transition-all hover:border-black ${selectedColor?.name == color?.name && "!border-black"}`}
+                                            className={`relative size-10 cursor-pointer border border-[#c5c5c5] transition-all hover:border-black ${selectedColor?.name == color?.name && "!border-black"}`}
                                             onClick={() => {
                                                 setSelectedColor(color);
-                                                setImages(color?.images);
                                             }}
                                         >
                                             <img
@@ -92,6 +96,14 @@ const ProductQuickView = forwardRef(function ProductQuickView({ product = {} }, 
                                         </div>
                                     ))}
                                 </div>
+                                {selectedColor && (
+                                    <button
+                                        className="text-sm font-normal text-[#d10202]"
+                                        onClick={() => setSelectedColor()}
+                                    >
+                                        Clear
+                                    </button>
+                                )}
                             </div>
                         )}
                         {product?.is_valid && (
@@ -107,7 +119,9 @@ const ProductQuickView = forwardRef(function ProductQuickView({ product = {} }, 
                                     <i className="fa-light fa-plus flex-1 shrink-0 cursor-pointer text-center text-sm"></i>
                                 </div>
                                 <div className="h-full flex-1 shrink-0">
-                                    <button className="h-full w-full bg-black text-sm font-semibold uppercase text-white transition-colors hover:bg-[#d10202]">
+                                    <button
+                                        className={`h-full w-full bg-black text-sm font-semibold uppercase text-white transition-colors hover:bg-[#d10202] ${!selectedColor && "cursor-not-allowed opacity-50"}`}
+                                    >
                                         Add to cart
                                     </button>
                                 </div>
@@ -115,7 +129,9 @@ const ProductQuickView = forwardRef(function ProductQuickView({ product = {} }, 
                         )}
 
                         {product?.is_valid && (
-                            <button className="mt-4 h-[50px] w-full border border-black bg-transparent text-sm font-semibold uppercase text-black transition-all hover:border-[#d10202] hover:text-[#d10202]">
+                            <button
+                                className={`mt-4 h-[50px] w-full border border-black bg-transparent text-sm font-semibold uppercase text-black transition-all hover:border-[#d10202] hover:text-[#d10202] ${!selectedColor && "cursor-not-allowed opacity-40"}`}
+                            >
                                 Buy now
                             </button>
                         )}
@@ -146,7 +162,7 @@ const ProductQuickView = forwardRef(function ProductQuickView({ product = {} }, 
                     </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 });
 
