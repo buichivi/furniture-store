@@ -1,7 +1,9 @@
-import { ScrollToTop } from "./components";
-import MainLayout from "./layouts/MainLayout";
-import { public_routes } from "./routes";
-import { Routes, Route } from "react-router-dom";
+import { ScrollToTop } from './components';
+import MainLayout from './layouts/MainLayout';
+import { ProtectedRoute } from './layouts/components';
+import { Login, Register } from './pages';
+import { private_routes, public_routes } from './routes';
+import { Routes, Route } from 'react-router-dom';
 function App() {
     return (
         <Routes>
@@ -21,6 +23,26 @@ function App() {
                     />
                 );
             })}
+            {private_routes.map(({ path, element: Element }, index) => {
+                return (
+                    <Route
+                        key={index}
+                        path={path}
+                        element={
+                            <ProtectedRoute>
+                                <MainLayout>
+                                    <>
+                                        <ScrollToTop />
+                                        <Element />
+                                    </>
+                                </MainLayout>
+                            </ProtectedRoute>
+                        }
+                    />
+                );
+            })}
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
         </Routes>
     );
 }

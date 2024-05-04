@@ -1,17 +1,17 @@
-import { Home, Shop, Product } from "../pages";
+import { Home, Shop, Product, Profile } from '../pages';
 // import TryZustand from "../pages/TryZustand";
 
 const public_routes = [
     {
-        path: "/",
+        path: '/',
         element: Home,
     },
     {
-        path: "/shop",
+        path: '/shop',
         element: Shop,
     },
     {
-        path: "/product",
+        path: '/product',
         element: Product,
     },
     // {
@@ -20,4 +20,11 @@ const public_routes = [
     // },
 ];
 
-export { public_routes };
+const private_routes = [
+    {
+        path: '/profile',
+        element: Profile,
+    },
+];
+
+export { public_routes, private_routes };

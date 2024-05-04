@@ -1,24 +1,24 @@
-import { Link } from "react-router-dom";
-import Tippy from "@tippyjs/react";
-import PropType from "prop-types";
-import { numberWithCommas } from "../utils";
-import { useProductQuickViewStore } from "../store/productQuickViewStore";
+import { Link } from 'react-router-dom';
+import Tippy from '@tippyjs/react';
+import PropType from 'prop-types';
+import { numberWithCommas } from '../utils/format';
+import { useProductQuickViewStore } from '../store/productQuickViewStore';
 
 const productDemo = {
     id: 1,
     is_trend: true,
     is_valid: true,
-    name: "Wood Outdoor Adirondack Chair",
+    name: 'Wood Outdoor Adirondack Chair',
     short_description: `Phasellus vitae imperdiet felis. Nam non condimentumerat. Lorem ipsum dolor sit amet, consecteturadipiscing elit. Nulla tortor arcu, consectetureleifend commodo at, consectetur eu justo.`,
     discount: 50,
     prices: [
         {
             price: 1099,
-            currency: "$",
+            currency: '$',
         },
         {
             price: 22000000,
-            currency: "vnd",
+            currency: 'vnd',
         },
     ],
     review: {
@@ -27,43 +27,43 @@ const productDemo = {
     },
     colors: [
         {
-            name: "black",
-            color_thumb: "https://demo.theme-sky.com/nooni/wp-content/uploads/2023/05/black-46x46.jpg",
+            name: 'black',
+            color_thumb: 'https://demo.theme-sky.com/nooni/wp-content/uploads/2023/05/black-46x46.jpg',
             images: [
-                "https://cdn.arhaus.com/product/StandardV2/201032CHMBLK_A210923.jpg?preset=ProductGrande",
-                "https://cdn.arhaus.com/product/StandardV2/201032CHMBLK_B210923.jpg?preset=ProductGrande",
-                "https://cdn.arhaus.com/product/StandardV2/201032CHMBLK_D210923.jpg?preset=ProductGrande",
-                "https://cdn.arhaus.com/product/StandardV2/201032CHMBLK_CD210511.jpg?preset=ProductGrande",
+                'https://cdn.arhaus.com/product/StandardV2/201032CHMBLK_A210923.jpg?preset=ProductGrande',
+                'https://cdn.arhaus.com/product/StandardV2/201032CHMBLK_B210923.jpg?preset=ProductGrande',
+                'https://cdn.arhaus.com/product/StandardV2/201032CHMBLK_D210923.jpg?preset=ProductGrande',
+                'https://cdn.arhaus.com/product/StandardV2/201032CHMBLK_CD210511.jpg?preset=ProductGrande',
             ],
         },
         {
-            name: "green",
-            color_thumb: "https://demo.theme-sky.com/nooni/wp-content/uploads/2023/05/green-46x46.jpg",
+            name: 'green',
+            color_thumb: 'https://demo.theme-sky.com/nooni/wp-content/uploads/2023/05/green-46x46.jpg',
             images: [
-                "https://cdn.arhaus.com/product/StandardV2/40HATTIECABEB_B210311.jpg?preset=ProductGrande",
-                "https://cdn.arhaus.com/product/StandardV2/40HATTIECABEB_A210311.jpg?preset=ProductGrande",
-                "https://cdn.arhaus.com/product/StandardV2/40HATTIECABEB_C210311.jpg?preset=ProductGrande",
-                "https://cdn.arhaus.com/product/StandardV2/40HATTIECABEB_D210311.jpg?preset=ProductGrande",
+                'https://cdn.arhaus.com/product/StandardV2/40HATTIECABEB_B210311.jpg?preset=ProductGrande',
+                'https://cdn.arhaus.com/product/StandardV2/40HATTIECABEB_A210311.jpg?preset=ProductGrande',
+                'https://cdn.arhaus.com/product/StandardV2/40HATTIECABEB_C210311.jpg?preset=ProductGrande',
+                'https://cdn.arhaus.com/product/StandardV2/40HATTIECABEB_D210311.jpg?preset=ProductGrande',
             ],
         },
         {
-            name: "gray",
-            color_thumb: "https://demo.theme-sky.com/nooni/wp-content/uploads/2023/05/grey-46x46.jpg",
+            name: 'gray',
+            color_thumb: 'https://demo.theme-sky.com/nooni/wp-content/uploads/2023/05/grey-46x46.jpg',
             images: [
-                "https://cdn.arhaus.com/product/StandardV2/1072838SWBF_DS231016.jpg?preset=ProductGrande",
-                "https://cdn.arhaus.com/product/StandardV2/1072838SWBF_DP231016.jpg?preset=ProductGrande",
-                "https://cdn.arhaus.com/product/StandardV2/1072838SWBF_DQ231016.jpg?preset=ProductGrande",
-                "https://cdn.arhaus.com/product/StandardV2/1072838SWBF_DT231016.jpg?preset=ProductGrande",
+                'https://cdn.arhaus.com/product/StandardV2/1072838SWBF_DS231016.jpg?preset=ProductGrande',
+                'https://cdn.arhaus.com/product/StandardV2/1072838SWBF_DP231016.jpg?preset=ProductGrande',
+                'https://cdn.arhaus.com/product/StandardV2/1072838SWBF_DQ231016.jpg?preset=ProductGrande',
+                'https://cdn.arhaus.com/product/StandardV2/1072838SWBF_DT231016.jpg?preset=ProductGrande',
             ],
         },
         {
-            name: "teak",
-            color_thumb: "https://demo.theme-sky.com/nooni/wp-content/uploads/2023/05/teak-46x46.jpg",
+            name: 'teak',
+            color_thumb: 'https://demo.theme-sky.com/nooni/wp-content/uploads/2023/05/teak-46x46.jpg',
             images: [
-                "https://nooni-be87.kxcdn.com/nooni/wp-content/uploads/2022/12/01-450x572.jpg",
-                "https://nooni-be87.kxcdn.com/nooni/wp-content/uploads/2023/04/01-2-450x572.jpg",
-                "https://demo.theme-sky.com/nooni/wp-content/uploads/2023/04/01-3-450x572.jpg",
-                "https://demo.theme-sky.com/nooni/wp-content/uploads/2023/04/01-5-450x572.jpg",
+                'https://nooni-be87.kxcdn.com/nooni/wp-content/uploads/2022/12/01-450x572.jpg',
+                'https://nooni-be87.kxcdn.com/nooni/wp-content/uploads/2023/04/01-2-450x572.jpg',
+                'https://demo.theme-sky.com/nooni/wp-content/uploads/2023/04/01-3-450x572.jpg',
+                'https://demo.theme-sky.com/nooni/wp-content/uploads/2023/04/01-5-450x572.jpg',
             ],
         },
     ],
@@ -74,10 +74,10 @@ const ProductCard = ({ product = productDemo, isDisplayGrid = true }) => {
 
     return (
         <>
-            <div className={`group/product w-full ${!isDisplayGrid && "flex items-center gap-[50px]"}`}>
+            <div className={`group/product w-full ${!isDisplayGrid && 'flex items-center gap-[50px]'}`}>
                 <Link
                     to="/product"
-                    className={`group/product-img relative w-full shrink-0 overflow-hidden ${!isDisplayGrid && "basis-[40%]"}`}
+                    className={`group/product-img relative w-full shrink-0 overflow-hidden ${!isDisplayGrid && 'basis-[40%]'}`}
                 >
                     <img
                         src={product?.colors[3]?.images[0]}
@@ -116,7 +116,7 @@ const ProductCard = ({ product = productDemo, isDisplayGrid = true }) => {
                                             toggleOpen(true);
                                         }}
                                     >
-                                        <label htmlFor={"product-quick-view-" + product?.id}></label>
+                                        <label htmlFor={'product-quick-view-' + product?.id}></label>
                                         <i className="fa-light fa-magnifying-glass"></i>
                                     </div>
                                 </Tippy>
@@ -150,14 +150,14 @@ const ProductCard = ({ product = productDemo, isDisplayGrid = true }) => {
                             </div>
                             <div
                                 to="/product"
-                                className={`w-full translate-y-3 bg-white py-3 text-center text-sm font-semibold uppercase text-black opacity-0 transition-all ease-out hover:bg-[#D10202] hover:text-white group-hover/product:translate-y-0 group-hover/product:opacity-100 ${!isDisplayGrid && "hidden"}`}
+                                className={`w-full translate-y-3 bg-white py-3 text-center text-sm font-semibold uppercase text-black opacity-0 transition-all ease-out hover:bg-[#D10202] hover:text-white group-hover/product:translate-y-0 group-hover/product:opacity-100 ${!isDisplayGrid && 'hidden'}`}
                                 onClick={(e) => e.preventDefault()}
                             >
                                 Select options
                             </div>
                         </div>
                         <div
-                            className={`absolute bottom-0 right-4 flex size-10 items-center justify-center text-xl opacity-100 transition-all duration-500 group-hover/product:pointer-events-none group-hover/product:opacity-0 ${!isDisplayGrid && "bottom-4"}`}
+                            className={`absolute bottom-0 right-4 flex size-10 items-center justify-center text-xl opacity-100 transition-all duration-500 group-hover/product:pointer-events-none group-hover/product:opacity-0 ${!isDisplayGrid && 'bottom-4'}`}
                         >
                             <i className="fa-sharp fa-light fa-heart "></i>
                         </div>
@@ -165,11 +165,11 @@ const ProductCard = ({ product = productDemo, isDisplayGrid = true }) => {
                 </Link>
                 <div className="mt-4">
                     <Link
-                        className={`mb-3 line-clamp-2 cursor-pointer text-base tracking-wide transition-colors hover:text-[#D10202] ${!isDisplayGrid && "!text-2xl font-medium"}`}
+                        className={`mb-3 line-clamp-2 cursor-pointer text-base tracking-wide transition-colors hover:text-[#D10202] ${!isDisplayGrid && '!text-2xl font-medium'}`}
                     >
                         {product?.name}
                     </Link>
-                    <div className={`flex items-center gap-4 text-base tracking-wide ${!isDisplayGrid && "text-xl"}`}>
+                    <div className={`flex items-center gap-4 text-base tracking-wide ${!isDisplayGrid && 'text-xl'}`}>
                         <span className="font-bold">
                             <span>{product?.prices[0].currency}</span>
                             <span>

@@ -1,24 +1,76 @@
-import { useEffect, useRef } from "react";
-import { SearchItem } from "../../components";
-import { Link } from "react-router-dom";
-import CartItemMini from "../../components/CartItemMini";
+import { useEffect, useRef } from 'react';
+import { SearchItem } from '../../components';
+import { Link, useNavigate } from 'react-router-dom';
+import CartItemMini from '../../components/CartItemMini';
+import useAuthStore from '../../store/authStore';
+import apiRequest from '../../utils/apiRequest';
+import Tippy from '@tippyjs/react/headless';
+import pathFile from '../../utils/pathFile';
+import toast from 'react-hot-toast';
+
 const Header = () => {
     const header_el = useRef();
+    const { currentUser, loginUser, logout } = useAuthStore();
+    const naviagate = useNavigate();
+
+    const token = localStorage.getItem('token');
+
+    console.log(currentUser);
+
     useEffect(() => {
-        window.addEventListener("scroll", () => {
+        const styleHeader = () => {
             var doc = document.documentElement;
             var top = (window.scrollY || doc.scrollTop) - (doc.clientTop || 0);
             if (top >= 200) {
-                header_el.current.style.background = "white";
-                header_el.current.classList.add("shadow-lg");
+                header_el.current.style.background = 'white';
+                header_el.current.classList.add('shadow-lg');
             } else {
                 if (top == 0) {
-                    header_el.current.classList.remove("shadow-lg");
-                    header_el.current.style.background = "transparent";
-                } else header_el.current.style.background = "white";
+                    header_el.current.classList.remove('shadow-lg');
+                    header_el.current.style.background = 'transparent';
+                } else header_el.current.style.background = 'white';
             }
-        });
+        };
+        window.addEventListener('scroll', styleHeader);
+        return () => {
+            window.removeEventListener('scroll', styleHeader);
+        };
     }, []);
+
+    useEffect(() => {
+        apiRequest
+            .get('/auth/me', {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            })
+            .then((res) => {
+                loginUser(res.data);
+            })
+            .catch((err) => console.log(err));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    const handleLogout = () => {
+        toast.promise(
+            apiRequest.patch('/auth/logout', null, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            }),
+            {
+                loading: 'Logout...',
+                success: (res) => {
+                    logout();
+                    naviagate('/');
+                    return res.data.message;
+                },
+                error: (err) => {
+                    return err.response.data.error || 'Something went wrong';
+                },
+            },
+        );
+    };
 
     return (
         <>
@@ -36,25 +88,23 @@ const Header = () => {
                                 const isOpen = e.currentTarget.checked;
                                 const logo = e.currentTarget.parentElement.nextElementSibling.children[0];
                                 if (isOpen) {
-                                    logo.classList.add("invert");
+                                    logo.classList.add('invert');
                                 } else {
-                                    logo.classList.remove("invert");
+                                    logo.classList.remove('invert');
                                 }
                             }}
                         />
-                        <div
-                            className="menu-clip-path fixed left-0 top-0 z-20 size-full bg-black peer-checked/menu:bg-[#191f22]"
-                        >
+                        <div className="menu-clip-path fixed left-0 top-0 z-20 size-full bg-black peer-checked/menu:bg-[#191f22]">
                             <div className="container relative mx-auto flex h-fit items-start px-5 pt-[10%]">
                                 <div className="flex shrink-0 basis-[50%] flex-col gap-5 text-white [&>*]:relative [&>*]:w-fit [&>*]:py-2 [&>*]:font-lora [&>*]:text-5xl [&>*]:before:absolute [&>*]:before:bottom-0 [&>*]:before:left-0 [&>*]:before:-z-10 [&>*]:before:h-full [&>*]:before:w-full [&>*]:before:origin-right [&>*]:before:scale-x-0 [&>*]:before:bg-white [&>*]:before:transition-[transform] [&>*]:before:duration-[200]">
-                                    {["Home", "Light", "Table", "Chair", "Blog", "Contact us"].map(
+                                    {['Home', 'Light', 'Table', 'Chair', 'Blog', 'Contact us'].map(
                                         (menuItem, index) => {
                                             return (
                                                 <Link
                                                     key={index}
                                                     className="menu-link ease-[cubic-bezier(0.86, 0, 0.07, 1)] transition-all duration-700 hover:px-3 hover:text-black hover:before:origin-left hover:before:scale-x-100"
                                                     style={{
-                                                        transitionDelay: (index + 1) * 0.05 + "s",
+                                                        transitionDelay: (index + 1) * 0.05 + 's',
                                                     }}
                                                 >
                                                     {menuItem}
@@ -67,15 +117,15 @@ const Header = () => {
                         </div>
                         <div className="cross menu--1 relative size-10 overflow-hidden">
                             <label
-                                className="absolute -left-[30px] hover:opacity-70 top-1/2 z-50 size-20 -translate-y-1/2 cursor-pointer"
+                                className="absolute -left-[30px] top-1/2 z-50 size-20 -translate-y-1/2 cursor-pointer hover:opacity-70"
                                 htmlFor="menu"
                                 aria-checked="false"
                                 onClick={(e) => {
-                                    const isOpen = e.currentTarget.getAttribute("aria-checked");
-                                    if (isOpen === "false") {
-                                        e.currentTarget.setAttribute("aria-checked", "true");
+                                    const isOpen = e.currentTarget.getAttribute('aria-checked');
+                                    if (isOpen === 'false') {
+                                        e.currentTarget.setAttribute('aria-checked', 'true');
                                     } else {
-                                        e.currentTarget.setAttribute("aria-checked", "false");
+                                        e.currentTarget.setAttribute('aria-checked', 'false');
                                     }
                                 }}
                             >
@@ -101,9 +151,63 @@ const Header = () => {
                         />
                     </Link>
                     <div className="flex items-center gap-8 [&>*>i]:cursor-pointer [&>*>i]:text-xl">
-                        <Link className="hover:opacity-70">
-                            <i className="fa-light fa-user"></i>
-                        </Link>
+                        {!currentUser ? (
+                            <Link className="relative hover:opacity-70" to="/login">
+                                <i className="fa-light fa-user"></i>
+                            </Link>
+                        ) : (
+                            <Tippy
+                                interactive
+                                arrow={true}
+                                placement="bottom"
+                                delay={[0, 500]}
+                                render={(attrs) => {
+                                    return (
+                                        <div
+                                            className="flex flex-col border bg-white px-4 py-2 shadow-lg"
+                                            tabIndex="-1"
+                                            {...attrs}
+                                        >
+                                            <div className="flex items-center gap-2 border-b py-2">
+                                                <div className="size-10 shrink-0 overflow-hidden rounded-full">
+                                                    <img
+                                                        src={
+                                                            pathFile(currentUser.avatar) ||
+                                                            'src/assets/images/account-placeholder.jpg'
+                                                        }
+                                                        alt={currentUser.name}
+                                                        className="size-full object-cover"
+                                                    />
+                                                </div>
+                                                <div className="flex flex-1 flex-col items-start justify-center text-sm">
+                                                    <h4 className="font-semibold">
+                                                        {currentUser.firstName + ' ' + currentUser.lastName}
+                                                    </h4>
+                                                    <p>{currentUser.email}</p>
+                                                </div>
+                                            </div>
+                                            <Link className="flex items-center px-2 py-2 text-sm transition-colors hover:bg-[#eeeeee6e]">
+                                                <span className="min-w-[15%] text-base">
+                                                    <i className="fa-light fa-user"></i>
+                                                </span>
+                                                My account
+                                            </Link>
+                                            <div
+                                                className="flex cursor-pointer items-center px-2 py-2 text-sm transition-colors hover:bg-[#eeeeee6e]"
+                                                onClick={handleLogout}
+                                            >
+                                                <span className="min-w-[15%] text-base">
+                                                    <i className="fa-light fa-arrow-left-from-bracket"></i>
+                                                </span>
+                                                Log out
+                                            </div>
+                                        </div>
+                                    );
+                                }}
+                            >
+                                <i className="fa-light fa-user cursor-pointer text-xl"></i>
+                            </Tippy>
+                        )}
                         <Link className="relative">
                             <i className="fa-light fa-heart hover:opacity-70"></i>
                             <div className="absolute -right-[45%] -top-[35%] flex size-5 items-center justify-center rounded-full bg-black text-white">
@@ -123,7 +227,7 @@ const Header = () => {
             {/* Search */}
             <input
                 type="checkbox"
-                className="peer/search-short-form hidden [&:checked~div>div]:translate-x-0 [&:checked~div>label]:opacity-100"
+                className="peer/search-short-form hidden [&:checked+div>div]:translate-x-0 [&:checked+div>label]:opacity-100"
                 id="search-short-form"
             />
             <div className="pointer-events-none invisible fixed right-0 top-0 z-50 h-screen w-screen peer-checked/search-short-form:pointer-events-auto peer-checked/search-short-form:visible">
@@ -131,7 +235,7 @@ const Header = () => {
                     htmlFor="search-short-form"
                     className="block h-full w-full bg-[#3f3f3f80] opacity-0 transition-all duration-500"
                 ></label>
-                <div className="absolute right-0 top-0 h-full w-[30%] translate-x-full overflow-y-auto [scrollbar-width:thin] bg-white p-[30px] transition-all duration-500 2xl:w-1/5">
+                <div className="absolute right-0 top-0 h-full w-[30%] translate-x-full overflow-y-auto bg-white p-[30px] transition-all duration-500 [scrollbar-width:thin] 2xl:w-1/5">
                     <div className="mb-8 flex items-center justify-between">
                         <h4>Search for products (0)</h4>
                         <label htmlFor="search-short-form" className="cursor-pointer text-2xl">
@@ -164,7 +268,7 @@ const Header = () => {
             {/* Cart */}
             <input
                 type="checkbox"
-                className="peer/cart-short-form hidden [&:checked~div>div]:translate-x-0 [&:checked~div>label]:opacity-100"
+                className="peer/cart-short-form hidden [&:checked+div>div]:translate-x-0 [&:checked+div>label]:opacity-100"
                 id="cart-short-form"
             />
             <div className="pointer-events-none invisible fixed right-0 top-0 z-50 h-screen w-screen peer-checked/cart-short-form:pointer-events-auto peer-checked/cart-short-form:visible">

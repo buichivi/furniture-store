@@ -1,15 +1,15 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Open+Sans:ital,wdth,wght@0,75..100,300..800;1,75..100,300..800&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Open+Sans:ital,wdth,wght@0,75..100,300..800;1,75..100,300..800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 body {
-    font-family: "Inter", sans-serif;
+    font-family: 'Inter', sans-serif;
     font-size: 16px;
     font-weight: 400;
-    font-variation-settings: "wdth" 75;
+    font-variation-settings: 'wdth' 75;
 }
 
 /* Swiper JS */
@@ -76,7 +76,7 @@ html {
 }
 .hover-text-effect::before,
 .hover-text-effect::after {
-    content: "";
+    content: '';
     position: absolute;
     top: 100%;
     height: 1px;
@@ -117,12 +117,12 @@ html {
 } */
 
 /* Reset input number */
-input[type="number"] {
+input[type='number'] {
     -moz-appearance: textfield;
 }
 
-input[type="number"]::-webkit-outer-spin-button,
-input[type="number"]::-webkit-inner-spin-button {
+input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button {
     -webkit-appearance: none;
 }
 
@@ -140,11 +140,11 @@ input[type="number"]::-webkit-inner-spin-button {
     transition: all 0.5s cubic-bezier(0.645, 0.045, 0.355, 1);
 }
 
-.cross label[aria-checked="true"] svg .line--1,
-.cross label[aria-checked="true"] svg .line--3 {
+.cross label[aria-checked='true'] svg .line--1,
+.cross label[aria-checked='true'] svg .line--3 {
     --length: 22.627416998;
 }
-.cross label[aria-checked="true"] svg .line--2 {
+.cross label[aria-checked='true'] svg .line--2 {
     --length: 0;
 }
 
@@ -155,11 +155,11 @@ input[type="number"]::-webkit-inner-spin-button {
 .menu--1 .line--2 {
     --total-length: 70;
 }
-.menu--1 label[aria-checked="true"] svg .line--1,
-.menu--1 label[aria-checked="true"] svg .line--3 {
+.menu--1 label[aria-checked='true'] svg .line--1,
+.menu--1 label[aria-checked='true'] svg .line--3 {
     --offset: -94.1149185097;
 }
-.menu--1 label[aria-checked="true"] svg .line--2 {
+.menu--1 label[aria-checked='true'] svg .line--2 {
     --offset: -50;
 }
 
@@ -170,6 +170,6 @@ input[type="number"]::-webkit-inner-spin-button {
 #menu:checked + .menu-clip-path {
     clip-path: circle(100%);
 }
-#menu:checked + .menu-clip-path + .menu--1 > label[aria-checked="true"] svg path {
+#menu:checked + .menu-clip-path + .menu--1 > label[aria-checked='true'] svg path {
     stroke: #fff;
 }

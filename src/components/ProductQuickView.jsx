@@ -1,10 +1,10 @@
-import { Link } from "react-router-dom";
-import SliderProductImages from "./SliderProductImages";
-import ReviewStars from "./ReviewStars";
-import { forwardRef, useEffect, useState } from "react";
-import { numberWithCommas } from "../utils";
-import PropType from "prop-types";
-import { useProductQuickViewStore } from "../store/productQuickViewStore";
+import { Link } from 'react-router-dom';
+import SliderProductImages from './SliderProductImages';
+import ReviewStars from './ReviewStars';
+import { forwardRef, useEffect, useState } from 'react';
+import { numberWithCommas } from '../utils/format';
+import PropType from 'prop-types';
+import { useProductQuickViewStore } from '../store/productQuickViewStore';
 
 const ProductQuickView = forwardRef(function ProductQuickView() {
     const [selectedColor, setSelectedColor] = useState();
@@ -18,14 +18,14 @@ const ProductQuickView = forwardRef(function ProductQuickView() {
         <>
             {/* Quick view */}
             <div
-                className={`fixed left-0 top-0 z-[60] h-screen w-screen ${isOpen ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"} transition-all`}
+                className={`fixed left-0 top-0 z-[60] h-screen w-screen ${isOpen ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'} transition-all`}
             >
                 <span
                     className="absolute left-0 top-0 block h-full w-full bg-[#000000ce]"
                     onClick={() => toggleOpen(false)}
                 ></span>
                 <div
-                    className={`absolute left-1/2 top-1/2 flex h-[600px] min-w-[1000px] -translate-x-1/2 ${isOpen ? "-translate-y-1/2 opacity-100" : "-translate-y-10 opacity-0"} items-center gap-8 bg-white p-8  transition-all delay-300`}
+                    className={`absolute left-1/2 top-1/2 flex h-[600px] min-w-[1000px] -translate-x-1/2 ${isOpen ? '-translate-y-1/2 opacity-100' : '-translate-y-10 opacity-0'} items-center gap-8 bg-white p-8  transition-all delay-300`}
                 >
                     <span
                         className="absolute right-0 top-0 flex size-8 cursor-pointer items-center justify-center bg-black text-white"
@@ -72,7 +72,7 @@ const ProductQuickView = forwardRef(function ProductQuickView() {
                         </div>
                         <p className="mb-7 line-clamp-3 text-base text-[#959595]">{product?.short_description}</p>
                         {product?.colors.length > 0 && (
-                            <div className={`mb-10 ${selectedColor && "mb-8"}`}>
+                            <div className={`mb-10 ${selectedColor && 'mb-8'}`}>
                                 <div className="mb-5 flex items-center gap-2">
                                     <h3 className="text-lg font-semibold">COLOR:</h3>
                                     {selectedColor && (
@@ -83,7 +83,7 @@ const ProductQuickView = forwardRef(function ProductQuickView() {
                                     {product?.colors.map((color, index) => (
                                         <div
                                             key={index}
-                                            className={`relative size-10 cursor-pointer border border-[#c5c5c5] transition-all hover:border-black ${selectedColor?.name == color?.name && "!border-black"}`}
+                                            className={`relative size-10 cursor-pointer border border-[#c5c5c5] transition-all hover:border-black ${selectedColor?.name == color?.name && '!border-black'}`}
                                             onClick={() => {
                                                 setSelectedColor(color);
                                             }}
@@ -120,7 +120,7 @@ const ProductQuickView = forwardRef(function ProductQuickView() {
                                 </div>
                                 <div className="h-full flex-1 shrink-0">
                                     <button
-                                        className={`h-full w-full bg-black text-sm font-semibold uppercase text-white transition-colors hover:bg-[#d10202] ${!selectedColor && "cursor-not-allowed opacity-50"}`}
+                                        className={`h-full w-full bg-black text-sm font-semibold uppercase text-white transition-colors hover:bg-[#d10202] ${!selectedColor && 'cursor-not-allowed opacity-50'}`}
                                     >
                                         Add to cart
                                     </button>
@@ -130,7 +130,7 @@ const ProductQuickView = forwardRef(function ProductQuickView() {
 
                         {product?.is_valid && (
                             <button
-                                className={`mt-4 h-[50px] w-full border border-black bg-transparent text-sm font-semibold uppercase text-black transition-all hover:border-[#d10202] hover:text-[#d10202] ${!selectedColor && "cursor-not-allowed opacity-40"}`}
+                                className={`mt-4 h-[50px] w-full border border-black bg-transparent text-sm font-semibold uppercase text-black transition-all hover:border-[#d10202] hover:text-[#d10202] ${!selectedColor && 'cursor-not-allowed opacity-40'}`}
                             >
                                 Buy now
                             </button>
@@ -140,15 +140,15 @@ const ProductQuickView = forwardRef(function ProductQuickView() {
                                 SKU: <span className="text-[#848484]">001</span>
                             </p>
                             <p>
-                                BRANDS:{" "}
+                                BRANDS:{' '}
                                 <Link className="text-[#848484] transition-colors hover:text-[#d10202]">
                                     Creative Design
                                 </Link>
                             </p>
                             <div className="flex gap-1">
-                                TAGS:{" "}
+                                TAGS:{' '}
                                 <div className="flex items-center gap-1">
-                                    {["furniture", "trending", "wood"].map((tag, index) => (
+                                    {['furniture', 'trending', 'wood'].map((tag, index) => (
                                         <div key={index}>
                                             <Link className="capitalize text-[#848484] transition-colors hover:text-[#d10202]">
                                                 {tag}

@@ -1,23 +1,23 @@
-import { useState } from "react";
-import { Navigation, RelatedProducts, ReviewStars, SliderProductImages, UserReview } from "../components";
-import { numberWithCommas } from "../utils";
-import { Link } from "react-router-dom";
+import { useState } from 'react';
+import { Navigation, RelatedProducts, ReviewStars, SliderProductImages, UserReview } from '../components';
+import { numberWithCommas } from '../utils/format';
+import { Link } from 'react-router-dom';
 
 const productDemo = {
     id: 1,
     is_trend: true,
     is_valid: true,
-    name: "Wood Outdoor Adirondack Chair",
+    name: 'Wood Outdoor Adirondack Chair',
     short_description: `Phasellus vitae imperdiet felis. Nam non condimentumerat. Lorem ipsum dolor sit amet, consecteturadipiscing elit. Nulla tortor arcu, consectetureleifend commodo at, consectetur eu justo.`,
     discount: 50,
     prices: [
         {
             price: 1099,
-            currency: "$",
+            currency: '$',
         },
         {
             price: 22000000,
-            currency: "vnd",
+            currency: 'vnd',
         },
     ],
     review: {
@@ -25,70 +25,70 @@ const productDemo = {
         number_of_review: 3,
         reviews: [
             {
-                username: "Marcel",
-                user_img: "https://secure.gravatar.com/avatar/e37e05791ac775975aaffb62f352fe32?s=150&d=mm&r=g",
+                username: 'Marcel',
+                user_img: 'https://secure.gravatar.com/avatar/e37e05791ac775975aaffb62f352fe32?s=150&d=mm&r=g',
                 user_review:
-                    "Lorem ipsum dolor sit amet consectetur adipisicing elit. Commodi itaque omnis voluptate earum dolorum odit vitae reiciendis quo assumenda pariatur.",
-                review_date: "May 31, 2023",
+                    'Lorem ipsum dolor sit amet consectetur adipisicing elit. Commodi itaque omnis voluptate earum dolorum odit vitae reiciendis quo assumenda pariatur.',
+                review_date: 'May 31, 2023',
                 user_rating: 5,
             },
             {
-                username: "Marcel",
-                user_img: "https://secure.gravatar.com/avatar/e37e05791ac775975aaffb62f352fe32?s=150&d=mm&r=g",
+                username: 'Marcel',
+                user_img: 'https://secure.gravatar.com/avatar/e37e05791ac775975aaffb62f352fe32?s=150&d=mm&r=g',
                 user_review:
-                    "Lorem ipsum dolor sit amet consectetur adipisicing elit. Commodi itaque omnis voluptate earum dolorum odit vitae reiciendis quo assumenda pariatur.",
-                review_date: "May 31, 2023",
+                    'Lorem ipsum dolor sit amet consectetur adipisicing elit. Commodi itaque omnis voluptate earum dolorum odit vitae reiciendis quo assumenda pariatur.',
+                review_date: 'May 31, 2023',
                 user_rating: 5,
             },
             {
-                username: "Marcel",
-                user_img: "https://secure.gravatar.com/avatar/e37e05791ac775975aaffb62f352fe32?s=150&d=mm&r=g",
+                username: 'Marcel',
+                user_img: 'https://secure.gravatar.com/avatar/e37e05791ac775975aaffb62f352fe32?s=150&d=mm&r=g',
                 user_review:
-                    "Lorem ipsum dolor sit amet consectetur adipisicing elit. Commodi itaque omnis voluptate earum dolorum odit vitae reiciendis quo assumenda pariatur.",
-                review_date: "May 31, 2023",
+                    'Lorem ipsum dolor sit amet consectetur adipisicing elit. Commodi itaque omnis voluptate earum dolorum odit vitae reiciendis quo assumenda pariatur.',
+                review_date: 'May 31, 2023',
                 user_rating: 5,
             },
         ],
     },
     colors: [
         {
-            name: "black",
-            color_thumb: "https://demo.theme-sky.com/nooni/wp-content/uploads/2023/05/black-46x46.jpg",
+            name: 'black',
+            color_thumb: 'https://demo.theme-sky.com/nooni/wp-content/uploads/2023/05/black-46x46.jpg',
             images: [
-                "https://cdn.arhaus.com/product/StandardV2/201032CHMBLK_A210923.jpg?preset=ProductGrande",
-                "https://cdn.arhaus.com/product/StandardV2/201032CHMBLK_B210923.jpg?preset=ProductGrande",
-                "https://cdn.arhaus.com/product/StandardV2/201032CHMBLK_D210923.jpg?preset=ProductGrande",
-                "https://cdn.arhaus.com/product/StandardV2/201032CHMBLK_CD210511.jpg?preset=ProductGrande",
+                'https://cdn.arhaus.com/product/StandardV2/201032CHMBLK_A210923.jpg?preset=ProductGrande',
+                'https://cdn.arhaus.com/product/StandardV2/201032CHMBLK_B210923.jpg?preset=ProductGrande',
+                'https://cdn.arhaus.com/product/StandardV2/201032CHMBLK_D210923.jpg?preset=ProductGrande',
+                'https://cdn.arhaus.com/product/StandardV2/201032CHMBLK_CD210511.jpg?preset=ProductGrande',
             ],
         },
         {
-            name: "green",
-            color_thumb: "https://demo.theme-sky.com/nooni/wp-content/uploads/2023/05/green-46x46.jpg",
+            name: 'green',
+            color_thumb: 'https://demo.theme-sky.com/nooni/wp-content/uploads/2023/05/green-46x46.jpg',
             images: [
-                "https://cdn.arhaus.com/product/StandardV2/40HATTIECABEB_B210311.jpg?preset=ProductGrande",
-                "https://cdn.arhaus.com/product/StandardV2/40HATTIECABEB_A210311.jpg?preset=ProductGrande",
-                "https://cdn.arhaus.com/product/StandardV2/40HATTIECABEB_C210311.jpg?preset=ProductGrande",
-                "https://cdn.arhaus.com/product/StandardV2/40HATTIECABEB_D210311.jpg?preset=ProductGrande",
+                'https://cdn.arhaus.com/product/StandardV2/40HATTIECABEB_B210311.jpg?preset=ProductGrande',
+                'https://cdn.arhaus.com/product/StandardV2/40HATTIECABEB_A210311.jpg?preset=ProductGrande',
+                'https://cdn.arhaus.com/product/StandardV2/40HATTIECABEB_C210311.jpg?preset=ProductGrande',
+                'https://cdn.arhaus.com/product/StandardV2/40HATTIECABEB_D210311.jpg?preset=ProductGrande',
             ],
         },
         {
-            name: "gray",
-            color_thumb: "https://demo.theme-sky.com/nooni/wp-content/uploads/2023/05/grey-46x46.jpg",
+            name: 'gray',
+            color_thumb: 'https://demo.theme-sky.com/nooni/wp-content/uploads/2023/05/grey-46x46.jpg',
             images: [
-                "https://cdn.arhaus.com/product/StandardV2/1072838SWBF_DS231016.jpg?preset=ProductGrande",
-                "https://cdn.arhaus.com/product/StandardV2/1072838SWBF_DP231016.jpg?preset=ProductGrande",
-                "https://cdn.arhaus.com/product/StandardV2/1072838SWBF_DQ231016.jpg?preset=ProductGrande",
-                "https://cdn.arhaus.com/product/StandardV2/1072838SWBF_DT231016.jpg?preset=ProductGrande",
+                'https://cdn.arhaus.com/product/StandardV2/1072838SWBF_DS231016.jpg?preset=ProductGrande',
+                'https://cdn.arhaus.com/product/StandardV2/1072838SWBF_DP231016.jpg?preset=ProductGrande',
+                'https://cdn.arhaus.com/product/StandardV2/1072838SWBF_DQ231016.jpg?preset=ProductGrande',
+                'https://cdn.arhaus.com/product/StandardV2/1072838SWBF_DT231016.jpg?preset=ProductGrande',
             ],
         },
         {
-            name: "teak",
-            color_thumb: "https://demo.theme-sky.com/nooni/wp-content/uploads/2023/05/teak-46x46.jpg",
+            name: 'teak',
+            color_thumb: 'https://demo.theme-sky.com/nooni/wp-content/uploads/2023/05/teak-46x46.jpg',
             images: [
-                "https://nooni-be87.kxcdn.com/nooni/wp-content/uploads/2022/12/01-450x572.jpg",
-                "https://nooni-be87.kxcdn.com/nooni/wp-content/uploads/2023/04/01-2-450x572.jpg",
-                "https://demo.theme-sky.com/nooni/wp-content/uploads/2023/04/01-3-450x572.jpg",
-                "https://demo.theme-sky.com/nooni/wp-content/uploads/2023/04/01-5-450x572.jpg",
+                'https://nooni-be87.kxcdn.com/nooni/wp-content/uploads/2022/12/01-450x572.jpg',
+                'https://nooni-be87.kxcdn.com/nooni/wp-content/uploads/2023/04/01-2-450x572.jpg',
+                'https://demo.theme-sky.com/nooni/wp-content/uploads/2023/04/01-3-450x572.jpg',
+                'https://demo.theme-sky.com/nooni/wp-content/uploads/2023/04/01-5-450x572.jpg',
             ],
         },
     ],
@@ -168,7 +168,7 @@ const Product = () => {
                                     return (
                                         <div
                                             key={index}
-                                            className={`relative size-10 cursor-pointer border hover:border-black ${color?.name == selectedColor?.name && "border-black"}`}
+                                            className={`relative size-10 cursor-pointer border hover:border-black ${color?.name == selectedColor?.name && 'border-black'}`}
                                             onClick={() => setSelectedColor(color)}
                                         >
                                             <img
@@ -202,14 +202,14 @@ const Product = () => {
                             </div>
                             <div className="h-full flex-1 shrink-0">
                                 <button
-                                    className={`h-full w-full bg-black text-sm font-semibold uppercase text-white transition-colors hover:bg-[#d10202] ${!selectedColor && "cursor-not-allowed opacity-50"}`}
+                                    className={`h-full w-full bg-black text-sm font-semibold uppercase text-white transition-colors hover:bg-[#d10202] ${!selectedColor && 'cursor-not-allowed opacity-50'}`}
                                 >
                                     Add to cart
                                 </button>
                             </div>
                         </div>
                         <button
-                            className={`mt-4 h-[50px] w-full border border-black bg-transparent text-sm font-semibold uppercase text-black transition-all hover:border-[#d10202] hover:text-[#d10202] ${!selectedColor && "cursor-not-allowed opacity-40"}`}
+                            className={`mt-4 h-[50px] w-full border border-black bg-transparent text-sm font-semibold uppercase text-black transition-all hover:border-[#d10202] hover:text-[#d10202] ${!selectedColor && 'cursor-not-allowed opacity-40'}`}
                         >
                             Buy now
                         </button>
@@ -241,15 +241,15 @@ const Product = () => {
                                 SKU: <span className="text-[#848484]">001</span>
                             </p>
                             <p className="text-sm">
-                                BRANDS:{" "}
+                                BRANDS:{' '}
                                 <Link className="text-[#848484] transition-colors hover:text-[#d10202]">
                                     Creative Design
                                 </Link>
                             </p>
                             <div className="flex gap-1 text-sm">
-                                TAGS:{" "}
+                                TAGS:{' '}
                                 <div className="flex items-center gap-1">
-                                    {["furniture", "trending", "wood"].map((tag, index) => (
+                                    {['furniture', 'trending', 'wood'].map((tag, index) => (
                                         <div key={index}>
                                             <Link className="capitalize text-[#848484] transition-colors hover:text-[#d10202]">
                                                 {tag}
@@ -265,19 +265,19 @@ const Product = () => {
                 <div className="mb-28">
                     <div className="mb-14 flex items-end justify-center gap-2 border-b [&_span]:text-xl">
                         <span
-                            className={`cursor-pointer px-10 py-5 capitalize transition-all hover:bg-[#efefef] ${selectedTab == 1 && "bg-[#efefef] font-bold"}`}
+                            className={`cursor-pointer px-10 py-5 capitalize transition-all hover:bg-[#efefef] ${selectedTab == 1 && 'bg-[#efefef] font-bold'}`}
                             onClick={() => setSelectedTab(1)}
                         >
                             Details
                         </span>
                         <span
-                            className={`cursor-pointer px-10 py-5 capitalize transition-all hover:bg-[#efefef] ${selectedTab == 2 && "bg-[#efefef] font-bold"}`}
+                            className={`cursor-pointer px-10 py-5 capitalize transition-all hover:bg-[#efefef] ${selectedTab == 2 && 'bg-[#efefef] font-bold'}`}
                             onClick={() => setSelectedTab(2)}
                         >
                             Delivery & returns
                         </span>
                         <span
-                            className={`cursor-pointer px-10 py-5 text-center capitalize transition-all hover:bg-[#efefef] ${selectedTab == 3 && "bg-[#efefef] font-bold"}`}
+                            className={`cursor-pointer px-10 py-5 text-center capitalize transition-all hover:bg-[#efefef] ${selectedTab == 3 && 'bg-[#efefef] font-bold'}`}
                             onClick={() => setSelectedTab(3)}
                         >
                             Reviews<span className="ml-1">({productDemo?.review?.number_of_review})</span>
