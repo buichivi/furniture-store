@@ -19,7 +19,10 @@ const ProtectedRoute = ({ children }) => {
             .then((res) => {
                 loginUser(res.data.user);
             })
-            .catch(() => navigate('/login'));
+            .catch(() => {
+                console.log('error');
+                navigate('/login');
+            });
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
     return children;

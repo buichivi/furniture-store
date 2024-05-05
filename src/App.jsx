@@ -1,3 +1,5 @@
+import { AdminLogin } from './admin/pages';
+import admin_routes from './admin/routes';
 import { ScrollToTop } from './components';
 import MainLayout from './layouts/MainLayout';
 import { ProtectedRoute } from './layouts/components';
@@ -43,6 +45,14 @@ function App() {
             })}
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+
+            {/* ###### */}
+
+            {/* {admin_routes.map(({ path, element: Element }, index) => {
+                return <Route key={index} path={path} element={}></Route>;
+            })} */}
+            {/* Admin route */}
+            <Route path="/admin/login" element={<AdminLogin />} />
         </Routes>
     );
 }

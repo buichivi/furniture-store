@@ -43,10 +43,8 @@ const Register = () => {
             toast.promise(apiRequest.post('/auth/register', formData), {
                 loading: 'Registering...',
                 success: (res) => {
-                    // setTimeout(() => {
                     toast.success("You'r ready to login");
                     navigate('/login');
-                    // }, 1000);
                     return res.data.message;
                 },
                 error: (err) => {
