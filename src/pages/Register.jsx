@@ -19,6 +19,7 @@ const Register = () => {
             lastName: '',
             phoneNumber: '',
             dateOfBirth: '',
+            // avatar: '',
         },
         validationSchema: Yup.object({
             email: Yup.string().email('Invalid email').required('This field is required'),
@@ -33,6 +34,7 @@ const Register = () => {
             lastName: Yup.string().required('This field is required'),
             phoneNumber: Yup.string().required('This field is required'),
             dateOfBirth: Yup.date(),
+            // avatar: Yup.mixed().required(),
         }),
         onSubmit: (values) => {
             const formData = new FormData();
@@ -48,6 +50,7 @@ const Register = () => {
                     return res.data.message;
                 },
                 error: (err) => {
+                    console.log(err);
                     return err.response.data.error || 'Something went wrong';
                 },
             });
@@ -163,7 +166,6 @@ const Register = () => {
                                     previewAvatar.current.src = URL.createObjectURL(e.currentTarget.files[0]);
                                     setFile(e.currentTarget.files[0]);
                                 }}
-                                placeholder="Date of birth"
                                 className="hidden w-full border-b py-2 pl-2 outline-none transition-colors duration-500 placeholder:font-light focus:border-b-black"
                             />
                             <label htmlFor="avatar" className="flex cursor-pointer items-center gap-2">

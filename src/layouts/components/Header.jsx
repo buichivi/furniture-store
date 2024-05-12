@@ -5,7 +5,6 @@ import CartItemMini from '../../components/CartItemMini';
 import useAuthStore from '../../store/authStore';
 import apiRequest from '../../utils/apiRequest';
 import Tippy from '@tippyjs/react/headless';
-import pathFile from '../../utils/pathFile';
 import toast from 'react-hot-toast';
 
 const Header = () => {
@@ -14,8 +13,6 @@ const Header = () => {
     const naviagate = useNavigate();
 
     const token = localStorage.getItem('token');
-
-    console.log(currentUser);
 
     useEffect(() => {
         const styleHeader = () => {
@@ -164,15 +161,15 @@ const Header = () => {
                                 render={(attrs) => {
                                     return (
                                         <div
-                                            className="flex flex-col border bg-white px-4 py-2 shadow-lg"
+                                            className="flex flex-col border bg-white  py-2 shadow-lg"
                                             tabIndex="-1"
                                             {...attrs}
                                         >
-                                            <div className="flex items-center gap-2 border-b py-2">
+                                            <div className="flex items-center gap-2 border-b px-4 py-2">
                                                 <div className="size-10 shrink-0 overflow-hidden rounded-full">
                                                     <img
                                                         src={
-                                                            pathFile(currentUser.avatar) ||
+                                                            currentUser.avatar ||
                                                             'src/assets/images/account-placeholder.jpg'
                                                         }
                                                         alt={currentUser.name}
@@ -186,17 +183,17 @@ const Header = () => {
                                                     <p>{currentUser.email}</p>
                                                 </div>
                                             </div>
-                                            <Link className="flex items-center px-2 py-2 text-sm transition-colors hover:bg-[#eeeeee6e]">
-                                                <span className="min-w-[15%] text-base">
+                                            <Link className="flex items-center px-5 py-2 text-sm transition-colors hover:bg-[#eeeeee6e]">
+                                                <span className="min-w-[20%] text-base">
                                                     <i className="fa-light fa-user"></i>
                                                 </span>
                                                 My account
                                             </Link>
                                             <div
-                                                className="flex cursor-pointer items-center px-2 py-2 text-sm transition-colors hover:bg-[#eeeeee6e]"
+                                                className="flex cursor-pointer items-center px-5 py-2 text-sm transition-colors hover:bg-[#eeeeee6e]"
                                                 onClick={handleLogout}
                                             >
-                                                <span className="min-w-[15%] text-base">
+                                                <span className="min-w-[20%] text-base">
                                                     <i className="fa-light fa-arrow-left-from-bracket"></i>
                                                 </span>
                                                 Log out
