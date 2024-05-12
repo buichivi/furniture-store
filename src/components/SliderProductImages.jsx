@@ -1,17 +1,23 @@
-import { useEffect, useRef, useState } from "react";
-import PhotoSwipeLightbox from "photoswipe/lightbox";
+import { useEffect, useRef, useState } from 'react';
+import PhotoSwipeLightbox from 'photoswipe/lightbox';
 
-import PropTypes from "prop-types";
+import PropTypes from 'prop-types';
 const init = [
-    "https://swiperjs.com/demos/images/nature-2.jpg",
-    "https://swiperjs.com/demos/images/nature-3.jpg",
-    "https://swiperjs.com/demos/images/nature-4.jpg",
-    "https://swiperjs.com/demos/images/nature-5.jpg",
-    "https://swiperjs.com/demos/images/nature-6.jpg",
-    "https://swiperjs.com/demos/images/nature-7.jpg",
+    'https://swiperjs.com/demos/images/nature-2.jpg',
+    'https://swiperjs.com/demos/images/nature-3.jpg',
+    'https://swiperjs.com/demos/images/nature-4.jpg',
+    'https://swiperjs.com/demos/images/nature-5.jpg',
+    'https://swiperjs.com/demos/images/nature-6.jpg',
+    'https://swiperjs.com/demos/images/nature-7.jpg',
 ];
 
-const SliderProductImages = ({ thumbWidth = "15%", imageGallery = init, viewFullScreen = true }) => {
+const SliderProductImages = ({
+    isValid = 0,
+    discount = 0,
+    thumbWidth = '15%',
+    imageGallery = init,
+    viewFullScreen = true,
+}) => {
     const imgThumbs = useRef();
     const galleryFullScreen = useRef();
     const [selectedImg, setSelectedImg] = useState(null);
@@ -19,19 +25,19 @@ const SliderProductImages = ({ thumbWidth = "15%", imageGallery = init, viewFull
     useEffect(() => {
         if (viewFullScreen) {
             let lightbox = new PhotoSwipeLightbox({
-                gallery: "#galleryFullScreen",
-                children: "a",
+                gallery: '#galleryFullScreen',
+                children: 'a',
                 wheelToZoom: true,
-                pswpModule: () => import("photoswipe"),
-                initialZoomLevel: "fit",
+                pswpModule: () => import('photoswipe'),
+                initialZoomLevel: 'fit',
                 secondaryZoomLevel: 2,
                 maxZoomLevel: 1,
-                showHideAnimationType: "none",
+                showHideAnimationType: 'none',
                 arrowPrevSVG: `<i class="fa-light fa-angle-left text-white text-2xl"></i>`,
                 arrowNextSVG: `<i class="fa-light fa-angle-right text-white text-2xl"></i>`,
                 closeSVG: `<i class="fa-light fa-xmark text-2xl text-white"></i>`,
                 zoomSVG: `<i class="fa-light fa-magnifying-glass-plus text-xl text-white"></i>`,
-                bgOpacity: 1
+                bgOpacity: 1,
             });
             lightbox.init();
             return () => {
@@ -60,13 +66,11 @@ const SliderProductImages = ({ thumbWidth = "15%", imageGallery = init, viewFull
                             <img
                                 key={index}
                                 src={img_url}
-                                className={`cursor-pointer object-contain transition-opacity hover:opacity-50 ${selectedImg == img_url && "opacity-50"}`}
+                                className={`cursor-pointer object-contain transition-opacity hover:opacity-50 ${selectedImg == img_url && 'opacity-50'}`}
                                 onClick={() => {
                                     setSelectedImg(img_url);
                                     const wrapperWidth = imgThumbs.current.children[0].clientWidth;
-                                    console.dir(wrapperWidth);
-                                    console.log(-(index * wrapperWidth) + "px");
-                                    imgThumbs.current.style.left = -(index * wrapperWidth) + "px";
+                                    imgThumbs.current.style.left = -(index * wrapperWidth) + 'px';
                                 }}
                             ></img>
                         );
@@ -75,8 +79,8 @@ const SliderProductImages = ({ thumbWidth = "15%", imageGallery = init, viewFull
                 <div className="relative h-full flex-1">
                     <div className="absolute left-[3%] top-[3%] z-10 [&_span]:px-3 [&_span]:py-1 [&_span]:text-xs [&_span]:uppercase [&_span]:text-white">
                         <span className="mr-1 bg-[#d10202]">Hot</span>
-                        <span className="mr-1 bg-black">Sale</span>
-                        <span className="bg-[#919191]">Sold out</span>
+                        {discount && <span className="mr-1 bg-black">Sale</span>}
+                        {!isValid && <span className="bg-[#919191]">Sold out</span>}
                     </div>
                     {viewFullScreen && (
                         <span
@@ -108,10 +112,10 @@ const SliderProductImages = ({ thumbWidth = "15%", imageGallery = init, viewFull
                                             e.target.style.transformOrigin = `${(x * 100) / rect.width}% ${(y * 100) / rect.height}%`;
                                         }}
                                         onMouseEnter={(e) => {
-                                            e.target.style.transform = "scale(2)";
+                                            e.target.style.transform = 'scale(2)';
                                         }}
                                         onMouseLeave={(e) => {
-                                            e.target.style.transform = "scale(1)";
+                                            e.target.style.transform = 'scale(1)';
                                         }}
                                     />
                                 );
@@ -127,11 +131,11 @@ const SliderProductImages = ({ thumbWidth = "15%", imageGallery = init, viewFull
                             href={image}
                             data-pswp-width="450"
                             data-pswp-height="550"
-                            key={"galleryFullScreen" + "-" + index}
+                            key={'galleryFullScreen' + '-' + index}
                             target="_blank"
                             rel="noreferrer"
                         >
-                            <img src={image} alt="" className="size-full py-4 object-cover" />
+                            <img src={image} alt="" className="size-full object-cover py-4" />
                         </a>
                     ))}
                 </div>
@@ -144,6 +148,8 @@ SliderProductImages.propTypes = {
     imageGallery: PropTypes.array,
     thumbWidth: PropTypes.string,
     viewFullScreen: PropTypes.bool,
+    isValid: PropTypes.number,
+    discount: PropTypes.number,
 };
 
 export default SliderProductImages;

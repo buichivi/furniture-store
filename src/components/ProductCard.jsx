@@ -3,6 +3,7 @@ import Tippy from '@tippyjs/react';
 import PropType from 'prop-types';
 import { numberWithCommas } from '../utils/format';
 import { useProductQuickViewStore } from '../store/productQuickViewStore';
+import { useMemo } from 'react';
 
 const productDemo = {
     id: 1,
@@ -72,31 +73,33 @@ const productDemo = {
 const ProductCard = ({ product = productDemo, isDisplayGrid = true }) => {
     const { setProduct, toggleOpen } = useProductQuickViewStore();
 
+    const isValid = useMemo(() => {
+        return product?.colors?.reduce((acc, cur) => acc + cur?.stock, 0);
+    }, [product]);
+
     return (
         <>
             <div className={`group/product w-full ${!isDisplayGrid && 'flex items-center gap-[50px]'}`}>
                 <Link
-                    to="/product"
+                    to={`/shop/${product?.slug}`}
                     className={`group/product-img relative w-full shrink-0 overflow-hidden ${!isDisplayGrid && 'basis-[40%]'}`}
                 >
                     <img
-                        src={product?.colors[3]?.images[0]}
+                        src={product?.colors[0]?.images[0]}
                         alt=""
                         className="h-[350px] w-full object-cover transition-all duration-500 group-hover/product-img:opacity-0"
                     />
                     <img
-                        src={product?.colors[3]?.images[1]}
+                        src={product?.colors[0]?.images[1]}
                         alt=""
                         className="absolute left-0 top-0 -z-10 h-[350px] w-full object-cover"
                     />
                     <div className="absolute left-0 top-0 z-10 h-full w-full p-4">
-                        {product?.is_trend && (
-                            <span className="mr-1 bg-[#D10202] px-3 py-[2px] text-xs uppercase text-white">Hot</span>
-                        )}
+                        <span className="mr-1 bg-[#D10202] px-3 py-[2px] text-xs uppercase text-white">Hot</span>
                         {product?.discount > 0 && (
                             <span className="mr-1 bg-[#000] px-3 py-[2px] text-xs uppercase text-white">Sale</span>
                         )}
-                        {product?.is_valid && (
+                        {isValid && (
                             <span className="bg-[#919191] px-3 py-[2px] text-xs uppercase text-white">Sold out</span>
                         )}
                     </div>
@@ -171,16 +174,12 @@ const ProductCard = ({ product = productDemo, isDisplayGrid = true }) => {
                     </Link>
                     <div className={`flex items-center gap-4 text-base tracking-wide ${!isDisplayGrid && 'text-xl'}`}>
                         <span className="font-bold">
-                            <span>{product?.prices[0].currency}</span>
-                            <span>
-                                {numberWithCommas(
-                                    Math.floor((product?.prices[0].price * (100 - product?.discount)) / 100),
-                                )}
-                            </span>
+                            <span>$</span>
+                            <span>{numberWithCommas(product?.salePrice)}</span>
                         </span>
                         <span className="text-[#959595] line-through">
-                            <span>{product?.prices[0].currency}</span>
-                            <span>{numberWithCommas(product?.prices[0].price)}</span>
+                            <span>$</span>
+                            <span>{numberWithCommas(product?.price)}</span>
                         </span>
                     </div>
                     {!isDisplayGrid && (

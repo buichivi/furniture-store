@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import SliderProductImages from './SliderProductImages';
 import ReviewStars from './ReviewStars';
-import { forwardRef, useEffect, useState } from 'react';
+import { forwardRef, useEffect, useMemo, useState } from 'react';
 import { numberWithCommas } from '../utils/format';
 import PropType from 'prop-types';
 import { useProductQuickViewStore } from '../store/productQuickViewStore';
@@ -13,6 +13,15 @@ const ProductQuickView = forwardRef(function ProductQuickView() {
     useEffect(() => {
         setSelectedColor();
     }, [isOpen]);
+
+    const averageRating = useMemo(() => {
+        const totalRating = product?.reviews?.reduce((acc, cur) => acc + cur?.rating, 0);
+        const totalReview = product?.reviews?.length;
+        return totalReview ? totalRating / totalReview : 0;
+    }, [product]);
+    const isValid = useMemo(() => {
+        return product?.colors?.reduce((acc, cur) => acc + cur?.stock, 0);
+    }, [product]);
 
     return (
         <>
@@ -35,7 +44,9 @@ const ProductQuickView = forwardRef(function ProductQuickView() {
                     </span>
                     <div className="h-full basis-[55%]">
                         <SliderProductImages
-                            imageGallery={selectedColor?.images || product?.colors[3]?.images}
+                            isValid={isValid}
+                            discount={product?.discount}
+                            imageGallery={selectedColor?.images || product?.colors[0]?.images}
                             viewFullScreen={false}
                         />
                     </div>
@@ -43,12 +54,12 @@ const ProductQuickView = forwardRef(function ProductQuickView() {
                         <h3 className="mb-8 text-3xl tracking-wider">{product?.name}</h3>
                         <div className="mb-7 flex items-center gap-12">
                             <div className="flex items-center gap-2">
-                                <ReviewStars stars={product?.review?.average_star} size="15px" />
-                                <span>({product?.review?.number_of_review})</span>
+                                <ReviewStars stars={averageRating} size="15px" />
+                                <span>({product?.reviews?.length})</span>
                             </div>
                             <div className="text-base">
                                 <span>Stock: </span>
-                                {product?.is_valid ? (
+                                {isValid ? (
                                     <span className="text-green-400">In Stock</span>
                                 ) : (
                                     <span className="text-red-400">Out Of Stock</span>
@@ -56,22 +67,19 @@ const ProductQuickView = forwardRef(function ProductQuickView() {
                             </div>
                         </div>
                         <div className="mb-7 flex items-center gap-4">
-                            <span className="text-2xl tracking-wide">
-                                {product?.prices[0]?.currency}
-                                {numberWithCommas(
-                                    Math.floor((product?.prices[0]?.price * (100 - product?.discount)) / 100),
-                                )}
-                            </span>
+                            <span className="text-2xl tracking-wide">${numberWithCommas(product?.salePrice)}</span>
                             <span className="text-lg font-light tracking-wide text-[#959595] line-through">
-                                {product?.prices[0]?.currency}
-                                {numberWithCommas(product?.prices[0]?.price)}
+                                ${numberWithCommas(product?.price)}
                             </span>
                             {product?.discount > 0 && (
                                 <span className="text-lg text-red-500">(-{product?.discount}%)</span>
                             )}
                         </div>
-                        <p className="mb-7 line-clamp-3 text-base text-[#959595]">{product?.short_description}</p>
-                        {product?.colors.length > 0 && (
+                        <p
+                            className="mb-7 line-clamp-3 text-base text-[#959595]"
+                            dangerouslySetInnerHTML={{ __html: product?.description }}
+                        ></p>
+                        {product?.colors?.length > 0 && (
                             <div className={`mb-10 ${selectedColor && 'mb-8'}`}>
                                 <div className="mb-5 flex items-center gap-2">
                                     <h3 className="text-lg font-semibold">COLOR:</h3>
@@ -89,7 +97,7 @@ const ProductQuickView = forwardRef(function ProductQuickView() {
                                             }}
                                         >
                                             <img
-                                                src={color?.color_thumb}
+                                                src={color?.thumb}
                                                 alt={color?.name}
                                                 className="absolute left-1/2 top-1/2 inline-block size-8 -translate-x-1/2 -translate-y-1/2 object-cover"
                                             ></img>
@@ -106,7 +114,7 @@ const ProductQuickView = forwardRef(function ProductQuickView() {
                                 )}
                             </div>
                         )}
-                        {product?.is_valid && (
+                        {isValid && (
                             <div className="flex h-[50px] w-full items-center gap-4">
                                 <div className="flex h-full flex-1 items-center bg-[#ededed]">
                                     <i className="fa-light fa-minus flex-1 shrink-0 cursor-pointer text-center text-sm"></i>
@@ -128,7 +136,7 @@ const ProductQuickView = forwardRef(function ProductQuickView() {
                             </div>
                         )}
 
-                        {product?.is_valid && (
+                        {isValid && (
                             <button
                                 className={`mt-4 h-[50px] w-full border border-black bg-transparent text-sm font-semibold uppercase text-black transition-all hover:border-[#d10202] hover:text-[#d10202] ${!selectedColor && 'cursor-not-allowed opacity-40'}`}
                             >
@@ -137,23 +145,23 @@ const ProductQuickView = forwardRef(function ProductQuickView() {
                         )}
                         <div className="mt-9 flex flex-col gap-[10px] text-sm tracking-wide">
                             <p>
-                                SKU: <span className="text-[#848484]">001</span>
+                                SKU: <span className="text-[#848484]">{product?.SKU}</span>
                             </p>
                             <p>
-                                BRANDS:{' '}
+                                BRAND:{' '}
                                 <Link className="text-[#848484] transition-colors hover:text-[#d10202]">
-                                    Creative Design
+                                    {product?.brand?.name}
                                 </Link>
                             </p>
                             <div className="flex gap-1">
                                 TAGS:{' '}
                                 <div className="flex items-center gap-1">
-                                    {['furniture', 'trending', 'wood'].map((tag, index) => (
+                                    {product?.tags?.map((tag, index) => (
                                         <div key={index}>
                                             <Link className="capitalize text-[#848484] transition-colors hover:text-[#d10202]">
-                                                {tag}
+                                                {tag?.name}
                                             </Link>
-                                            {index <= 1 && <span>,</span>}
+                                            {index <= product?.tags?.length - 2 && <span>,</span>}
                                         </div>
                                     ))}
                                 </div>

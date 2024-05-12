@@ -11,13 +11,9 @@ const public_routes = [
         element: Shop,
     },
     {
-        path: '/product',
+        path: '/shop/:slug',
         element: Product,
     },
-    // {
-    //     path: "/test",
-    //     element: TryZustand,
-    // },
 ];
 
 const private_routes = [

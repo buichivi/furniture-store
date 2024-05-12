@@ -1,19 +1,23 @@
-import { useState } from "react";
-import ReviewItem from "./ReviewItem";
-import ReviewStars from "./ReviewStars";
-import PropTypes from "prop-types";
+import { useState } from 'react';
+import ReviewItem from './ReviewItem';
+import ReviewStars from './ReviewStars';
+import PropTypes from 'prop-types';
 
-const UserReview = ({ product = {} }) => {
+const UserReview = ({ product = {}, averageRating = 5 }) => {
     const [rating, setRating] = useState(0);
 
     return (
         <div>
             <div className="mb-10 text-center">
                 <h3 className="mb-5 text-2xl font-bold capitalize tracking-widest">Customers Reviews</h3>
-                <div className="flex items-center justify-center gap-2">
-                    <ReviewStars size="16px" stars={5} />
-                    <span>({product?.review?.number_of_review})</span>
-                </div>
+                {product?.reviews?.length > 0 ? (
+                    <div className="flex items-center justify-center gap-2">
+                        <ReviewStars size="16px" stars={averageRating} />
+                        <span>({product?.reviews?.length})</span>
+                    </div>
+                ) : (
+                    <p>There are no reviews yet.</p>
+                )}
             </div>
             <div>
                 {product?.review?.reviews?.map((review, index) => {
@@ -22,7 +26,13 @@ const UserReview = ({ product = {} }) => {
             </div>
             <div className="mt-14">
                 <div className="mb-12">
-                    <h3 className="mb-5 text-center text-2xl font-bold tracking-wider">Add a review</h3>
+                    {product?.reviews?.lengt > 0 ? (
+                        <h3 className="mb-5 text-center text-2xl font-bold tracking-wider">Add a review</h3>
+                    ) : (
+                        <h3 className="mb-5 text-center text-2xl font-bold">
+                            Be the first to review “{product?.name}”
+                        </h3>
+                    )}
                     <p className="mb-6 text-center tracking-wider">
                         Your email address will not be published. Required fields are marked *
                     </p>
@@ -34,7 +44,7 @@ const UserReview = ({ product = {} }) => {
                                 .map((el, index) => (
                                     <span
                                         key={index}
-                                        className={`cursor-pointer [&:hover~span_i:first-child]:inline-block [&:hover~span_i:last-child]:hidden ${index + 1 <= rating && "[&_i:first-child]:hidden [&_i:last-child]:inline-block"}`}
+                                        className={`cursor-pointer [&:hover~span_i:first-child]:inline-block [&:hover~span_i:last-child]:hidden ${index + 1 <= rating && '[&_i:first-child]:hidden [&_i:last-child]:inline-block'}`}
                                         onClick={() => setRating(index + 1)}
                                     >
                                         <i className="fa-sharp fa-light fa-star"></i>
@@ -68,7 +78,7 @@ const UserReview = ({ product = {} }) => {
                         className="w-full bg-black py-4 text-sm font-bold uppercase tracking-wider text-white transition-colors hover:bg-[#d10202]"
                         onClick={() => {
                             if (!rating) {
-                                alert("Please select a rating");
+                                alert('Please select a rating');
                             }
                         }}
                     >
@@ -82,6 +92,7 @@ const UserReview = ({ product = {} }) => {
 
 UserReview.propTypes = {
     product: PropTypes.object,
+    averageRating: PropTypes.number,
 };
 
 export default UserReview;

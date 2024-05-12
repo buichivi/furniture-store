@@ -42,7 +42,7 @@ const Header = () => {
                 },
             })
             .then((res) => {
-                loginUser(res.data);
+                loginUser(res.data.user);
             })
             .catch((err) => console.log(err));
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -141,11 +141,7 @@ const Header = () => {
                         to="/"
                         className="absolute left-1/2 z-50 flex h-full w-[150px] -translate-x-1/2 items-center justify-center"
                     >
-                        <img
-                            src="src/assets/images/logo.png"
-                            alt=""
-                            className="w-full object-fill transition-all duration-700"
-                        />
+                        <img src="/images/logo.png" alt="" className="w-full object-fill transition-all duration-700" />
                     </Link>
                     <div className="flex items-center gap-8 [&>*>i]:cursor-pointer [&>*>i]:text-xl">
                         {!currentUser ? (
@@ -168,10 +164,7 @@ const Header = () => {
                                             <div className="flex items-center gap-2 border-b px-4 py-2">
                                                 <div className="size-10 shrink-0 overflow-hidden rounded-full">
                                                     <img
-                                                        src={
-                                                            currentUser.avatar ||
-                                                            'src/assets/images/account-placeholder.jpg'
-                                                        }
+                                                        src={currentUser.avatar || '/images/account-placeholder.jpg'}
                                                         alt={currentUser.name}
                                                         className="size-full object-cover"
                                                     />

@@ -2,11 +2,10 @@ import { useFormik } from 'formik';
 import toast from 'react-hot-toast';
 import * as Yup from 'yup';
 import apiRequest from '../utils/apiRequest';
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 const Register = () => {
-    const [file, setFile] = useState();
     const previewAvatar = useRef();
     const navigate = useNavigate();
 
@@ -34,7 +33,7 @@ const Register = () => {
             lastName: Yup.string().required('This field is required'),
             phoneNumber: Yup.string().required('This field is required'),
             dateOfBirth: Yup.date().required('This field is required'),
-            avatar: Yup.mixed().required('This field is required'),
+            avatar: Yup.mixed(),
         }),
         onSubmit: (values) => {
             const formData = new FormData();

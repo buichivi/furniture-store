@@ -1,98 +1,95 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Navigation, RelatedProducts, ReviewStars, SliderProductImages, UserReview } from '../components';
 import { numberWithCommas } from '../utils/format';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
+import apiRequest from '../utils/apiRequest';
 
 const productDemo = {
     id: 1,
     is_trend: true,
     is_valid: true,
     name: 'Wood Outdoor Adirondack Chair',
-    short_description: `Phasellus vitae imperdiet felis. Nam non condimentumerat. Lorem ipsum dolor sit amet, consecteturadipiscing elit. Nulla tortor arcu, consectetureleifend commodo at, consectetur eu justo.`,
     discount: 50,
-    prices: [
+    price: 199,
+    reviews: [
         {
-            price: 1099,
-            currency: '$',
+            user: {
+                name: 'Marcel',
+                avatar: 'https://secure.gravatar.com/avatar/e37e05791ac775975aaffb62f352fe32?s=150&d=mm&r=g',
+            },
+            comment:
+                'Lorem ipsum dolor sit amet consectetur adipisicing elit. Commodi itaque omnis voluptate earum dolorum odit vitae reiciendis quo assumenda pariatur.',
+            review_date: 'May 31, 2023',
+            rating: 3,
         },
         {
-            price: 22000000,
-            currency: 'vnd',
+            user: {
+                name: 'Marcel',
+                avatar: 'https://secure.gravatar.com/avatar/e37e05791ac775975aaffb62f352fe32?s=150&d=mm&r=g',
+            },
+            comment:
+                'Lorem ipsum dolor sit amet consectetur adipisicing elit. Commodi itaque omnis voluptate earum dolorum odit vitae reiciendis quo assumenda pariatur.',
+            review_date: 'May 31, 2023',
+            rating: 4,
+        },
+        {
+            user: {
+                name: 'Marcel',
+                avatar: 'https://secure.gravatar.com/avatar/e37e05791ac775975aaffb62f352fe32?s=150&d=mm&r=g',
+            },
+            comment:
+                'Lorem ipsum dolor sit amet consectetur adipisicing elit. Commodi itaque omnis voluptate earum dolorum odit vitae reiciendis quo assumenda pariatur.',
+            review_date: 'May 31, 2023',
+            rating: 5,
         },
     ],
-    review: {
-        average_star: 3.4,
-        number_of_review: 3,
-        reviews: [
-            {
-                username: 'Marcel',
-                user_img: 'https://secure.gravatar.com/avatar/e37e05791ac775975aaffb62f352fe32?s=150&d=mm&r=g',
-                user_review:
-                    'Lorem ipsum dolor sit amet consectetur adipisicing elit. Commodi itaque omnis voluptate earum dolorum odit vitae reiciendis quo assumenda pariatur.',
-                review_date: 'May 31, 2023',
-                user_rating: 5,
-            },
-            {
-                username: 'Marcel',
-                user_img: 'https://secure.gravatar.com/avatar/e37e05791ac775975aaffb62f352fe32?s=150&d=mm&r=g',
-                user_review:
-                    'Lorem ipsum dolor sit amet consectetur adipisicing elit. Commodi itaque omnis voluptate earum dolorum odit vitae reiciendis quo assumenda pariatur.',
-                review_date: 'May 31, 2023',
-                user_rating: 5,
-            },
-            {
-                username: 'Marcel',
-                user_img: 'https://secure.gravatar.com/avatar/e37e05791ac775975aaffb62f352fe32?s=150&d=mm&r=g',
-                user_review:
-                    'Lorem ipsum dolor sit amet consectetur adipisicing elit. Commodi itaque omnis voluptate earum dolorum odit vitae reiciendis quo assumenda pariatur.',
-                review_date: 'May 31, 2023',
-                user_rating: 5,
-            },
-        ],
-    },
     colors: [
         {
             name: 'black',
-            color_thumb: 'https://demo.theme-sky.com/nooni/wp-content/uploads/2023/05/black-46x46.jpg',
+            thumb: 'https://demo.theme-sky.com/nooni/wp-content/uploads/2023/05/black-46x46.jpg',
             images: [
                 'https://cdn.arhaus.com/product/StandardV2/201032CHMBLK_A210923.jpg?preset=ProductGrande',
                 'https://cdn.arhaus.com/product/StandardV2/201032CHMBLK_B210923.jpg?preset=ProductGrande',
                 'https://cdn.arhaus.com/product/StandardV2/201032CHMBLK_D210923.jpg?preset=ProductGrande',
                 'https://cdn.arhaus.com/product/StandardV2/201032CHMBLK_CD210511.jpg?preset=ProductGrande',
             ],
+            stock: 10,
         },
         {
             name: 'green',
-            color_thumb: 'https://demo.theme-sky.com/nooni/wp-content/uploads/2023/05/green-46x46.jpg',
+            thumb: 'https://demo.theme-sky.com/nooni/wp-content/uploads/2023/05/green-46x46.jpg',
             images: [
                 'https://cdn.arhaus.com/product/StandardV2/40HATTIECABEB_B210311.jpg?preset=ProductGrande',
                 'https://cdn.arhaus.com/product/StandardV2/40HATTIECABEB_A210311.jpg?preset=ProductGrande',
                 'https://cdn.arhaus.com/product/StandardV2/40HATTIECABEB_C210311.jpg?preset=ProductGrande',
                 'https://cdn.arhaus.com/product/StandardV2/40HATTIECABEB_D210311.jpg?preset=ProductGrande',
             ],
+            stock: 10,
         },
         {
             name: 'gray',
-            color_thumb: 'https://demo.theme-sky.com/nooni/wp-content/uploads/2023/05/grey-46x46.jpg',
+            thumb: 'https://demo.theme-sky.com/nooni/wp-content/uploads/2023/05/grey-46x46.jpg',
             images: [
                 'https://cdn.arhaus.com/product/StandardV2/1072838SWBF_DS231016.jpg?preset=ProductGrande',
                 'https://cdn.arhaus.com/product/StandardV2/1072838SWBF_DP231016.jpg?preset=ProductGrande',
                 'https://cdn.arhaus.com/product/StandardV2/1072838SWBF_DQ231016.jpg?preset=ProductGrande',
                 'https://cdn.arhaus.com/product/StandardV2/1072838SWBF_DT231016.jpg?preset=ProductGrande',
             ],
+            stock: 10,
         },
         {
             name: 'teak',
-            color_thumb: 'https://demo.theme-sky.com/nooni/wp-content/uploads/2023/05/teak-46x46.jpg',
+            thumb: 'https://demo.theme-sky.com/nooni/wp-content/uploads/2023/05/teak-46x46.jpg',
             images: [
                 'https://nooni-be87.kxcdn.com/nooni/wp-content/uploads/2022/12/01-450x572.jpg',
                 'https://nooni-be87.kxcdn.com/nooni/wp-content/uploads/2023/04/01-2-450x572.jpg',
                 'https://demo.theme-sky.com/nooni/wp-content/uploads/2023/04/01-3-450x572.jpg',
                 'https://demo.theme-sky.com/nooni/wp-content/uploads/2023/04/01-5-450x572.jpg',
             ],
+            stock: 10,
         },
     ],
-    details: `
+    description: `
         <p>Ankara Chair with Fabric Cushion 29.75″Wx28″Dx30.5″H</p>
         <ul>
         <li>Frame is benchmade with precision-cut solid ash with grey wash finish, hardwood plywood, and a cane seat</li>
@@ -101,19 +98,36 @@ const productDemo = {
         <li>Frame stained with grey wash finish and clear protective lacquer</li>
         <li>See product label or call customer service for additional details on product content</li>
         </ul>`,
-    deliveryAndReturns: `
-        <div class="custom-tab-content"><p class="heading"><strong>WHITE GLOVE SERVICE </strong></p>
-        <p>Items are delivered to your room of choice by appointment, then unpacked and fully assembled by a skilled two-person team. Includes packaging removal and recycling Fee varies by location and order total. (Doorstep delivery does not include assembly)</p>
-        <p class="heading"><strong>FLAT RATE DELIVERY </strong></p>
-        <p>An unlimited number of eligible furniture and select non-furniture items can be delivered for one flat rate per shipping address. Your order will ship when all items are ready for delivery. Fee varies by location and order total.</p>
-        <p class="heading"><strong>RETURN POLICY </strong></p>
-        <p>You can return eligible items within 30 days of receiving an order or 7 days for Quick Ship upholstery items for a refund of the merchandise value. Made-to-Order furniture is not eligible for returns.</p></div>`,
 };
 
 const Product = () => {
     const [selectedColor, setSelectedColor] = useState();
     const [selectedTab, setSelectedTab] = useState(1);
+    const [quantity, setQuantity] = useState(1);
+    const [product, setProduct] = useState(productDemo);
+    const { slug } = useParams();
 
+    useEffect(() => {
+        apiRequest
+            .get('/products/' + slug)
+            .then((res) => {
+                if (res.data.product?.colors?.length == 1) {
+                    setSelectedColor(res.data.product?.colors[0]);
+                }
+                setProduct(res.data.product);
+            })
+            .catch((err) => console.log(err));
+    }, [slug]);
+
+    const averageRating = useMemo(() => {
+        const totalRating = product?.reviews?.reduce((acc, cur) => acc + cur?.rating, 0);
+        const totalReview = product?.reviews?.length;
+        return totalReview ? totalRating / totalReview : 0;
+    }, [product]);
+
+    const isValid = useMemo(() => {
+        return product?.colors?.reduce((acc, cur) => acc + cur?.stock, 0);
+    }, [product]);
     return (
         <div className="mt-[90px] border-t">
             <Navigation isShowPageName={false} />
@@ -121,20 +135,22 @@ const Product = () => {
                 <div className="mb-32 flex gap-12">
                     <div className="basis-[55%]">
                         <SliderProductImages
+                            isValid={isValid}
+                            discount={product?.discount}
                             thumbWidth="12%"
-                            imageGallery={selectedColor?.images || productDemo?.colors[3]?.images}
+                            imageGallery={selectedColor?.images || product?.colors[0]?.images}
                         />
                     </div>
                     <div className="flex-1">
-                        <h1 className="mb-6 text-3xl font-normal">{productDemo?.name}</h1>
+                        <h1 className="mb-6 text-3xl font-normal">{product?.name}</h1>
                         <div className="mb-10 flex items-center gap-10">
                             <div className="flex items-center gap-2">
-                                <ReviewStars stars={productDemo?.review?.average_star} size="15px" />
-                                <span>({productDemo?.review?.number_of_review})</span>
+                                <ReviewStars stars={averageRating} size="15px" />
+                                <span>({product?.reviews?.length})</span>
                             </div>
                             <div className="flex items-center gap-1">
                                 <span>Stock: </span>
-                                {productDemo?.is_valid ? (
+                                {isValid ? (
                                     <span className="text-green-500">In stock</span>
                                 ) : (
                                     <span className="text-red-500">Out of stock</span>
@@ -143,62 +159,68 @@ const Product = () => {
                         </div>
                         <div className="mb-4 flex items-center gap-4">
                             <div className="flex gap-0 text-4xl">
-                                <span>{productDemo?.prices[0].currency}</span>
-                                <span>{numberWithCommas(productDemo?.prices[0].price)}</span>
+                                <span>$</span>
+                                <span>{numberWithCommas(product?.salePrice)}</span>
                             </div>
                             <div className="flex gap-0 text-xl text-[#959595] line-through">
-                                <span>{productDemo?.prices[0].currency}</span>
-                                <span>
-                                    {numberWithCommas(
-                                        Math.floor(
-                                            (productDemo?.prices[0].price * (100 - productDemo?.discount)) / 100,
-                                        ),
-                                    )}
-                                </span>
+                                <span>$</span>
+                                <span>{numberWithCommas(product?.price)}</span>
                             </div>
                         </div>
-                        <p className="mb-10 line-clamp-3 text-base text-[#959595]">{productDemo?.short_description}</p>
-                        <div className="relative mb-9 pb-1">
-                            <div className="mb-5 flex items-center gap-2">
-                                <span className="inline-block font-semibold">COLOR: </span>
-                                {selectedColor && <span className="capitalize">{selectedColor?.name}</span>}
+                        <p
+                            className="mb-10 line-clamp-3 text-base text-[#959595]"
+                            dangerouslySetInnerHTML={{ __html: product?.description }}
+                        ></p>
+                        {product?.colors?.length > 1 && (
+                            <div className="relative mb-9 pb-1">
+                                <div className="mb-5 flex items-center gap-2">
+                                    <span className="inline-block font-semibold">COLOR: </span>
+                                    {selectedColor && <span className="capitalize">{selectedColor?.name}</span>}
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    {product?.colors?.map((color, index) => {
+                                        return (
+                                            <div
+                                                key={index}
+                                                className={`relative size-10 cursor-pointer border hover:border-black ${color?.name == selectedColor?.name && 'border-black'}`}
+                                                onClick={() => setSelectedColor(color)}
+                                            >
+                                                <img
+                                                    className="absolute left-1/2 top-1/2 size-8 -translate-x-1/2 -translate-y-1/2"
+                                                    src={color?.thumb}
+                                                    alt={color?.name}
+                                                ></img>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                                {selectedColor && (
+                                    <button
+                                        className="absolute left-0 top-full text-[#d10202]"
+                                        onClick={() => setSelectedColor()}
+                                    >
+                                        Clear
+                                    </button>
+                                )}
                             </div>
-                            <div className="flex items-center gap-2">
-                                {productDemo?.colors?.map((color, index) => {
-                                    return (
-                                        <div
-                                            key={index}
-                                            className={`relative size-10 cursor-pointer border hover:border-black ${color?.name == selectedColor?.name && 'border-black'}`}
-                                            onClick={() => setSelectedColor(color)}
-                                        >
-                                            <img
-                                                className="absolute left-1/2 top-1/2 size-8 -translate-x-1/2 -translate-y-1/2"
-                                                src={color?.color_thumb}
-                                                alt={color?.name}
-                                            ></img>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                            {selectedColor && (
-                                <button
-                                    className="absolute left-0 top-full text-[#d10202]"
-                                    onClick={() => setSelectedColor()}
-                                >
-                                    Clear
-                                </button>
-                            )}
-                        </div>
+                        )}
                         <div className="flex h-[50px] w-full items-center gap-4">
                             <div className="flex h-full basis-[30%] items-center bg-[#ededed]">
-                                <i className="fa-light fa-minus flex-1 shrink-0 cursor-pointer text-center text-sm"></i>
+                                <i
+                                    className="fa-light fa-minus flex-1 shrink-0 cursor-pointer text-center text-sm"
+                                    onClick={() => setQuantity((quantity) => (quantity >= 2 ? quantity - 1 : 1))}
+                                ></i>
                                 <input
                                     type="number"
                                     min={1}
-                                    defaultValue={1}
+                                    value={quantity}
+                                    onChange={(e) => setQuantity(e.target.value)}
                                     className="w-5 flex-1 shrink-0 border-none bg-transparent px-4 text-center text-sm outline-none"
                                 />
-                                <i className="fa-light fa-plus flex-1 shrink-0 cursor-pointer text-center text-sm"></i>
+                                <i
+                                    className="fa-light fa-plus flex-1 shrink-0 cursor-pointer text-center text-sm"
+                                    onClick={() => setQuantity((quantity) => quantity + 1)}
+                                ></i>
                             </div>
                             <div className="h-full flex-1 shrink-0">
                                 <button
@@ -238,23 +260,23 @@ const Product = () => {
                         </div>
                         <div className="mt-5 flex flex-col gap-1 border-t pt-6">
                             <p className="text-sm">
-                                SKU: <span className="text-[#848484]">001</span>
+                                SKU: <span className="text-[#848484]">{product?.SKU}</span>
                             </p>
                             <p className="text-sm">
-                                BRANDS:{' '}
+                                BRAND:{' '}
                                 <Link className="text-[#848484] transition-colors hover:text-[#d10202]">
-                                    Creative Design
+                                    {product?.brand?.name}
                                 </Link>
                             </p>
                             <div className="flex gap-1 text-sm">
                                 TAGS:{' '}
                                 <div className="flex items-center gap-1">
-                                    {['furniture', 'trending', 'wood'].map((tag, index) => (
+                                    {product?.tags?.map((tag, index) => (
                                         <div key={index}>
                                             <Link className="capitalize text-[#848484] transition-colors hover:text-[#d10202]">
-                                                {tag}
+                                                {tag.name}
                                             </Link>
-                                            {index <= 1 && <span>,</span>}
+                                            {index <= product?.tags?.length - 2 && <span>,</span>}
                                         </div>
                                     ))}
                                 </div>
@@ -268,7 +290,7 @@ const Product = () => {
                             className={`cursor-pointer px-10 py-5 capitalize transition-all hover:bg-[#efefef] ${selectedTab == 1 && 'bg-[#efefef] font-bold'}`}
                             onClick={() => setSelectedTab(1)}
                         >
-                            Details
+                            Description
                         </span>
                         <span
                             className={`cursor-pointer px-10 py-5 capitalize transition-all hover:bg-[#efefef] ${selectedTab == 2 && 'bg-[#efefef] font-bold'}`}
@@ -280,15 +302,43 @@ const Product = () => {
                             className={`cursor-pointer px-10 py-5 text-center capitalize transition-all hover:bg-[#efefef] ${selectedTab == 3 && 'bg-[#efefef] font-bold'}`}
                             onClick={() => setSelectedTab(3)}
                         >
-                            Reviews<span className="ml-1">({productDemo?.review?.number_of_review})</span>
+                            Reviews<span className="ml-1">({product?.reviews?.length})</span>
                         </span>
                     </div>
                     <div>
-                        {selectedTab == 1 && <div dangerouslySetInnerHTML={{ __html: productDemo?.details }}></div>}
+                        {selectedTab == 1 && <div dangerouslySetInnerHTML={{ __html: product?.description }}></div>}
                         {selectedTab == 2 && (
-                            <div dangerouslySetInnerHTML={{ __html: productDemo?.deliveryAndReturns }}></div>
+                            <div>
+                                <div className="custom-tab-content">
+                                    <p className="heading">
+                                        <strong>WHITE GLOVE SERVICE </strong>
+                                    </p>
+                                    <p>
+                                        Items are delivered to your room of choice by appointment, then unpacked and
+                                        fully assembled by a skilled two-person team. Includes packaging removal and
+                                        recycling Fee varies by location and order total. (Doorstep delivery does not
+                                        include assembly)
+                                    </p>
+                                    <p className="heading">
+                                        <strong>FLAT RATE DELIVERY </strong>
+                                    </p>
+                                    <p>
+                                        An unlimited number of eligible furniture and select non-furniture items can be
+                                        delivered for one flat rate per shipping address. Your order will ship when all
+                                        items are ready for delivery. Fee varies by location and order total.
+                                    </p>
+                                    <p className="heading">
+                                        <strong>RETURN POLICY </strong>
+                                    </p>
+                                    <p>
+                                        You can return eligible items within 30 days of receiving an order or 7 days for
+                                        Quick Ship upholstery items for a refund of the merchandise value. Made-to-Order
+                                        furniture is not eligible for returns.
+                                    </p>
+                                </div>
+                            </div>
                         )}
-                        {selectedTab == 3 && <UserReview product={productDemo} />}
+                        {selectedTab == 3 && <UserReview product={product} averageRating={averageRating} />}
                     </div>
                 </div>
                 <div className="mb-20">
