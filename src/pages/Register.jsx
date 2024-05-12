@@ -19,7 +19,7 @@ const Register = () => {
             lastName: '',
             phoneNumber: '',
             dateOfBirth: '',
-            // avatar: '',
+            avatar: '',
         },
         validationSchema: Yup.object({
             email: Yup.string().email('Invalid email').required('This field is required'),
@@ -33,15 +33,15 @@ const Register = () => {
             firstName: Yup.string().required('This field is required'),
             lastName: Yup.string().required('This field is required'),
             phoneNumber: Yup.string().required('This field is required'),
-            dateOfBirth: Yup.date(),
-            // avatar: Yup.mixed().required(),
+            dateOfBirth: Yup.date().required('This field is required'),
+            avatar: Yup.mixed().required('This field is required'),
         }),
         onSubmit: (values) => {
             const formData = new FormData();
             for (const key in values) {
                 if (key != 'confirmPassword') formData.append(key, values[key]);
             }
-            formData.append('avatar', file);
+            // formData.append('avatar', file);
             toast.promise(apiRequest.post('/auth/register', formData), {
                 loading: 'Registering...',
                 success: (res) => {
@@ -164,7 +164,8 @@ const Register = () => {
                                 accept="image/*"
                                 onChange={(e) => {
                                     previewAvatar.current.src = URL.createObjectURL(e.currentTarget.files[0]);
-                                    setFile(e.currentTarget.files[0]);
+                                    // setFile(e.currentTarget.files[0]);
+                                    formik.setFieldValue('avatar', e.currentTarget.files[0]);
                                 }}
                                 className="hidden w-full border-b py-2 pl-2 outline-none transition-colors duration-500 placeholder:font-light focus:border-b-black"
                             />
