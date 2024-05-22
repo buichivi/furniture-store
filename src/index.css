@@ -37,37 +37,6 @@ html {
     overflow-x: hidden;
     scrollbar-width: thin;
 }
-/* ::-webkit-scrollbar-track {
-    background-color: #dfdfdf;
-    padding-left: 2px;
-    padding-right: 2px;
-}
-
-::-webkit-scrollbar {
-    width: 8px;
-    background-color: blue;
-    padding-left: 2px;
-    padding-right: 2px;
-}
-
-::-webkit-scrollbar-thumb {
-    background-color: #a0a0a0;
-    padding-left: 2px;
-    padding-right: 2px;
-} */
-
-.cart-list-short::-webkit-scrollbar-track {
-    background-color: #dfdfdf;
-}
-
-.cart-list-short::-webkit-scrollbar {
-    width: 4px;
-    background-color: blue;
-}
-
-.cart-list-short::-webkit-scrollbar-thumb {
-    background-color: #cccccc;
-}
 
 /* Animation */
 .hover-text-effect {

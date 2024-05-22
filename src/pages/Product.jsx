@@ -3,108 +3,15 @@ import { Navigation, RelatedProducts, ReviewStars, SliderProductImages, UserRevi
 import { numberWithCommas } from '../utils/format';
 import { Link, useParams } from 'react-router-dom';
 import apiRequest from '../utils/apiRequest';
-
-const productDemo = {
-    id: 1,
-    is_trend: true,
-    is_valid: true,
-    name: 'Wood Outdoor Adirondack Chair',
-    discount: 50,
-    price: 199,
-    reviews: [
-        {
-            user: {
-                name: 'Marcel',
-                avatar: 'https://secure.gravatar.com/avatar/e37e05791ac775975aaffb62f352fe32?s=150&d=mm&r=g',
-            },
-            comment:
-                'Lorem ipsum dolor sit amet consectetur adipisicing elit. Commodi itaque omnis voluptate earum dolorum odit vitae reiciendis quo assumenda pariatur.',
-            review_date: 'May 31, 2023',
-            rating: 3,
-        },
-        {
-            user: {
-                name: 'Marcel',
-                avatar: 'https://secure.gravatar.com/avatar/e37e05791ac775975aaffb62f352fe32?s=150&d=mm&r=g',
-            },
-            comment:
-                'Lorem ipsum dolor sit amet consectetur adipisicing elit. Commodi itaque omnis voluptate earum dolorum odit vitae reiciendis quo assumenda pariatur.',
-            review_date: 'May 31, 2023',
-            rating: 4,
-        },
-        {
-            user: {
-                name: 'Marcel',
-                avatar: 'https://secure.gravatar.com/avatar/e37e05791ac775975aaffb62f352fe32?s=150&d=mm&r=g',
-            },
-            comment:
-                'Lorem ipsum dolor sit amet consectetur adipisicing elit. Commodi itaque omnis voluptate earum dolorum odit vitae reiciendis quo assumenda pariatur.',
-            review_date: 'May 31, 2023',
-            rating: 5,
-        },
-    ],
-    colors: [
-        {
-            name: 'black',
-            thumb: 'https://demo.theme-sky.com/nooni/wp-content/uploads/2023/05/black-46x46.jpg',
-            images: [
-                'https://cdn.arhaus.com/product/StandardV2/201032CHMBLK_A210923.jpg?preset=ProductGrande',
-                'https://cdn.arhaus.com/product/StandardV2/201032CHMBLK_B210923.jpg?preset=ProductGrande',
-                'https://cdn.arhaus.com/product/StandardV2/201032CHMBLK_D210923.jpg?preset=ProductGrande',
-                'https://cdn.arhaus.com/product/StandardV2/201032CHMBLK_CD210511.jpg?preset=ProductGrande',
-            ],
-            stock: 10,
-        },
-        {
-            name: 'green',
-            thumb: 'https://demo.theme-sky.com/nooni/wp-content/uploads/2023/05/green-46x46.jpg',
-            images: [
-                'https://cdn.arhaus.com/product/StandardV2/40HATTIECABEB_B210311.jpg?preset=ProductGrande',
-                'https://cdn.arhaus.com/product/StandardV2/40HATTIECABEB_A210311.jpg?preset=ProductGrande',
-                'https://cdn.arhaus.com/product/StandardV2/40HATTIECABEB_C210311.jpg?preset=ProductGrande',
-                'https://cdn.arhaus.com/product/StandardV2/40HATTIECABEB_D210311.jpg?preset=ProductGrande',
-            ],
-            stock: 10,
-        },
-        {
-            name: 'gray',
-            thumb: 'https://demo.theme-sky.com/nooni/wp-content/uploads/2023/05/grey-46x46.jpg',
-            images: [
-                'https://cdn.arhaus.com/product/StandardV2/1072838SWBF_DS231016.jpg?preset=ProductGrande',
-                'https://cdn.arhaus.com/product/StandardV2/1072838SWBF_DP231016.jpg?preset=ProductGrande',
-                'https://cdn.arhaus.com/product/StandardV2/1072838SWBF_DQ231016.jpg?preset=ProductGrande',
-                'https://cdn.arhaus.com/product/StandardV2/1072838SWBF_DT231016.jpg?preset=ProductGrande',
-            ],
-            stock: 10,
-        },
-        {
-            name: 'teak',
-            thumb: 'https://demo.theme-sky.com/nooni/wp-content/uploads/2023/05/teak-46x46.jpg',
-            images: [
-                'https://nooni-be87.kxcdn.com/nooni/wp-content/uploads/2022/12/01-450x572.jpg',
-                'https://nooni-be87.kxcdn.com/nooni/wp-content/uploads/2023/04/01-2-450x572.jpg',
-                'https://demo.theme-sky.com/nooni/wp-content/uploads/2023/04/01-3-450x572.jpg',
-                'https://demo.theme-sky.com/nooni/wp-content/uploads/2023/04/01-5-450x572.jpg',
-            ],
-            stock: 10,
-        },
-    ],
-    description: `
-        <p>Ankara Chair with Fabric Cushion 29.75″Wx28″Dx30.5″H</p>
-        <ul>
-        <li>Frame is benchmade with precision-cut solid ash with grey wash finish, hardwood plywood, and a cane seat</li>
-        <li>Synthetic webbing suspension system</li>
-        <li>Soy-based polyfoam cushion with fiber encased in downproof ticking</li>
-        <li>Frame stained with grey wash finish and clear protective lacquer</li>
-        <li>See product label or call customer service for additional details on product content</li>
-        </ul>`,
-};
+import toast from 'react-hot-toast';
+import useCartStore from '../store/cartStore';
 
 const Product = () => {
     const [selectedColor, setSelectedColor] = useState();
     const [selectedTab, setSelectedTab] = useState(1);
     const [quantity, setQuantity] = useState(1);
-    const [product, setProduct] = useState(productDemo);
+    const [product, setProduct] = useState({});
+    const { setCart } = useCartStore();
     const { slug } = useParams();
 
     useEffect(() => {
@@ -125,9 +32,28 @@ const Product = () => {
         return totalReview ? totalRating / totalReview : 0;
     }, [product]);
 
-    const isValid = useMemo(() => {
-        return product?.colors?.reduce((acc, cur) => acc + cur?.stock, 0);
-    }, [product]);
+    const handleAddToCart = (productId, colorId, quantity) => {
+        toast.promise(
+            apiRequest.post(
+                '/cart',
+                {
+                    product: productId,
+                    color: colorId,
+                    quantity,
+                },
+                { withCredentials: true },
+            ),
+            {
+                loading: 'Adding to cart...',
+                success: (res) => {
+                    setCart(res.data.cart);
+                    return res.data.message;
+                },
+                error: (err) => err.response.data?.error,
+            },
+        );
+    };
+
     return (
         <div className="mt-[90px] border-t">
             <Navigation isShowPageName={false} />
@@ -135,10 +61,12 @@ const Product = () => {
                 <div className="mb-32 flex gap-12">
                     <div className="basis-[55%]">
                         <SliderProductImages
-                            isValid={isValid}
+                            isValid={product?.isValid}
                             discount={product?.discount}
                             thumbWidth="12%"
-                            imageGallery={selectedColor?.images || product?.colors[0]?.images}
+                            imageGallery={
+                                selectedColor?.images || (product?.colors?.length && product?.colors[0]?.images)
+                            }
                         />
                     </div>
                     <div className="flex-1">
@@ -150,7 +78,7 @@ const Product = () => {
                             </div>
                             <div className="flex items-center gap-1">
                                 <span>Stock: </span>
-                                {isValid ? (
+                                {product?.isValid ? (
                                     <span className="text-green-500">In stock</span>
                                 ) : (
                                     <span className="text-red-500">Out of stock</span>
@@ -225,6 +153,7 @@ const Product = () => {
                             <div className="h-full flex-1 shrink-0">
                                 <button
                                     className={`h-full w-full bg-black text-sm font-semibold uppercase text-white transition-colors hover:bg-[#d10202] ${!selectedColor && 'cursor-not-allowed opacity-50'}`}
+                                    onClick={() => handleAddToCart(product?._id, selectedColor?._id, quantity)}
                                 >
                                     Add to cart
                                 </button>

@@ -1,4 +1,4 @@
-import React from 'react';
+// import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App.jsx';
 import './index.css';
@@ -19,15 +19,15 @@ import 'photoswipe/style.css';
 import { Toaster } from 'react-hot-toast';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-    <React.StrictMode>
-        <BrowserRouter>
-            <App />
-            <Toaster
-                toastOptions={{
-                    className: 'text-sm',
-                    position: 'top-center',
-                }}
-            />
-        </BrowserRouter>
-    </React.StrictMode>,
+    // <React.StrictMode>
+    <BrowserRouter>
+        <App />
+        <Toaster
+            toastOptions={{
+                className: 'text-sm',
+                position: 'top-center',
+            }}
+        />
+    </BrowserRouter>,
+    // </React.StrictMode>,
 );

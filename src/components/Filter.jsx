@@ -1,4 +1,4 @@
-import SliderPrice from "./SliderPrice";
+import SliderPrice from './SliderPrice';
 
 const Filter = () => {
     return (
@@ -18,9 +18,7 @@ const Filter = () => {
                         htmlFor="filter-option-1"
                         className="flex cursor-pointer items-center justify-between bg-[#EFEFEF] px-4 py-4"
                     >
-                        <span className="text-base font-bold uppercase tracking-wider">
-                            Type
-                        </span>
+                        <span className="text-base font-bold uppercase tracking-wider">Type</span>
                         <span className="relative">
                             <i className="fa-light fa-minus"></i>
                             <i className="fa-light fa-minus absolute left-0 top-1/2 -translate-y-1/2 rotate-90 transition-opacity"></i>
@@ -30,14 +28,14 @@ const Filter = () => {
                         <div className="overflow-hidden">
                             <div className="flex flex-col gap-4 border px-4 py-6">
                                 {[
-                                    "bed",
-                                    "bedroom furniture",
-                                    "chair",
-                                    "table",
-                                    "cabinet",
-                                    "home office",
-                                    "lamp",
-                                    "living room",
+                                    'bed',
+                                    'bedroom furniture',
+                                    'chair',
+                                    'table',
+                                    'cabinet',
+                                    'home office',
+                                    'lamp',
+                                    'living room',
                                 ].map((type, index) => {
                                     return (
                                         <label
@@ -49,11 +47,7 @@ const Filter = () => {
                                                 className="hidden [&:checked+span]:bg-black [&:checked+span_path]:[stroke-dashoffset:0] [&:checked+span_path]:[stroke:#fff]"
                                             />
                                             <span className="inline-block size-5 bg-transparent ring-1 ring-[#b1b1b1] transition-colors ">
-                                                <svg
-                                                    className=""
-                                                    viewBox="0 0 100 100"
-                                                    fill="none"
-                                                >
+                                                <svg className="" viewBox="0 0 100 100" fill="none">
                                                     <path
                                                         d="m 20 55 l 20 20 l 41 -50"
                                                         stroke="#000"
@@ -86,9 +80,7 @@ const Filter = () => {
                         htmlFor="filter-option-2"
                         className="flex cursor-pointer items-center justify-between bg-[#EFEFEF] px-4 py-4"
                     >
-                        <span className="text-base font-bold uppercase tracking-wider">
-                            Colors
-                        </span>
+                        <span className="text-base font-bold uppercase tracking-wider">Colors</span>
                         <span className="relative">
                             <i className="fa-light fa-minus"></i>
                             <i className="fa-light fa-minus absolute left-0 top-1/2 -translate-y-1/2 rotate-90 transition-opacity"></i>
@@ -98,18 +90,18 @@ const Filter = () => {
                         <div className="overflow-hidden">
                             <div className="grid grid-cols-7 gap-x-4 gap-y-4 border px-4 py-6">
                                 {[
-                                    "red",
-                                    "blue",
-                                    "green",
-                                    "gray",
-                                    "pink",
-                                    "yellow",
-                                    "red",
-                                    "blue",
-                                    "green",
-                                    "gray",
-                                    "pink",
-                                    "yellow",
+                                    'red',
+                                    'blue',
+                                    'green',
+                                    'gray',
+                                    'pink',
+                                    'yellow',
+                                    'red',
+                                    'blue',
+                                    'green',
+                                    'gray',
+                                    'pink',
+                                    'yellow',
                                 ].map((color, index) => {
                                     return (
                                         <span
@@ -136,9 +128,7 @@ const Filter = () => {
                         htmlFor="filter-option-3"
                         className="flex cursor-pointer items-center justify-between bg-[#EFEFEF] px-4 py-4"
                     >
-                        <span className="text-base font-bold uppercase tracking-wider">
-                            Price
-                        </span>
+                        <span className="text-base font-bold uppercase tracking-wider">Price</span>
                         <span className="relative">
                             <i className="fa-light fa-minus"></i>
                             <i className="fa-light fa-minus absolute left-0 top-1/2 -translate-y-1/2 rotate-90 transition-opacity"></i>
@@ -168,9 +158,7 @@ const Filter = () => {
                         htmlFor="filter-option-4"
                         className="flex cursor-pointer items-center justify-between bg-[#EFEFEF] px-4 py-4"
                     >
-                        <span className="text-base font-bold uppercase tracking-wider">
-                            Material
-                        </span>
+                        <span className="text-base font-bold uppercase tracking-wider">Material</span>
                         <span className="relative">
                             <i className="fa-light fa-minus"></i>
                             <i className="fa-light fa-minus absolute left-0 top-1/2 -translate-y-1/2 rotate-90 transition-opacity"></i>
@@ -179,14 +167,7 @@ const Filter = () => {
                     <div className="grid grid-rows-[0fr] transition-[grid-template-rows] duration-500">
                         <div className="overflow-hidden">
                             <div className="flex flex-col gap-4 border px-4 py-6">
-                                {[
-                                    "glass",
-                                    "leather",
-                                    "metal",
-                                    "velvet",
-                                    "cabinet",
-                                    "wood",
-                                ].map((type, index) => {
+                                {['glass', 'leather', 'metal', 'velvet', 'cabinet', 'wood'].map((type, index) => {
                                     return (
                                         <label
                                             key={index}
@@ -197,11 +178,7 @@ const Filter = () => {
                                                 className="hidden [&:checked+span]:bg-black [&:checked+span_path]:[stroke-dashoffset:0] [&:checked+span_path]:[stroke:#fff]"
                                             />
                                             <span className="inline-block size-5 bg-transparent ring-1 ring-[#b1b1b1] transition-colors ">
-                                                <svg
-                                                    className=""
-                                                    viewBox="0 0 100 100"
-                                                    fill="none"
-                                                >
+                                                <svg className="" viewBox="0 0 100 100" fill="none">
                                                     <path
                                                         d="m 20 55 l 20 20 l 41 -50"
                                                         stroke="#000"

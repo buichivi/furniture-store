@@ -1,15 +1,16 @@
 import { useEffect, useRef } from 'react';
-import { SearchItem } from '../../components';
+import { CartShortForm, SearchItem } from '../../components';
 import { Link, useNavigate } from 'react-router-dom';
-import CartItemMini from '../../components/CartItemMini';
 import useAuthStore from '../../store/authStore';
 import apiRequest from '../../utils/apiRequest';
 import Tippy from '@tippyjs/react/headless';
 import toast from 'react-hot-toast';
+import useCartStore from '../../store/cartStore';
 
 const Header = () => {
     const header_el = useRef();
     const { currentUser, loginUser, logout } = useAuthStore();
+    const { cart } = useCartStore();
     const naviagate = useNavigate();
 
     const token = localStorage.getItem('token');
@@ -200,14 +201,14 @@ const Header = () => {
                         )}
                         <Link className="relative">
                             <i className="fa-light fa-heart hover:opacity-70"></i>
-                            <div className="absolute -right-[45%] -top-[35%] flex size-5 items-center justify-center rounded-full bg-black text-white">
+                            <div className="absolute -right-[45%] -top-[35%] flex size-5 cursor-pointer items-center justify-center rounded-full bg-black text-white">
                                 <span className="text-sm">0</span>
                             </div>
                         </Link>
                         <label className="relative" htmlFor="cart-short-form">
                             <i className="fa-light fa-cart-shopping hover:opacity-70"></i>
-                            <div className="absolute -right-[30%] -top-[35%] flex size-5 items-center justify-center rounded-full bg-black text-white">
-                                <span className="text-sm">0</span>
+                            <div className="absolute -right-[30%] -top-[35%] flex size-5 cursor-pointer items-center justify-center rounded-full bg-black text-white">
+                                <span className="text-sm">{cart?.totalProducts}</span>
                             </div>
                         </label>
                     </div>
@@ -254,48 +255,7 @@ const Header = () => {
                     </div>
                 </div>
             </div>
-
-            {/* Cart */}
-            <input
-                type="checkbox"
-                className="peer/cart-short-form hidden [&:checked+div>div]:translate-x-0 [&:checked+div>label]:opacity-100"
-                id="cart-short-form"
-            />
-            <div className="pointer-events-none invisible fixed right-0 top-0 z-50 h-screen w-screen peer-checked/cart-short-form:pointer-events-auto peer-checked/cart-short-form:visible">
-                <label
-                    htmlFor="cart-short-form"
-                    className="block h-full w-full bg-[#3f3f3f80] opacity-0 transition-all duration-500"
-                ></label>
-                <div className="absolute right-0 top-0 flex h-full w-[30%] translate-x-full flex-col overflow-y-hidden bg-white p-[30px] transition-all duration-500 2xl:w-1/5">
-                    <div className="mb-8 flex shrink-0 items-center justify-between">
-                        <h4 className="tracking-wider">Cart (0)</h4>
-                        <label htmlFor="cart-short-form" className="cursor-pointer text-2xl">
-                            <i className="fa-light fa-xmark"></i>
-                        </label>
-                    </div>
-                    <div className="flex h-full flex-1 flex-col">
-                        <div className="cart-list-short flex h-[55%] flex-col gap-8 overflow-y-auto pr-1">
-                            {[1, 2, 3].map((item, index) => {
-                                return <CartItemMini key={index} />;
-                            })}
-                        </div>
-                        <div>
-                            <div className="flex items-center justify-between py-8 text-lg font-bold tracking-wider">
-                                <h4>Subtotal</h4>
-                                <span>$5,000</span>
-                            </div>
-                            <div>
-                                <Link className="mb-3 block py-4 text-center text-sm font-bold uppercase ring-1 ring-black transition-colors hover:text-[#d10202] hover:ring-[#d10202]">
-                                    View cart
-                                </Link>
-                                <Link className="block bg-black py-4 text-center text-sm font-bold uppercase text-white transition-colors hover:bg-[#d10202]">
-                                    Check out
-                                </Link>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <CartShortForm />
         </>
     );
 };

@@ -1,13 +1,13 @@
-import { useEffect, useRef, useState } from "react";
-import PropType from "prop-types";
+import { useEffect, useRef, useState } from 'react';
+import PropType from 'prop-types';
 
 const SliderPrice = ({ min = 0, max = 1000, onChange = () => {} }) => {
     const [range, setRange] = useState({ min: min, max: max });
     const progress = useRef();
 
     useEffect(() => {
-        progress.current.style.left = (range.min / max) * 100 + "%";
-        progress.current.style.right = ((max - range.max) / max) * 100 + "%";
+        progress.current.style.left = (range.min / max) * 100 + '%';
+        progress.current.style.right = ((max - range.max) / max) * 100 + '%';
     }, [range, max]);
 
     useEffect(() => {
@@ -52,13 +52,10 @@ const SliderPrice = ({ min = 0, max = 1000, onChange = () => {} }) => {
                 </div>
             </div>
             <div className="relative h-[3px] bg-[#dbdbdb]">
-                <div
-                    ref={progress}
-                    className="absolute left-0 right-0 top-0 h-full bg-[#000]"
-                ></div>
+                <div ref={progress} className="absolute left-0 right-0 top-0 h-full bg-[#000]"></div>
                 <input
                     type="range"
-                    className="[&::-webkit-slider-thumb]:border-1 pointer-events-none absolute left-0 top-0 z-10 h-full w-full bg-transparent [-webkit-appearance:none] [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:size-5 [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-solid [&::-webkit-slider-thumb]:border-black [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:[-webkit-appearance:none]"
+                    className="pointer-events-none absolute left-0 top-0 z-10 h-full w-full bg-transparent [-webkit-appearance:none] [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:size-5 [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-solid [&::-webkit-slider-thumb]:border-black [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:[-webkit-appearance:none]"
                     min={min}
                     max={max}
                     value={range.min}
@@ -73,7 +70,7 @@ const SliderPrice = ({ min = 0, max = 1000, onChange = () => {} }) => {
                 />
                 <input
                     type="range"
-                    className="[&::-webkit-slider-thumb]:border-1 pointer-events-none absolute right-0 top-0 z-10 h-full w-full bg-transparent [-webkit-appearance:none] [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:size-5 [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-solid [&::-webkit-slider-thumb]:border-black [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:[-webkit-appearance:none]"
+                    className="pointer-events-none absolute right-0 top-0 z-10 h-full w-full bg-transparent [-webkit-appearance:none] [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:size-5 [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-solid [&::-webkit-slider-thumb]:border-black [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:[-webkit-appearance:none]"
                     min={min}
                     max={max}
                     value={range.max}

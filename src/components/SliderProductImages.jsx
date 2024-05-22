@@ -12,7 +12,7 @@ const init = [
 ];
 
 const SliderProductImages = ({
-    isValid = 0,
+    isValid = true,
     discount = 0,
     thumbWidth = '15%',
     imageGallery = init,
@@ -104,7 +104,7 @@ const SliderProductImages = ({
                                         key={index}
                                         src={img_url}
                                         alt=""
-                                        className="relative top-0 h-full w-full flex-auto shrink-0 cursor-zoom-in object-cover object-top transition-transform duration-500"
+                                        className="relative top-0 h-full w-full flex-auto shrink-0 cursor-zoom-in object-contain object-top transition-transform duration-500"
                                         onMouseMove={(e) => {
                                             const rect = e.target.getBoundingClientRect();
                                             const x = e.clientX - rect.left;
@@ -148,7 +148,7 @@ SliderProductImages.propTypes = {
     imageGallery: PropTypes.array,
     thumbWidth: PropTypes.string,
     viewFullScreen: PropTypes.bool,
-    isValid: PropTypes.number,
+    isValid: PropTypes.bool,
     discount: PropTypes.number,
 };
 

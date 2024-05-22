@@ -3,79 +3,35 @@ import Tippy from '@tippyjs/react';
 import PropType from 'prop-types';
 import { numberWithCommas } from '../utils/format';
 import { useProductQuickViewStore } from '../store/productQuickViewStore';
-import { useMemo } from 'react';
+import toast from 'react-hot-toast';
+import apiRequest from '../utils/apiRequest';
+import useCartStore from '../store/cartStore';
 
-const productDemo = {
-    id: 1,
-    is_trend: true,
-    is_valid: true,
-    name: 'Wood Outdoor Adirondack Chair',
-    short_description: `Phasellus vitae imperdiet felis. Nam non condimentumerat. Lorem ipsum dolor sit amet, consecteturadipiscing elit. Nulla tortor arcu, consectetureleifend commodo at, consectetur eu justo.`,
-    discount: 50,
-    prices: [
-        {
-            price: 1099,
-            currency: '$',
-        },
-        {
-            price: 22000000,
-            currency: 'vnd',
-        },
-    ],
-    review: {
-        average_star: 3.4,
-        number_of_review: 9,
-    },
-    colors: [
-        {
-            name: 'black',
-            color_thumb: 'https://demo.theme-sky.com/nooni/wp-content/uploads/2023/05/black-46x46.jpg',
-            images: [
-                'https://cdn.arhaus.com/product/StandardV2/201032CHMBLK_A210923.jpg?preset=ProductGrande',
-                'https://cdn.arhaus.com/product/StandardV2/201032CHMBLK_B210923.jpg?preset=ProductGrande',
-                'https://cdn.arhaus.com/product/StandardV2/201032CHMBLK_D210923.jpg?preset=ProductGrande',
-                'https://cdn.arhaus.com/product/StandardV2/201032CHMBLK_CD210511.jpg?preset=ProductGrande',
-            ],
-        },
-        {
-            name: 'green',
-            color_thumb: 'https://demo.theme-sky.com/nooni/wp-content/uploads/2023/05/green-46x46.jpg',
-            images: [
-                'https://cdn.arhaus.com/product/StandardV2/40HATTIECABEB_B210311.jpg?preset=ProductGrande',
-                'https://cdn.arhaus.com/product/StandardV2/40HATTIECABEB_A210311.jpg?preset=ProductGrande',
-                'https://cdn.arhaus.com/product/StandardV2/40HATTIECABEB_C210311.jpg?preset=ProductGrande',
-                'https://cdn.arhaus.com/product/StandardV2/40HATTIECABEB_D210311.jpg?preset=ProductGrande',
-            ],
-        },
-        {
-            name: 'gray',
-            color_thumb: 'https://demo.theme-sky.com/nooni/wp-content/uploads/2023/05/grey-46x46.jpg',
-            images: [
-                'https://cdn.arhaus.com/product/StandardV2/1072838SWBF_DS231016.jpg?preset=ProductGrande',
-                'https://cdn.arhaus.com/product/StandardV2/1072838SWBF_DP231016.jpg?preset=ProductGrande',
-                'https://cdn.arhaus.com/product/StandardV2/1072838SWBF_DQ231016.jpg?preset=ProductGrande',
-                'https://cdn.arhaus.com/product/StandardV2/1072838SWBF_DT231016.jpg?preset=ProductGrande',
-            ],
-        },
-        {
-            name: 'teak',
-            color_thumb: 'https://demo.theme-sky.com/nooni/wp-content/uploads/2023/05/teak-46x46.jpg',
-            images: [
-                'https://nooni-be87.kxcdn.com/nooni/wp-content/uploads/2022/12/01-450x572.jpg',
-                'https://nooni-be87.kxcdn.com/nooni/wp-content/uploads/2023/04/01-2-450x572.jpg',
-                'https://demo.theme-sky.com/nooni/wp-content/uploads/2023/04/01-3-450x572.jpg',
-                'https://demo.theme-sky.com/nooni/wp-content/uploads/2023/04/01-5-450x572.jpg',
-            ],
-        },
-    ],
-};
-
-const ProductCard = ({ product = productDemo, isDisplayGrid = true }) => {
+const ProductCard = ({ product = {}, isDisplayGrid = true }) => {
     const { setProduct, toggleOpen } = useProductQuickViewStore();
+    const { setCart } = useCartStore();
 
-    const isValid = useMemo(() => {
-        return product?.colors?.reduce((acc, cur) => acc + cur?.stock, 0);
-    }, [product]);
+    const handleAddToCart = (productId, colorId, quantity) => {
+        toast.promise(
+            apiRequest.post(
+                '/cart',
+                {
+                    product: productId,
+                    color: colorId,
+                    quantity,
+                },
+                { withCredentials: true },
+            ),
+            {
+                loading: 'Adding to cart...',
+                success: (res) => {
+                    setCart(res.data.cart);
+                    return res.data.message;
+                },
+                error: (err) => err.response.data?.error,
+            },
+        );
+    };
 
     return (
         <>
@@ -85,21 +41,21 @@ const ProductCard = ({ product = productDemo, isDisplayGrid = true }) => {
                     className={`group/product-img relative w-full shrink-0 overflow-hidden ${!isDisplayGrid && 'basis-[40%]'}`}
                 >
                     <img
-                        src={product?.colors[0]?.images[0]}
+                        src={product?.colors?.length && product?.colors[0]?.images[0]}
                         alt=""
-                        className="h-[350px] w-full object-cover transition-all duration-500 group-hover/product-img:opacity-0"
+                        className="h-[350px] w-full object-contain transition-all duration-500 group-hover/product-img:opacity-0"
                     />
                     <img
-                        src={product?.colors[0]?.images[1]}
+                        src={product?.colors?.length && product?.colors[0]?.images[1]}
                         alt=""
-                        className="absolute left-0 top-0 -z-10 h-[350px] w-full object-cover"
+                        className="absolute left-0 top-0 -z-10 h-[350px] w-full object-contain"
                     />
                     <div className="absolute left-0 top-0 z-10 h-full w-full p-4">
                         <span className="mr-1 bg-[#D10202] px-3 py-[2px] text-xs uppercase text-white">Hot</span>
                         {product?.discount > 0 && (
                             <span className="mr-1 bg-[#000] px-3 py-[2px] text-xs uppercase text-white">Sale</span>
                         )}
-                        {isValid && (
+                        {!product?.isValid && (
                             <span className="bg-[#919191] px-3 py-[2px] text-xs uppercase text-white">Sold out</span>
                         )}
                     </div>
@@ -151,13 +107,25 @@ const ProductCard = ({ product = productDemo, isDisplayGrid = true }) => {
                                     </div>
                                 </Tippy>
                             </div>
-                            <div
-                                to="/product"
-                                className={`w-full translate-y-3 bg-white py-3 text-center text-sm font-semibold uppercase text-black opacity-0 transition-all ease-out hover:bg-[#D10202] hover:text-white group-hover/product:translate-y-0 group-hover/product:opacity-100 ${!isDisplayGrid && 'hidden'}`}
-                                onClick={(e) => e.preventDefault()}
-                            >
-                                Select options
-                            </div>
+                            {product?.colors?.length >= 2 && (
+                                <Link
+                                    to={`/shop/${product?.slug}`}
+                                    className={`w-full translate-y-3 bg-white py-3 text-center text-sm font-semibold uppercase text-black opacity-0 transition-all ease-out hover:bg-[#D10202] hover:text-white group-hover/product:translate-y-0 group-hover/product:opacity-100 ${!isDisplayGrid && 'hidden'}`}
+                                >
+                                    Select options
+                                </Link>
+                            )}
+                            {product?.colors?.length == 1 && (
+                                <div
+                                    className={`w-full translate-y-3 bg-white py-3 text-center text-sm font-semibold uppercase text-black opacity-0 transition-all ease-out hover:bg-[#D10202] hover:text-white group-hover/product:translate-y-0 group-hover/product:opacity-100 ${!isDisplayGrid && 'hidden'}`}
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        handleAddToCart(product?._id, product?.colors[0]?._id, 1);
+                                    }}
+                                >
+                                    Add to cart
+                                </div>
+                            )}
                         </div>
                         <div
                             className={`absolute bottom-0 right-4 flex size-10 items-center justify-center text-xl opacity-100 transition-all duration-500 group-hover/product:pointer-events-none group-hover/product:opacity-0 ${!isDisplayGrid && 'bottom-4'}`}
@@ -168,12 +136,12 @@ const ProductCard = ({ product = productDemo, isDisplayGrid = true }) => {
                 </Link>
                 <div className="mt-4">
                     <Link
-                        className={`mb-3 line-clamp-2 cursor-pointer text-base tracking-wide transition-colors hover:text-[#D10202] ${!isDisplayGrid && '!text-2xl font-medium'}`}
+                        className={`mb-3 line-clamp-2 cursor-pointer text-base tracking-wide transition-colors hover:text-[#D10202] ${!isDisplayGrid && '!text-xl font-normal tracking-wider'}`}
                     >
                         {product?.name}
                     </Link>
                     <div className={`flex items-center gap-4 text-base tracking-wide ${!isDisplayGrid && 'text-xl'}`}>
-                        <span className="font-bold">
+                        <span className="font-semibold">
                             <span>$</span>
                             <span>{numberWithCommas(product?.salePrice)}</span>
                         </span>
@@ -184,8 +152,11 @@ const ProductCard = ({ product = productDemo, isDisplayGrid = true }) => {
                     </div>
                     {!isDisplayGrid && (
                         <>
-                            <p className="mt-6 text-[#848484]">{product?.short_description}</p>
-                            <button className="mt-6 bg-black px-24 py-4 text-base font-bold uppercase tracking-wider text-white transition-colors hover:bg-[#D10202]">
+                            <p
+                                className="mt-6 line-clamp-3 text-sm text-[#848484]"
+                                dangerouslySetInnerHTML={{ __html: product?.description }}
+                            ></p>
+                            <button className="mt-6 bg-black px-24 py-4 text-sm font-bold uppercase tracking-wider text-white transition-colors hover:bg-[#D10202]">
                                 Add to cart
                             </button>
                         </>

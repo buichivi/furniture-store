@@ -5,23 +5,66 @@ import { forwardRef, useEffect, useMemo, useState } from 'react';
 import { numberWithCommas } from '../utils/format';
 import PropType from 'prop-types';
 import { useProductQuickViewStore } from '../store/productQuickViewStore';
+import toast from 'react-hot-toast';
+import apiRequest from '../utils/apiRequest';
+import useCartStore from '../store/cartStore';
 
 const ProductQuickView = forwardRef(function ProductQuickView() {
     const [selectedColor, setSelectedColor] = useState();
+    const [quantity, setQuantity] = useState(1);
     const { product, isOpen, toggleOpen } = useProductQuickViewStore();
+    const { setCart } = useCartStore();
 
     useEffect(() => {
-        setSelectedColor();
+        if (!isOpen) setSelectedColor();
     }, [isOpen]);
+
+    useEffect(() => {
+        const closeQuickViewWithESC = (e) => {
+            if (e.keyCode == 27) toggleOpen(false);
+        };
+        window.addEventListener('keydown', closeQuickViewWithESC);
+        return () => {
+            window.removeEventListener('keydown', closeQuickViewWithESC);
+        };
+    }, []);
+
+    useEffect(() => {
+        var colorIndex = null;
+        const isOnlyOneColor = product?.colors?.reduce((acc, cur, index) => {
+            if (cur?.stock) colorIndex = index;
+            return acc + (cur?.stock > 0);
+        }, 0);
+        if (isOnlyOneColor == 1) setSelectedColor(product?.colors[colorIndex]);
+    }, [product]);
 
     const averageRating = useMemo(() => {
         const totalRating = product?.reviews?.reduce((acc, cur) => acc + cur?.rating, 0);
         const totalReview = product?.reviews?.length;
         return totalReview ? totalRating / totalReview : 0;
     }, [product]);
-    const isValid = useMemo(() => {
-        return product?.colors?.reduce((acc, cur) => acc + cur?.stock, 0);
-    }, [product]);
+
+    const handleAddToCart = (productId, colorId, quantity) => {
+        toast.promise(
+            apiRequest.post(
+                '/cart',
+                {
+                    product: productId,
+                    color: colorId,
+                    quantity,
+                },
+                { withCredentials: true },
+            ),
+            {
+                loading: 'Adding to cart...',
+                success: (res) => {
+                    setCart(res.data.cart);
+                    return res.data.message;
+                },
+                error: (err) => err.response.data?.error,
+            },
+        );
+    };
 
     return (
         <>
@@ -44,7 +87,7 @@ const ProductQuickView = forwardRef(function ProductQuickView() {
                     </span>
                     <div className="h-full basis-[55%]">
                         <SliderProductImages
-                            isValid={isValid}
+                            isValid={product?.isValid}
                             discount={product?.discount}
                             imageGallery={selectedColor?.images || product?.colors[0]?.images}
                             viewFullScreen={false}
@@ -59,7 +102,7 @@ const ProductQuickView = forwardRef(function ProductQuickView() {
                             </div>
                             <div className="text-base">
                                 <span>Stock: </span>
-                                {isValid ? (
+                                {product?.isValid ? (
                                     <span className="text-green-400">In Stock</span>
                                 ) : (
                                     <span className="text-red-400">Out Of Stock</span>
@@ -79,7 +122,7 @@ const ProductQuickView = forwardRef(function ProductQuickView() {
                             className="mb-7 line-clamp-3 text-base text-[#959595]"
                             dangerouslySetInnerHTML={{ __html: product?.description }}
                         ></p>
-                        {product?.colors?.length > 0 && (
+                        {product?.colors?.length > 1 && (
                             <div className={`mb-10 ${selectedColor && 'mb-8'}`}>
                                 <div className="mb-5 flex items-center gap-2">
                                     <h3 className="text-lg font-semibold">COLOR:</h3>
@@ -91,7 +134,7 @@ const ProductQuickView = forwardRef(function ProductQuickView() {
                                     {product?.colors.map((color, index) => (
                                         <div
                                             key={index}
-                                            className={`relative size-10 cursor-pointer border border-[#c5c5c5] transition-all hover:border-black ${selectedColor?.name == color?.name && '!border-black'}`}
+                                            className={`relative size-10 cursor-pointer border border-[#c5c5c5] transition-all hover:border-black ${selectedColor?.name == color?.name && '!border-black'} ${!color?.stock && 'pointer-events-none opacity-40'}`}
                                             onClick={() => {
                                                 setSelectedColor(color);
                                             }}
@@ -114,21 +157,36 @@ const ProductQuickView = forwardRef(function ProductQuickView() {
                                 )}
                             </div>
                         )}
-                        {isValid && (
+                        {product?.isValid && (
                             <div className="flex h-[50px] w-full items-center gap-4">
                                 <div className="flex h-full flex-1 items-center bg-[#ededed]">
-                                    <i className="fa-light fa-minus flex-1 shrink-0 cursor-pointer text-center text-sm"></i>
+                                    <i
+                                        className="fa-light fa-minus flex-1 shrink-0 cursor-pointer text-center text-sm"
+                                        onClick={() => {
+                                            setQuantity(quantity - 1 || 1);
+                                        }}
+                                    ></i>
                                     <input
                                         type="number"
                                         min={1}
-                                        defaultValue={1}
+                                        value={quantity}
+                                        onChange={(e) => setQuantity(Number(e.target.value))}
+                                        onBlur={(e) =>
+                                            setQuantity(Number(e.target.value) >= 1 ? Number(e.target.value) : 1)
+                                        }
                                         className="w-5 flex-1 shrink-0 border-none bg-transparent px-4 text-center text-sm outline-none"
                                     />
-                                    <i className="fa-light fa-plus flex-1 shrink-0 cursor-pointer text-center text-sm"></i>
+                                    <i
+                                        className="fa-light fa-plus flex-1 shrink-0 cursor-pointer text-center text-sm"
+                                        onClick={() => {
+                                            setQuantity(quantity + 1);
+                                        }}
+                                    ></i>
                                 </div>
                                 <div className="h-full flex-1 shrink-0">
                                     <button
                                         className={`h-full w-full bg-black text-sm font-semibold uppercase text-white transition-colors hover:bg-[#d10202] ${!selectedColor && 'cursor-not-allowed opacity-50'}`}
+                                        onClick={() => handleAddToCart(product?._id, selectedColor?._id, quantity)}
                                     >
                                         Add to cart
                                     </button>
@@ -136,7 +194,7 @@ const ProductQuickView = forwardRef(function ProductQuickView() {
                             </div>
                         )}
 
-                        {isValid && (
+                        {product?.isValid && (
                             <button
                                 className={`mt-4 h-[50px] w-full border border-black bg-transparent text-sm font-semibold uppercase text-black transition-all hover:border-[#d10202] hover:text-[#d10202] ${!selectedColor && 'cursor-not-allowed opacity-40'}`}
                             >
