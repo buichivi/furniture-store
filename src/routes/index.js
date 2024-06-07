@@ -1,18 +1,39 @@
-import { Home, Shop, Product, Profile } from '../pages';
-// import TryZustand from "../pages/TryZustand";
+import { Home, Shop, Product, Profile, productLoader, Cart } from '../pages';
+import { loader } from '../pages/Product';
+const fakeLoader = async () => {
+    return await new Promise((resolve) => setTimeout(() => resolve(null), 500));
+};
 
 const public_routes = [
     {
         path: '/',
         element: Home,
+        loader: fakeLoader,
+    },
+    {
+        path: '/shop/:parentCategorySlug/:categorySlug/:productSlug',
+        element: Product,
+        loader: productLoader,
+    },
+    {
+        path: '/shop/:parentCategorySlug/:categorySlug',
+        element: Shop,
+        loader: fakeLoader,
+    },
+    {
+        path: '/shop/:parentCategorySlug',
+        element: Shop,
+        loader: fakeLoader,
     },
     {
         path: '/shop',
         element: Shop,
+        loader: fakeLoader,
     },
     {
-        path: '/shop/:slug',
-        element: Product,
+        path: '/cart',
+        element: Cart,
+        loader: fakeLoader,
     },
 ];
 

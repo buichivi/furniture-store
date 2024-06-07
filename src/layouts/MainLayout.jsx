@@ -1,14 +1,12 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { Header, Footer } from './components';
 import PropTypes from 'prop-types';
 import { ProductQuickView } from '../components';
-import { useLocation } from 'react-router-dom';
-import NProgress from 'nprogress';
+// import { useLocation } from 'react-router-dom';
 
 const MainLayout = ({ children }) => {
     const scroll_to_top = useRef();
-    const [prevLoc, setPrevLoc] = useState('');
-    const location = useLocation();
+    // const location = useLocation();
 
     useEffect(() => {
         const scrollToTop = () => {
@@ -26,25 +24,18 @@ const MainLayout = ({ children }) => {
         };
     }, []);
 
-    useEffect(() => {
-        setPrevLoc(location.pathname);
-        NProgress.configure({
-            showSpinner: false,
-        });
-        NProgress.start();
-        if (location.pathname === prevLoc) {
-            setPrevLoc('');
-            NProgress.done();
-        }
-    }, [location]);
-
-    useEffect(() => {
-        NProgress.done();
-    }, [prevLoc]);
+    // useEffect(() => {
+    //     // NProgress.configure({
+    //     //     showSpinner: false,
+    //     // });
+    //     NProgress.start();
+    //     return () => {
+    //         NProgress.done();
+    //     };
+    // }, [location]);
 
     return (
         <div className="relative">
-            {/* <Progress /> */}
             <Header />
             {children}
             <Footer />

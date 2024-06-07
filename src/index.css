@@ -34,8 +34,20 @@ body {
 }
 /* Scroll bar */
 html {
+    scroll-behavior: smooth;
     overflow-x: hidden;
     scrollbar-width: thin;
+}
+
+/* Custome Nprogress bar */
+#nprogress .bar {
+    background: #000 !important;
+    height: 3px !important;
+}
+#nprogress .peg {
+    box-shadow:
+        0 0 10px #000,
+        0 0 5px #000 !important;
 }
 
 /* Animation */
@@ -133,12 +145,17 @@ input[type='number']::-webkit-inner-spin-button {
 }
 
 .menu-clip-path {
-    clip-path: circle(0 at 0 0);
+    top: -100%;
+    /* clip-path: circle(0 at 0 0); */
     transition: all 0.8s cubic-bezier(0.86, 0, 0.07, 1);
 }
+
 #menu:checked + .menu-clip-path {
-    clip-path: circle(100%);
+    top: 0%;
+    /* clip-path: circle(100%); */
 }
 #menu:checked + .menu-clip-path + .menu--1 > label[aria-checked='true'] svg path {
     stroke: #fff;
 }
+
+/* Tippy animation */

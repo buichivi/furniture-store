@@ -1,38 +1,51 @@
-import { Link, useLocation } from "react-router-dom";
-import PropTypes from "prop-types";
+import { Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
 
-const Navigation = ({ isShowPageName = true }) => {
-    const location = useLocation();
-    const pathNames = location.pathname.split("/");
+const Navigation = ({ isShowPageName = true, paths = '' }) => {
+    let pathNames;
+    if (paths.charAt(paths.length - 1) == '/') {
+        pathNames = paths.slice(0, paths.length - 1).split('/');
+    } else pathNames = paths.split('/');
     return (
         <div className="py-14">
             <div className="mb-6 flex justify-center">
-                {[
-                    {
-                        name: "home",
-                        to: "/",
-                    },
-                    {
-                        name: "shop",
-                        to: "/shop",
-                    },
-                ].map(({ name, to }, index) => {
-                    return (
-                        <div key={index} className="mr-2 flex items-center gap-2">
-                            {pathNames.at(-1) != name ? (
-                                <Link to={to} className="capitalize text-[#848484] hover:underline">
-                                    {name}
-                                </Link>
-                            ) : (
-                                <span className="capitalize text-black hover:no-underline">{name}</span>
-                            )}
-                            {index < ["Home", "Shop"].length - 1 && <span className="text-[#848484]">/</span>}
-                        </div>
-                    );
-                })}
+                {pathNames
+                    .map((path, index) => {
+                        let i = 0,
+                            to = '';
+                        while (i <= index) {
+                            if (i != 0) to += '/' + pathNames[i];
+                            else if (i == 0 && index == 0) to = '/';
+                            i++;
+                        }
+                        return {
+                            name:
+                                path
+                                    .split('-')
+                                    .map((p) => p.charAt(0).toUpperCase() + p.slice(1))
+                                    .join(' ') || 'Home',
+                            to,
+                        };
+                    })
+                    .map(({ name, to }, index) => {
+                        return (
+                            <div key={index} className="mr-2 flex items-center gap-2">
+                                {pathNames.length != index + 1 ? (
+                                    <Link to={to} className="capitalize text-[#3f3f3f] hover:underline">
+                                        {name}
+                                    </Link>
+                                ) : (
+                                    <span className="capitalize text-black hover:no-underline">{name}</span>
+                                )}
+                                {index < pathNames.length - 1 && <span className="text-[#3f3f3f]">/</span>}
+                            </div>
+                        );
+                    })}
             </div>
             {isShowPageName && (
-                <h3 className="text-center text-4xl font-semibold capitalize tracking-wider text-black">Shop</h3>
+                <h3 className="text-center text-4xl font-semibold capitalize tracking-wider text-black">
+                    {pathNames.at(-1).split('-').join(' ')}
+                </h3>
             )}
         </div>
     );
@@ -40,6 +53,7 @@ const Navigation = ({ isShowPageName = true }) => {
 
 Navigation.propTypes = {
     isShowPageName: PropTypes.bool,
+    paths: PropTypes.string,
 };
 
 export default Navigation;

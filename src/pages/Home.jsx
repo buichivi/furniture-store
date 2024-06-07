@@ -2,9 +2,11 @@ import { useEffect, useState } from 'react';
 import { Coupon, HomeBanner, ProductCard, Slider, SliderBlog, SliderCategory } from '../components';
 import { Link } from 'react-router-dom';
 import apiRequest from '../utils/apiRequest';
+import useCategoryStore from '../store/navigationStore';
 
 const Home = () => {
     const [products, setProducts] = useState();
+    const { getNavigationPath } = useCategoryStore();
     useEffect(() => {
         apiRequest
             .get('/products')
@@ -23,7 +25,7 @@ const Home = () => {
             </div>
             <div className="container mx-auto mb-20 px-5">
                 <h3 className="mb-[30px] text-xl font-bold uppercase">Shop by category</h3>
-                <SliderCategory />
+                <SliderCategory products={products} />
             </div>
             <div className="container mx-auto mb-[30px] px-5">
                 <HomeBanner />
@@ -43,7 +45,7 @@ const Home = () => {
                 </div>
                 <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
                     {products?.map((product, index) => {
-                        return <ProductCard key={index} product={product} />;
+                        return <ProductCard key={index} product={product} to={getNavigationPath(product, 'product')} />;
                     })}
                 </div>
             </div>

@@ -1,10 +1,20 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Navigation, RelatedProducts, ReviewStars, SliderProductImages, UserReview } from '../components';
 import { numberWithCommas } from '../utils/format';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigation, useParams } from 'react-router-dom';
 import apiRequest from '../utils/apiRequest';
 import toast from 'react-hot-toast';
 import useCartStore from '../store/cartStore';
+import useCategoryStore from '../store/navigationStore';
+
+export const loader = async ({ params }) => {
+    const { productSlug } = params;
+    try {
+        return (await apiRequest.get('/products/' + productSlug)).data.product;
+    } catch (err) {
+        return {};
+    }
+};
 
 const Product = () => {
     const [selectedColor, setSelectedColor] = useState();
@@ -12,11 +22,15 @@ const Product = () => {
     const [quantity, setQuantity] = useState(1);
     const [product, setProduct] = useState({});
     const { setCart } = useCartStore();
-    const { slug } = useParams();
+    const { getNavigationPath } = useCategoryStore();
+    const { productSlug } = useParams();
+
+    const navigation = useNavigation();
 
     useEffect(() => {
+        // nProgress.done();
         apiRequest
-            .get('/products/' + slug)
+            .get('/products/' + productSlug)
             .then((res) => {
                 if (res.data.product?.colors?.length == 1) {
                     setSelectedColor(res.data.product?.colors[0]);
@@ -24,7 +38,7 @@ const Product = () => {
                 setProduct(res.data.product);
             })
             .catch((err) => console.log(err));
-    }, [slug]);
+    }, [productSlug]);
 
     const averageRating = useMemo(() => {
         const totalRating = product?.reviews?.reduce((acc, cur) => acc + cur?.rating, 0);
@@ -56,7 +70,7 @@ const Product = () => {
 
     return (
         <div className="mt-[90px] border-t">
-            <Navigation isShowPageName={false} />
+            <Navigation isShowPageName={false} paths={getNavigationPath(product, 'product')} />
             <div className="container mx-auto px-5">
                 <div className="mb-32 flex gap-12">
                     <div className="basis-[55%]">
@@ -77,6 +91,7 @@ const Product = () => {
                                 <span>({product?.reviews?.length})</span>
                             </div>
                             <div className="flex items-center gap-1">
+                                {navigation.state == 'loading' && <h1>Loaded</h1>}
                                 <span>Stock: </span>
                                 {product?.isValid ? (
                                     <span className="text-green-500">In stock</span>

@@ -1,21 +1,10 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import CartItemMini from './CartItemMini';
-import { useEffect } from 'react';
-import apiRequest from '../utils/apiRequest';
 import useCartStore from '../store/cartStore';
 
 const CartShortForm = () => {
-    const { cart, setCart } = useCartStore();
-
-    useEffect(() => {
-        apiRequest
-            .get('/cart', {
-                withCredentials: true,
-            })
-            .then((res) => setCart(res.data.cart))
-            .catch((err) => console.log(err.response.data.error));
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    const { cart } = useCartStore();
+    const navigate = useNavigate();
 
     return (
         <>
@@ -32,7 +21,7 @@ const CartShortForm = () => {
                 ></label>
                 <div className="absolute right-0 top-0 flex h-full w-[30%] translate-x-full flex-col overflow-y-hidden bg-white p-[30px] transition-all duration-500 2xl:w-1/5">
                     <div className="mb-8 flex shrink-0 items-center justify-between">
-                        <h4 className="tracking-wider">Cart ({cart?.totalProducts})</h4>
+                        <h4 className="tracking-wider">Cart ({cart?.items?.length})</h4>
                         <label htmlFor="cart-short-form" className="cursor-pointer text-2xl">
                             <i className="fa-light fa-xmark"></i>
                         </label>
@@ -50,9 +39,15 @@ const CartShortForm = () => {
                                     <span>${cart?.subTotal}</span>
                                 </div>
                                 <div>
-                                    <Link className="mb-3 block py-4 text-center text-sm font-bold uppercase ring-1 ring-black transition-colors hover:text-[#d10202] hover:ring-[#d10202]">
+                                    <label
+                                        htmlFor="cart-short-form"
+                                        className="mb-3 block cursor-pointer py-4 text-center text-sm font-bold uppercase ring-1 ring-black transition-colors hover:text-[#d10202] hover:ring-[#d10202]"
+                                        onClick={() => {
+                                            navigate('/cart');
+                                        }}
+                                    >
                                         View cart
-                                    </Link>
+                                    </label>
                                     <Link className="block bg-black py-4 text-center text-sm font-bold uppercase text-white transition-colors hover:bg-[#d10202]">
                                         Check out
                                     </Link>

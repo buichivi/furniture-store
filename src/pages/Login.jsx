@@ -48,10 +48,10 @@ const Login = () => {
                     loginUser(res.data.user);
                     setToken(res.data.token);
                     navigate('/');
-                    return <span>{res.data.message}</span>;
+                    return res.data.message;
                 },
                 error: (error) => {
-                    return <span>{error.response.data.error}</span>;
+                    return error.response.data.error;
                 },
             });
         },
@@ -73,7 +73,7 @@ const Login = () => {
             <div className="flex h-[70%] w-full flex-1 items-center justify-center">
                 <div className="flex h-full min-w-[60%] flex-col justify-between">
                     <Link to="/" className="w-32">
-                        <img src="src/assets/images/logo.png" alt="" className="w-full object-cover" />
+                        <img src="/images/logo.png" alt="" className="w-full object-cover" />
                     </Link>
                     <form onSubmit={formik.handleSubmit}>
                         <div className="mb-10">

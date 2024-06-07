@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Tippy from '@tippyjs/react';
 import PropType from 'prop-types';
 import { numberWithCommas } from '../utils/format';
@@ -7,8 +7,9 @@ import toast from 'react-hot-toast';
 import apiRequest from '../utils/apiRequest';
 import useCartStore from '../store/cartStore';
 
-const ProductCard = ({ product = {}, isDisplayGrid = true }) => {
+const ProductCard = ({ product = {}, isDisplayGrid = true, to = '' }) => {
     const { setProduct, toggleOpen } = useProductQuickViewStore();
+    const navigate = useNavigate();
     const { setCart } = useCartStore();
 
     const handleAddToCart = (productId, colorId, quantity) => {
@@ -32,12 +33,11 @@ const ProductCard = ({ product = {}, isDisplayGrid = true }) => {
             },
         );
     };
-
     return (
         <>
             <div className={`group/product w-full ${!isDisplayGrid && 'flex items-center gap-[50px]'}`}>
                 <Link
-                    to={`/shop/${product?.slug}`}
+                    to={to}
                     className={`group/product-img relative w-full shrink-0 overflow-hidden ${!isDisplayGrid && 'basis-[40%]'}`}
                 >
                     <img
@@ -65,10 +65,11 @@ const ProductCard = ({ product = {}, isDisplayGrid = true }) => {
                                 <Tippy
                                     content="Quick view"
                                     placement="left"
+                                    animation="shift-toward"
                                     className="!bg-[#D10202] px-3 !text-sm [&.tippy-box[data-placement^=left]>.tippy-arrow:before]:border-l-[#D10202]"
                                 >
                                     <div
-                                        className="flex size-9 translate-y-3 cursor-pointer items-center justify-center rounded-full bg-white text-base opacity-0 transition-all delay-100  hover:bg-[#D10202] hover:text-white group-hover/product:translate-y-0 group-hover/product:opacity-100"
+                                        className="flex size-9 translate-y-3 cursor-pointer items-center justify-center rounded-full bg-white text-base opacity-0 transition-all  hover:bg-[#D10202] hover:text-white group-hover/product:translate-y-0 group-hover/product:opacity-100"
                                         onClick={(e) => {
                                             e.preventDefault();
                                             setProduct(product);
@@ -82,6 +83,7 @@ const ProductCard = ({ product = {}, isDisplayGrid = true }) => {
                                 <Tippy
                                     content="Compare"
                                     placement="left"
+                                    animation="shift-toward"
                                     className="!bg-[#D10202] px-3 !text-sm [&.tippy-box[data-placement^=left]>.tippy-arrow:before]:border-l-[#D10202]"
                                     hideOnClick={false}
                                 >
@@ -95,6 +97,7 @@ const ProductCard = ({ product = {}, isDisplayGrid = true }) => {
                                 <Tippy
                                     content="Wishlist"
                                     placement="left"
+                                    animation="shift-toward"
                                     className="!bg-[#D10202] px-3 !text-sm [&.tippy-box[data-placement^=left]>.tippy-arrow:before]:border-l-[#D10202]"
                                     hideOnClick={false}
                                 >
@@ -107,17 +110,19 @@ const ProductCard = ({ product = {}, isDisplayGrid = true }) => {
                                     </div>
                                 </Tippy>
                             </div>
-                            {product?.colors?.length >= 2 && (
-                                <Link
-                                    to={`/shop/${product?.slug}`}
-                                    className={`w-full translate-y-3 bg-white py-3 text-center text-sm font-semibold uppercase text-black opacity-0 transition-all ease-out hover:bg-[#D10202] hover:text-white group-hover/product:translate-y-0 group-hover/product:opacity-100 ${!isDisplayGrid && 'hidden'}`}
+                            {product?.colors?.length >= 2 && product?.isValid && (
+                                <span
+                                    onClick={() => {
+                                        navigate(to);
+                                    }}
+                                    className={`w-full translate-y-3 bg-black py-3 text-center text-sm font-semibold uppercase text-white opacity-0 transition-all ease-out hover:bg-[#D10202] hover:text-white group-hover/product:translate-y-0 group-hover/product:opacity-100 ${!isDisplayGrid && 'hidden'}`}
                                 >
                                     Select options
-                                </Link>
+                                </span>
                             )}
-                            {product?.colors?.length == 1 && (
+                            {product?.colors?.length == 1 && product?.isValid && (
                                 <div
-                                    className={`w-full translate-y-3 bg-white py-3 text-center text-sm font-semibold uppercase text-black opacity-0 transition-all ease-out hover:bg-[#D10202] hover:text-white group-hover/product:translate-y-0 group-hover/product:opacity-100 ${!isDisplayGrid && 'hidden'}`}
+                                    className={`w-full translate-y-3 bg-black py-3 text-center text-sm font-semibold uppercase text-white opacity-0 transition-all ease-out hover:bg-[#D10202] hover:text-white group-hover/product:translate-y-0 group-hover/product:opacity-100 ${!isDisplayGrid && 'hidden'}`}
                                     onClick={(e) => {
                                         e.preventDefault();
                                         handleAddToCart(product?._id, product?.colors[0]?._id, 1);
@@ -125,6 +130,16 @@ const ProductCard = ({ product = {}, isDisplayGrid = true }) => {
                                 >
                                     Add to cart
                                 </div>
+                            )}
+                            {!product?.isValid && (
+                                <span
+                                    onClick={() => {
+                                        navigate(to);
+                                    }}
+                                    className={`w-full translate-y-3 bg-black py-3 text-center text-sm font-semibold uppercase text-white opacity-0 transition-all ease-out hover:bg-[#D10202] hover:text-white group-hover/product:translate-y-0 group-hover/product:opacity-100 ${!isDisplayGrid && 'hidden'}`}
+                                >
+                                    Read more
+                                </span>
                             )}
                         </div>
                         <div
@@ -134,18 +149,22 @@ const ProductCard = ({ product = {}, isDisplayGrid = true }) => {
                         </div>
                     </div>
                 </Link>
-                <div className="mt-4">
+                <div className="mt-2">
+                    {product?.discount > 0 && <span className="text-sm text-red-400">-{product?.discount}%</span>}
                     <Link
+                        to={to}
                         className={`mb-3 line-clamp-2 cursor-pointer text-base tracking-wide transition-colors hover:text-[#D10202] ${!isDisplayGrid && '!text-xl font-normal tracking-wider'}`}
                     >
                         {product?.name}
                     </Link>
                     <div className={`flex items-center gap-4 text-base tracking-wide ${!isDisplayGrid && 'text-xl'}`}>
-                        <span className="font-semibold">
-                            <span>$</span>
-                            <span>{numberWithCommas(product?.salePrice)}</span>
-                        </span>
-                        <span className="text-[#959595] line-through">
+                        {product?.discount > 0 && (
+                            <span className="font-semibold">
+                                <span>$</span>
+                                <span>{numberWithCommas(product?.salePrice)}</span>
+                            </span>
+                        )}
+                        <span className={`${product?.discount > 0 ? 'text-[#959595] line-through' : 'font-semibold'}`}>
                             <span>$</span>
                             <span>{numberWithCommas(product?.price)}</span>
                         </span>
@@ -156,9 +175,37 @@ const ProductCard = ({ product = {}, isDisplayGrid = true }) => {
                                 className="mt-6 line-clamp-3 text-sm text-[#848484]"
                                 dangerouslySetInnerHTML={{ __html: product?.description }}
                             ></p>
-                            <button className="mt-6 bg-black px-24 py-4 text-sm font-bold uppercase tracking-wider text-white transition-colors hover:bg-[#D10202]">
-                                Add to cart
-                            </button>
+                            {product?.colors?.length >= 2 && product?.isValid && (
+                                <button
+                                    onClick={() => {
+                                        navigate(to);
+                                    }}
+                                    className="mt-6 bg-black px-24 py-4 text-sm font-bold uppercase tracking-wider text-white transition-colors hover:bg-[#D10202]"
+                                >
+                                    Select options
+                                </button>
+                            )}
+                            {product?.colors?.length == 1 && product?.isValid && (
+                                <button
+                                    className="mt-6 bg-black px-24 py-4 text-sm font-bold uppercase tracking-wider text-white transition-colors hover:bg-[#D10202]"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        handleAddToCart(product?._id, product?.colors[0]?._id, 1);
+                                    }}
+                                >
+                                    Add to cart
+                                </button>
+                            )}
+                            {!product?.isValid && (
+                                <button
+                                    onClick={() => {
+                                        navigate(to);
+                                    }}
+                                    className="mt-6 bg-black px-24 py-4 text-sm font-bold uppercase tracking-wider text-white transition-colors hover:bg-[#D10202]"
+                                >
+                                    Read more
+                                </button>
+                            )}
                         </>
                     )}
                 </div>
@@ -170,6 +217,7 @@ const ProductCard = ({ product = {}, isDisplayGrid = true }) => {
 ProductCard.propTypes = {
     product: PropType.object,
     isDisplayGrid: PropType.bool,
+    to: PropType.string,
 };
 
 export default ProductCard;

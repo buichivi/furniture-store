@@ -27,15 +27,19 @@ const ProductQuickView = forwardRef(function ProductQuickView() {
         return () => {
             window.removeEventListener('keydown', closeQuickViewWithESC);
         };
-    }, []);
+    }, [toggleOpen]);
+
+    // useEffect(() => {
+    //     var colorIndex = null;
+    //     const isOnlyOneColor = product?.colors?.reduce((acc, cur, index) => {
+    //         if (cur?.stock) colorIndex = index;
+    //         return acc + (cur?.stock > 0);
+    //     }, 0);
+    //     if (isOnlyOneColor == 1) setSelectedColor(product?.colors[colorIndex]);
+    // }, [product]);
 
     useEffect(() => {
-        var colorIndex = null;
-        const isOnlyOneColor = product?.colors?.reduce((acc, cur, index) => {
-            if (cur?.stock) colorIndex = index;
-            return acc + (cur?.stock > 0);
-        }, 0);
-        if (isOnlyOneColor == 1) setSelectedColor(product?.colors[colorIndex]);
+        if (product?.colors?.length == 1) setSelectedColor(product?.colors[0]);
     }, [product]);
 
     const averageRating = useMemo(() => {

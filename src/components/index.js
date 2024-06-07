@@ -17,3 +17,4 @@ export { default as ReviewStars } from './ReviewStars';
 export { default as ProductQuickView } from './ProductQuickView';
 export { default as ReviewItem } from './ReviewItem';
 export { default as UserReview } from './UserReview';
+export { default as Pagination } from './Pagination';

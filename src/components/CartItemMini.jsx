@@ -6,6 +6,7 @@ import toast from 'react-hot-toast';
 import apiRequest from '../utils/apiRequest';
 import useCartStore from '../store/cartStore';
 import { numberWithCommas } from '../utils/format';
+import { TrashIcon } from '@heroicons/react/24/outline';
 
 const CartItemMini = ({ item = {} }) => {
     const [quantity, setQuantity] = useState(item?.quantity);
@@ -70,7 +71,7 @@ const CartItemMini = ({ item = {} }) => {
                         <span
                             className="cursor-pointer"
                             onClick={() => {
-                                setQuantity(quantity - 1 || 1);
+                                setQuantity(quantity - 1 || 0);
                             }}
                         >
                             <i className="fa-light fa-minus"></i>
@@ -80,7 +81,6 @@ const CartItemMini = ({ item = {} }) => {
                             className="w-1/2 border-none bg-transparent outline-none"
                             value={quantity}
                             onChange={(e) => setQuantity(Number(e.target.value))}
-                            onBlur={(e) => setQuantity(Number(e.target.value) >= 1 ? Number(e.target.value) : 1)}
                         />
                         <span className="cursor-pointer" onClick={() => setQuantity(quantity + 1)}>
                             <i className="fa-light fa-plus"></i>
@@ -93,7 +93,8 @@ const CartItemMini = ({ item = {} }) => {
                 className="cursor-pointer pr-2 text-xl transition-colors hover:text-[#d10202]"
                 onClick={() => handleDeleteCartItem(item._id)}
             >
-                <i className="fa-light fa-trash-xmark"></i>
+                {/* <i className="fa-light fa-trash-xmark"></i> */}
+                <TrashIcon className="size-5" />
             </span>
         </div>
     );
