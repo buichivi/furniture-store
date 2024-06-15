@@ -14,7 +14,7 @@ const CartShortForm = () => {
                 className="peer/cart-short-form hidden [&:checked+div>div]:translate-x-0 [&:checked+div>label]:opacity-100"
                 id="cart-short-form"
             />
-            <div className="pointer-events-none invisible fixed right-0 top-0 z-50 h-screen w-screen peer-checked/cart-short-form:pointer-events-auto peer-checked/cart-short-form:visible">
+            <div className="pointer-events-none invisible fixed right-0 top-0 z-[60] h-screen w-screen peer-checked/cart-short-form:pointer-events-auto peer-checked/cart-short-form:visible">
                 <label
                     htmlFor="cart-short-form"
                     className="block h-full w-full bg-[#3f3f3f80] opacity-0 transition-all duration-500"
@@ -48,9 +48,15 @@ const CartShortForm = () => {
                                     >
                                         View cart
                                     </label>
-                                    <Link className="block bg-black py-4 text-center text-sm font-bold uppercase text-white transition-colors hover:bg-[#d10202]">
+                                    <label
+                                        htmlFor="cart-short-form"
+                                        className="block cursor-pointer bg-black py-4 text-center text-sm font-bold uppercase text-white transition-colors hover:bg-[#d10202]"
+                                        onClick={() => {
+                                            navigate('/checkout');
+                                        }}
+                                    >
                                         Check out
-                                    </Link>
+                                    </label>
                                 </div>
                             </div>
                         )}

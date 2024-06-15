@@ -2,20 +2,11 @@ import { useEffect, useRef, useState } from 'react';
 import PhotoSwipeLightbox from 'photoswipe/lightbox';
 
 import PropTypes from 'prop-types';
-const init = [
-    'https://swiperjs.com/demos/images/nature-2.jpg',
-    'https://swiperjs.com/demos/images/nature-3.jpg',
-    'https://swiperjs.com/demos/images/nature-4.jpg',
-    'https://swiperjs.com/demos/images/nature-5.jpg',
-    'https://swiperjs.com/demos/images/nature-6.jpg',
-    'https://swiperjs.com/demos/images/nature-7.jpg',
-];
-
 const SliderProductImages = ({
     isValid = true,
     discount = 0,
     thumbWidth = '15%',
-    imageGallery = init,
+    imageGallery = [],
     viewFullScreen = true,
 }) => {
     const imgThumbs = useRef();

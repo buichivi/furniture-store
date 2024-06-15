@@ -7,6 +7,8 @@ import { useMemo } from 'react';
 const SliderCategory = ({ products = [], className }) => {
     const { categories, getNavigationPath } = useCategoryStore();
 
+    console.log('Slider category re-render');
+
     const listCategory = useMemo(() => {
         const categoryMap = new Map();
 

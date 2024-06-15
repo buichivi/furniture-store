@@ -157,5 +157,3 @@ input[type='number']::-webkit-inner-spin-button {
 #menu:checked + .menu-clip-path + .menu--1 > label[aria-checked='true'] svg path {
     stroke: #fff;
 }
-
-/* Tippy animation */

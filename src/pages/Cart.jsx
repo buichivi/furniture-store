@@ -1,48 +1,277 @@
 import { Link } from 'react-router-dom';
 import { Navigation } from '../components';
+import { useEffect, useMemo, useState } from 'react';
+import { ArrowLeftIcon, TrashIcon } from '@heroicons/react/24/outline';
+import useCartStore from '../store/cartStore';
+import PropTypes from 'prop-types';
+import apiRequest from '../utils/apiRequest';
+import toast from 'react-hot-toast';
+import useDebounced from '../utils/useDebounced';
+import useCategoryStore from '../store/navigationStore';
+import { numberWithCommas } from '../utils/format';
+import StepProgress from '../components/StepProgress';
 
 const Cart = () => {
+    const { cart, setCart } = useCartStore();
+    const { getNavigationPath } = useCategoryStore();
+    const [promo, setPromo] = useState('');
+
+    const handleDeleteCartItem = (id) => {
+        toast.promise(
+            apiRequest.delete('/cart/' + id, {
+                withCredentials: true,
+            }),
+            {
+                loading: 'Deleting...',
+                success: (res) => {
+                    setCart(res.data.cart);
+                    return res.data.message;
+                },
+                error: (err) => err?.response?.data?.error,
+            },
+        );
+    };
+
+    const handleApplyPromoCode = () => {
+        toast.promise(apiRequest.get('/promo-code/' + promo?.code), {
+            loading: 'Checking...',
+            success: (res) => {
+                setPromo(res.data.promoCode);
+                return res.data.message;
+            },
+            error: (err) => err.response.data.error,
+        });
+    };
+    const handleEmptyCart = () => {
+        if (confirm('Are you sure you want to clear your cart?')) {
+            toast.promise(apiRequest.delete('/cart/clear'), {
+                loading: 'Clearing...',
+                success: (res) => {
+                    setCart({ ...cart, items: [] });
+                    return res.data.message;
+                },
+                error: (err) => err.response.data.error,
+            });
+        }
+    };
+
+    const discount = useMemo(() => {
+        if (!promo?.type) {
+            return 0;
+        }
+        return promo?.type == 'coupon' ? Math.floor((cart?.subTotal * promo?.discount) / 100) : promo?.discount;
+    }, [promo, cart]);
+
     return (
-        <div className="mt-[90px] border-t">
+        <div className="my-[90px] border-t">
             <div className="container mx-auto px-5">
                 <Navigation isShowPageName={true} paths="/cart" />
-                <div className="flex items-start">
-                    <div className="flex-1">
-                        <table className="w-full">
-                            <thead>
-                                <th align="left">Product</th>
-                                <th>Price</th>
-                                <th>Quantity</th>
-                                <th>Subtotal</th>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>
-                                        <div className="flex w-full">
-                                            <Link className="w-28 shrink-0">
-                                                <img
-                                                    src="https://nooni-be87.kxcdn.com/nooni/wp-content/uploads/2022/12/08-450x572.jpg"
-                                                    className="h-auto w-full object-contain"
-                                                />
-                                            </Link>
-                                            <Link className="flex-1 text-wrap">
-                                                Lorem ipsum dolor sit amet consectetur adipisicing elit. Iste architecto
-                                                porro debitis cupiditate eius! Minus doloremque quisquam fugiat id cum.
-                                            </Link>
-                                        </div>
-                                    </td>
-                                    <td>$1999</td>
-                                    <td>10</td>
-                                    <td>$1999</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                <StepProgress />
+                {cart?.items?.length > 0 ? (
+                    <div className="flex items-start gap-10">
+                        <div className="flex-1">
+                            <table className="w-full">
+                                <thead>
+                                    <tr>
+                                        <th align="left" className="mr-8 w-2/5 border-b pb-5">
+                                            Product
+                                        </th>
+                                        <th align="left" className="mr-8 border-b pb-5">
+                                            Price
+                                        </th>
+                                        <th align="left" className="mr-8 border-b pb-5">
+                                            Quantity
+                                        </th>
+                                        <th align="left" className="mr-8 border-b pb-5">
+                                            Subtotal
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {cart?.items?.map((item, index) => {
+                                        return (
+                                            <tr key={index}>
+                                                <td className="w-2/5 border-b py-5">
+                                                    <div className="flex w-full items-center gap-4">
+                                                        <Link
+                                                            to={getNavigationPath(item?.product, 'product')}
+                                                            className="w-28 shrink-0"
+                                                        >
+                                                            <img
+                                                                src={item?.productImage}
+                                                                className="h-auto w-full object-contain"
+                                                            />
+                                                        </Link>
+                                                        <Link
+                                                            to={getNavigationPath(item?.product, 'product')}
+                                                            className="flex-1 text-wrap text-base transition-colors hover:text-[#D10202]"
+                                                        >
+                                                            {item?.product?.name}
+                                                        </Link>
+                                                    </div>
+                                                </td>
+                                                <td className="border-b">
+                                                    <span className="text-base font-bold tracking-wide">
+                                                        ${numberWithCommas(item?.product?.salePrice)}
+                                                    </span>
+                                                </td>
+                                                <td className="border-b">
+                                                    <CartItemQuantity
+                                                        productId={item?.product?._id}
+                                                        colorId={item?.color?._id}
+                                                        quantity={item?.quantity}
+                                                    />
+                                                </td>
+                                                <td className="border-b">
+                                                    <div className="flex items-center justify-between">
+                                                        <span className="text-base font-bold tracking-wide">
+                                                            ${numberWithCommas(item?.itemPrice)}
+                                                        </span>
+                                                        <TrashIcon
+                                                            className="size-5 cursor-pointer transition-colors hover:text-[#D10202]"
+                                                            onClick={() => handleDeleteCartItem(item?._id)}
+                                                        />
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        );
+                                    })}
+                                </tbody>
+                            </table>
+                            <button
+                                className="float-right mt-4 border border-black  bg-white px-4 py-2 text-black outline-none transition-colors hover:bg-black hover:text-white"
+                                onClick={() => handleEmptyCart()}
+                            >
+                                Empty cart
+                            </button>
+                        </div>
+                        <div className="basis-1/3 bg-gray-100 p-6">
+                            <div>
+                                <h4 className="mb-2 text-sm uppercase tracking-wider">Enter promo code</h4>
+                                <div className="flex h-14 w-full items-center py-2">
+                                    <input
+                                        type="text"
+                                        className="h-full flex-1 border pl-3 outline-none"
+                                        placeholder="Promo code"
+                                        value={promo?.code || ''}
+                                        onChange={(e) => setPromo({ ...promo, code: e.currentTarget.value })}
+                                    />
+                                    <button
+                                        className="h-full basis-1/3 border border-black bg-black text-white"
+                                        onClick={() => handleApplyPromoCode()}
+                                    >
+                                        Apply
+                                    </button>
+                                </div>
+                                <div className="w-full pt-8">
+                                    <div className="flex w-full items-center justify-between py-1 tracking-wide">
+                                        <span>Shipping cost: </span>
+                                        <span>$10</span>
+                                    </div>
+                                    <div className="flex w-full items-center justify-between py-1 tracking-wide">
+                                        <span>Discount: </span>
+                                        <span>
+                                            - ${discount}
+                                            {promo?.type == 'coupon' && (
+                                                <span className="text-green-400">({promo?.discount}%)</span>
+                                            )}
+                                        </span>
+                                    </div>
+                                    {promo?.code && (
+                                        <span
+                                            className="float-right cursor-pointer text-sm transition-all hover:text-red-400 hover:underline"
+                                            onClick={() => setPromo()}
+                                        >
+                                            Remove
+                                        </span>
+                                    )}
+                                    <div className="flex w-full items-center justify-between py-1 text-lg font-bold tracking-wide">
+                                        <span>Estimated total: </span>
+                                        <span>${numberWithCommas(cart?.subTotal - discount)}</span>
+                                    </div>
+                                </div>
+                                <Link
+                                    to="/checkout"
+                                    className="mt-10 block w-full bg-black py-4 text-center text-sm font-bold uppercase tracking-wider text-white"
+                                >
+                                    Check out
+                                </Link>
+                            </div>
+                        </div>
                     </div>
-                    <div className="basis-1/3"></div>
-                </div>
+                ) : (
+                    <div>
+                        <h3 className="mb-6 text-center">Your cart is currently empty</h3>
+                        <Link
+                            to="/"
+                            className="mx-auto flex w-fit items-center justify-center gap-2 border border-black  bg-white px-3 py-2 text-black transition-colors hover:bg-black hover:text-white"
+                        >
+                            <ArrowLeftIcon className="size-5" />
+                            <span className="text-sm font-bold uppercase">Return to shop</span>
+                        </Link>
+                    </div>
+                )}
             </div>
         </div>
     );
+};
+
+const CartItemQuantity = ({ productId, colorId, quantity }) => {
+    const [qty, setQty] = useState(quantity || 1);
+    const _qty = useDebounced(qty, 500);
+    const { setCart } = useCartStore();
+
+    useEffect(() => {
+        if (_qty != quantity) {
+            toast.promise(
+                apiRequest.patch(
+                    '/cart',
+                    {
+                        product: productId,
+                        color: colorId,
+                        quantity: _qty,
+                    },
+                    { withCredentials: true },
+                ),
+                {
+                    loading: 'Update quantity...',
+                    success: (res) => {
+                        setCart(res.data.cart);
+                        return res.data.message;
+                    },
+                    error: (err) => err?.response?.data?.error,
+                },
+            );
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [_qty]);
+
+    return (
+        <div className="flex w-[50%] max-w-20 border bg-[#EDEDED] py-1 [&>*]:flex-1 [&>*]:text-center [&>*]:text-xs">
+            <span
+                className="cursor-pointer"
+                onClick={() => {
+                    setQty(qty - 1 || 0);
+                }}
+            >
+                <i className="fa-light fa-minus"></i>
+            </span>
+            <input
+                type="number"
+                className="w-1/2 border-none bg-transparent outline-none"
+                value={qty}
+                onChange={(e) => setQty(Number(e.target.value))}
+            />
+            <span className="cursor-pointer" onClick={() => setQty(qty + 1)}>
+                <i className="fa-light fa-plus"></i>
+            </span>
+        </div>
+    );
+};
+CartItemQuantity.propTypes = {
+    productId: PropTypes.string,
+    colorId: PropTypes.string,
+    quantity: PropTypes.number,
 };
 
 export default Cart;

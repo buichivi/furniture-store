@@ -1,5 +1,4 @@
-import { Home, Shop, Product, Profile, productLoader, Cart } from '../pages';
-import { loader } from '../pages/Product';
+import { Home, Shop, Product, Profile, productLoader, Cart, Checkout } from '../pages';
 const fakeLoader = async () => {
     return await new Promise((resolve) => setTimeout(() => resolve(null), 500));
 };
@@ -33,6 +32,11 @@ const public_routes = [
     {
         path: '/cart',
         element: Cart,
+        loader: fakeLoader,
+    },
+    {
+        path: '/checkout',
+        element: Checkout,
         loader: fakeLoader,
     },
 ];

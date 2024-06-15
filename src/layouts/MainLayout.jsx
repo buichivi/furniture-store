@@ -24,16 +24,6 @@ const MainLayout = ({ children }) => {
         };
     }, []);
 
-    // useEffect(() => {
-    //     // NProgress.configure({
-    //     //     showSpinner: false,
-    //     // });
-    //     NProgress.start();
-    //     return () => {
-    //         NProgress.done();
-    //     };
-    // }, [location]);
-
     return (
         <div className="relative">
             <Header />

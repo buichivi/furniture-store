@@ -311,7 +311,7 @@ const Header = () => {
                 className="peer/search-short-form hidden [&:checked+div>div]:translate-x-0 [&:checked+div>label]:opacity-100"
                 id="search-short-form"
             />
-            <div className="pointer-events-none invisible fixed right-0 top-0 z-50 h-screen w-screen peer-checked/search-short-form:pointer-events-auto peer-checked/search-short-form:visible">
+            <div className="pointer-events-none invisible fixed right-0 top-0 z-[60] h-screen w-screen peer-checked/search-short-form:pointer-events-auto peer-checked/search-short-form:visible">
                 <label
                     htmlFor="search-short-form"
                     className="block h-full w-full bg-[#3f3f3f80] opacity-0 transition-all duration-500"

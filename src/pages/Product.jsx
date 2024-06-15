@@ -101,7 +101,7 @@ const Product = () => {
                             </div>
                         </div>
                         <div className="mb-4 flex items-center gap-4">
-                            <div className="flex gap-0 text-4xl">
+                            <div className="flex gap-0 text-3xl">
                                 <span>$</span>
                                 <span>{numberWithCommas(product?.salePrice)}</span>
                             </div>
