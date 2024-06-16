@@ -33,7 +33,7 @@ const StepProgress = () => {
                 return (
                     <React.Fragment key={index}>
                         <div
-                            className={`relative flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-full 
+                            className={`relative flex size-6 shrink-0 cursor-pointer items-center justify-center rounded-full 
                                                     ${step ? 'bg-slate-200' : ''} ${index <= currentStep ? '!border-black !bg-black' : ''} ${currentStep == index ? '!border-black !bg-white' : ''} border border-slate-300 text-center leading-10 transition-colors duration-500`}
                             onClick={() => {
                                 if (index == 0) navigate('/cart');
@@ -46,15 +46,17 @@ const StepProgress = () => {
                                 ></span>
                                 {index >= currentStep ? (
                                     <span
-                                        className={`relative inline-flex  rounded-full opacity-30 transition-colors duration-500 ${step && 'text-white !opacity-100'} ${index < currentStep && 'text-white'} ${currentStep == index && '!text-black'}`}
+                                        className={`relative inline-flex rounded-full  text-sm opacity-30 transition-colors duration-500 ${step && 'text-white !opacity-100'} ${index < currentStep && 'text-white'} ${currentStep == index && '!text-black'}`}
                                     >
                                         {index + 1}
                                     </span>
                                 ) : (
-                                    <CheckIcon className="size-5 font-bold text-white" />
+                                    <CheckIcon className="size-4 font-bold text-white" />
                                 )}
                             </span>
-                            <span className="absolute left-1/2 top-[110%] w-[120px] -translate-x-1/2 text-sm">
+                            <span
+                                className={`absolute left-1/2 top-[110%] w-[120px] -translate-x-1/2 text-sm opacity-30 ${step && '!opacity-100'}`}
+                            >
                                 {index === 0 && 'Shopping cart'}
                                 {index === 1 && 'Checkout'}
                                 {index === 2 && 'Finish'}

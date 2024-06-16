@@ -138,12 +138,18 @@ const Cart = () => {
                                     })}
                                 </tbody>
                             </table>
-                            <button
-                                className="float-right mt-4 border border-black  bg-white px-4 py-2 text-black outline-none transition-colors hover:bg-black hover:text-white"
-                                onClick={() => handleEmptyCart()}
-                            >
-                                Empty cart
-                            </button>
+                            <div className="mt-4 flex items-center justify-between">
+                                <Link to="/" className="flex items-center gap-2">
+                                    <ArrowLeftIcon className="size-4" />
+                                    <span>Back to shop</span>
+                                </Link>
+                                <button
+                                    className="float-right border border-black  bg-white px-4 py-2 text-black outline-none transition-colors hover:bg-black hover:text-white"
+                                    onClick={() => handleEmptyCart()}
+                                >
+                                    Empty cart
+                                </button>
+                            </div>
                         </div>
                         <div className="basis-1/3 bg-gray-100 p-6">
                             <div>

@@ -53,6 +53,8 @@ const Header = () => {
     const { cart, setCart } = useCartStore();
     const token = localStorage.getItem('token');
 
+    console.log(currentUser);
+
     useEffect(() => {
         const styleHeader = () => {
             var doc = document.documentElement;
@@ -77,6 +79,7 @@ const Header = () => {
         Promise.allSettled([apiRequest.get('/auth/me'), apiRequest.get('/categories')]).then((results) => {
             const user = results[0].status == 'fulfilled' && results[0].value.data.user;
             const categories = results[1].status == 'fulfilled' && results[1].value.data.categories;
+            console.log(results[0].value.data?.user);
             loginUser(user);
             setCategories(categories);
         });
@@ -231,7 +234,7 @@ const Header = () => {
                         />
                     </Link>
                     <div className="flex items-center gap-8 [&>*>i]:cursor-pointer [&>*>i]:text-xl">
-                        {!currentUser ? (
+                        {!currentUser?.email ? (
                             <Link className="relative hover:opacity-70" to="/login">
                                 <i className="fa-light fa-user"></i>
                             </Link>
