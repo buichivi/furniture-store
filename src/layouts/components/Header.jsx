@@ -7,7 +7,7 @@ import Tippy from '@tippyjs/react/headless';
 import toast from 'react-hot-toast';
 import useCartStore from '../../store/cartStore';
 import nProgress from 'nprogress';
-import useCategoryStore from '../../store/navigationStore';
+import useDataStore from '../../store/dataStore';
 
 const NAV_ITEMS = [
     {
@@ -49,11 +49,11 @@ const Header = () => {
     const inputToggleMenu = useRef();
     const imageRef = useRef();
     const { currentUser, loginUser, logout } = useAuthStore();
-    const { setCategories } = useCategoryStore();
+    const { products, setCategories, setProducts } = useDataStore();
     const { cart, setCart } = useCartStore();
     const token = localStorage.getItem('token');
 
-    console.log(currentUser);
+    console.log({ currentUser, products });
 
     useEffect(() => {
         const styleHeader = () => {
@@ -76,12 +76,17 @@ const Header = () => {
     }, []);
 
     useEffect(() => {
-        Promise.allSettled([apiRequest.get('/auth/me'), apiRequest.get('/categories')]).then((results) => {
+        Promise.allSettled([
+            apiRequest.get('/auth/me'),
+            apiRequest.get('/categories'),
+            apiRequest.get('/products'),
+        ]).then((results) => {
             const user = results[0].status == 'fulfilled' && results[0].value.data.user;
             const categories = results[1].status == 'fulfilled' && results[1].value.data.categories;
-            console.log(results[0].value.data?.user);
+            const products = results[2].status == 'fulfilled' && results[2].value.data.products;
             loginUser(user);
             setCategories(categories);
+            setProducts(products);
         });
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);

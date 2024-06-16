@@ -5,7 +5,7 @@ import { Link, useNavigation, useParams } from 'react-router-dom';
 import apiRequest from '../utils/apiRequest';
 import toast from 'react-hot-toast';
 import useCartStore from '../store/cartStore';
-import useCategoryStore from '../store/navigationStore';
+import useDataStore from '../store/dataStore';
 
 export const loader = async ({ params }) => {
     const { productSlug } = params;
@@ -22,7 +22,7 @@ const Product = () => {
     const [quantity, setQuantity] = useState(1);
     const [product, setProduct] = useState({});
     const { setCart } = useCartStore();
-    const { getNavigationPath } = useCategoryStore();
+    const { getNavigationPath } = useDataStore();
     const { productSlug } = useParams();
 
     const navigation = useNavigation();

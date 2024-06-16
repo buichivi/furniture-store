@@ -1,20 +1,9 @@
-import { useEffect, useState } from 'react';
 import { Coupon, HomeBanner, ProductCard, Slider, SliderBlog, SliderCategory } from '../components';
 import { Link } from 'react-router-dom';
-import apiRequest from '../utils/apiRequest';
-import useCategoryStore from '../store/navigationStore';
+import useDataStore from '../store/dataStore';
 
 const Home = () => {
-    const [products, setProducts] = useState();
-    const { getNavigationPath } = useCategoryStore();
-    useEffect(() => {
-        apiRequest
-            .get('/products')
-            .then((res) => {
-                setProducts(res.data?.products);
-            })
-            .catch((err) => console.log(err));
-    }, []);
+    const { products, getNavigationPath } = useDataStore();
 
     return (
         <>

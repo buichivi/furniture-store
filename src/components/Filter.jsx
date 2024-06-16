@@ -1,12 +1,12 @@
 import Tippy from '@tippyjs/react';
 import SliderPrice from './SliderPrice';
 import PropTypes from 'prop-types';
-import useCategoryStore from '../store/navigationStore';
+import useDataStore from '../store/dataStore';
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 
-const Filter = ({ filters, setFilters, products, resetPrice, openState, setOpenState }) => {
-    const { categories } = useCategoryStore();
+const Filter = ({ filters, setFilters, resetPrice, openState, setOpenState }) => {
+    const { products, categories } = useDataStore();
     const { parentCategorySlug, categorySlug } = useParams();
     const [priceRange, setPriceRange] = useState([0, 2000]);
 
@@ -316,7 +316,6 @@ const Filter = ({ filters, setFilters, products, resetPrice, openState, setOpenS
 Filter.propTypes = {
     filters: PropTypes.object,
     setFilters: PropTypes.func,
-    products: PropTypes.array,
     resetPrice: PropTypes.bool,
     openState: PropTypes.array,
     setOpenState: PropTypes.func,

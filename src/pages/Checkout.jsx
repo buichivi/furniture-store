@@ -3,12 +3,14 @@ import { Navigation } from '../components';
 import StepProgress from '../components/StepProgress';
 import useCartStore from '../store/cartStore';
 import { numberWithCommas } from '../utils/format';
-import useCategoryStore from '../store/navigationStore';
-import React, { forwardRef, useEffect, useRef, useState } from 'react';
+import useDataStore from '../store/dataStore';
+import React, { forwardRef, useEffect, useMemo, useRef, useState } from 'react';
 import useAuthStore from '../store/authStore';
 import axios from 'axios';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
+import apiRequest from '../utils/apiRequest';
+import toast from 'react-hot-toast';
 
 const PAYMENT_METHODS = [
     { name: 'Cash Payment', value: 'cash' },
@@ -19,9 +21,32 @@ const PAYMENT_METHODS = [
 const Checkout = () => {
     const { currentUser } = useAuthStore();
     const { cart } = useCartStore();
-    const { getNavigationPath } = useCategoryStore();
+    const { getNavigationPath, promoCode, setPromoCode } = useDataStore();
+    const [code, setCode] = useState('');
     const [payment, setPayment] = useState('cash');
     const infoFormBtn = useRef();
+
+    const discount = useMemo(() => {
+        if (!promoCode?.type) {
+            return 0;
+        }
+        return promoCode?.type == 'coupon'
+            ? Math.floor((cart?.subTotal * promoCode?.discount) / 100)
+            : promoCode?.discount;
+    }, [promoCode, cart]);
+
+    const handleApplyPromoCode = () => {
+        if (code) {
+            toast.promise(apiRequest.get('/promo-code/' + code), {
+                loading: 'Checking...',
+                success: (res) => {
+                    setPromoCode(res.data.promoCode);
+                    return res.data.message;
+                },
+                error: (err) => err?.response?.data?.error || err?.message,
+            });
+        }
+    };
 
     return (
         <div className="my-[90px] border-t">
@@ -140,11 +165,18 @@ const Checkout = () => {
                             </div>
                             <div className="flex items-center justify-between py-1 text-base">
                                 <span>Discount: </span>
-                                <span>- $10</span>
-                            </div>
-                            <div className="flex items-center justify-end gap-4 py-1 text-sm">
                                 <span>
-                                    Promo code: <span className="italic">DISCOUNT-1234</span>
+                                    - ${discount}
+                                    {promoCode?.type == 'coupon' && (
+                                        <span className="text-green-400">({promoCode?.discount}%)</span>
+                                    )}
+                                </span>
+                            </div>
+                            <div
+                                className={`flex items-center justify-end gap-4 py-1 text-sm ${promoCode?.code ? 'flex' : 'hidden'}`}
+                            >
+                                <span>
+                                    Promo code: <span className="italic">{promoCode?.code}</span>
                                 </span>
                                 <label
                                     htmlFor="change-promo-code"
@@ -157,15 +189,27 @@ const Checkout = () => {
                                 type="checkbox"
                                 id="change-promo-code"
                                 className="hidden [&:checked+div]:grid-rows-[1fr]"
+                                onChange={(e) => {
+                                    if (e.currentTarget.checked)
+                                        e.currentTarget.previousElementSibling.children[1].textContent = 'Cancel';
+                                    else e.currentTarget.previousElementSibling.children[1].textContent = 'Change';
+                                }}
                             />
-                            <div className="mt-2 grid grid-rows-[0fr] transition-[grid-template-rows] duration-500">
+                            <div
+                                className={`mt-2 grid transition-[grid-template-rows] duration-500 ${promoCode?.code ? 'grid-rows-[0fr]' : 'grid-rows-[1fr]'}`}
+                            >
                                 <div className="flex w-full items-center gap-4 overflow-hidden">
                                     <input
                                         type="text"
                                         className="flex-1 border border-transparent py-1 pl-4 text-base uppercase outline-none placeholder:text-sm"
                                         placeholder="Promo code"
+                                        value={code}
+                                        onChange={(e) => setCode(e.currentTarget.value)}
                                     />
-                                    <button className="basis-1/3 border border-black bg-white py-1 text-sm text-black transition-colors hover:bg-black hover:text-white">
+                                    <button
+                                        className={`shrink-0 basis-1/3 border border-black bg-white py-1 text-sm text-black transition-colors hover:bg-black hover:text-white ${code ? 'pointer-events-auto cursor-pointer opacity-100' : 'pointer-events-none cursor-default opacity-50'}`}
+                                        onClick={() => handleApplyPromoCode()}
+                                    >
                                         Apply
                                     </button>
                                 </div>

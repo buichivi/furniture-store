@@ -1,9 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Filter, Navigation, Pagination, ProductCard, SliderCategory } from '../components';
-import apiRequest from '../utils/apiRequest';
 import { useParams } from 'react-router-dom';
-import useCategoryStore from '../store/navigationStore';
-import { ChevronDownIcon, ChevronUpIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import useDataStore from '../store/dataStore';
+import { ChevronDownIcon, XMarkIcon } from '@heroicons/react/24/outline';
 
 const FILTER_OPEN_STATE = [
     { name: 'type', open: true },
@@ -22,10 +21,9 @@ const PAGE_SIZE = 4;
 
 const Shop = () => {
     const [isDisplayGrid, setIsDisplayGrid] = useState(true);
-    const [products, setProducts] = useState([]);
-    const { categories, getNavigationPath } = useCategoryStore();
+    const { products, categories, getNavigationPath } = useDataStore();
     const { parentCategorySlug, categorySlug } = useParams();
-    const [filters, setFilters] = useState({});
+    const [filters, setFilters] = useState({ typeFilters: [], colorsFilters: [], priceRange: [], materialFilters: [] });
     const [onSaleOnly, setOnSaleOnly] = useState(false);
     const [resetPrice, setResetPrice] = useState(false);
     const [key, setKey] = useState(0);
@@ -34,19 +32,14 @@ const Shop = () => {
     const [currentPage, setCurrentPage] = useState(1);
 
     useEffect(() => {
-        apiRequest
-            .get('/products')
-            .then((res) => setProducts(res.data.products))
-            .catch((err) => console.log(err.response.data.error));
-    }, []);
-
-    useEffect(() => {
         window.scrollTo(0, 0);
     }, [currentPage]);
 
     useEffect(() => {
         setCurrentPage(1);
     }, [filters]);
+
+    console.log(categories);
 
     const filteredProducts = useMemo(() => {
         const { typeFilters, colorsFilters, priceRange, materialFilters } = filters;
@@ -114,7 +107,7 @@ const Shop = () => {
                 <Navigation paths={location.pathname} />
                 <div className="container mx-auto px-5">
                     <div className="bg-transparent pb-16">
-                        {!categorySlug && <SliderCategory products={products} className="" />}
+                        {!categorySlug && <SliderCategory products={products} className="w-2/3" />}
                     </div>
                 </div>
             </div>
@@ -125,7 +118,6 @@ const Shop = () => {
                             key={key}
                             filters={filters}
                             setFilters={setFilters}
-                            products={products}
                             resetPrice={resetPrice}
                             openState={openState}
                             setOpenState={setOpenState}

@@ -150,7 +150,7 @@ const ProductCard = ({ product = {}, isDisplayGrid = true, to = '' }) => {
                     </div>
                 </Link>
                 <div className="mt-2">
-                    {product?.discount > 0 && <span className="text-sm text-red-400">-{product?.discount}%</span>}
+                    {product?.discount > 0 && <span className="text-sm text-green-400">-{product?.discount}%</span>}
                     <Link
                         to={to}
                         className={`mb-3 line-clamp-2 cursor-pointer text-base tracking-wide transition-colors hover:text-[#D10202] ${!isDisplayGrid && '!text-xl font-normal tracking-wider'}`}

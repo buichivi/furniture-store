@@ -1,11 +1,11 @@
 import { Link } from 'react-router-dom';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import useCategoryStore from '../store/navigationStore';
+import useDataStore from '../store/dataStore';
 import PropTypes from 'prop-types';
 import { useMemo } from 'react';
 
 const SliderCategory = ({ products = [], className }) => {
-    const { categories, getNavigationPath } = useCategoryStore();
+    const { categories, getNavigationPath } = useDataStore();
 
     console.log('Slider category re-render');
 
@@ -29,24 +29,27 @@ const SliderCategory = ({ products = [], className }) => {
                 }
             });
         }
-        return Array.from(categoryMap);
+        // eslint-disable-next-line no-unused-vars
+        return Array.from(categoryMap).filter(([_, item]) => item.numberOfProducts > 0);
     }, [categories, products]);
+
+    console.log(listCategory.length < 4 ? listCategory.length : 4);
 
     return (
         <Swiper
-            slidesPerView={4}
-            spaceBetween={30}
+            slidesPerView={listCategory.length < 4 ? listCategory.length : 4}
+            spaceBetween={listCategory.length < 4 ? 10 : 30}
             loop={true}
             autoplay={{
                 delay: 3000,
             }}
-            loopAdditionalSlides={1}
             className={className}
         >
+            {/* eslint-disable-next-line no-unused-vars */}
             {listCategory.map(([_, { category, numberOfProducts }], index) => {
                 return (
                     <SwiperSlide key={index}>
-                        <div className="flex h-[120px] items-center">
+                        <div className="flex h-[120px] items-center justify-center">
                             <Link
                                 to={getNavigationPath(category, 'category')}
                                 className="group relative mr-[25px] h-[120px] w-[120px] shrink-0 overflow-hidden rounded-full "
@@ -65,7 +68,7 @@ const SliderCategory = ({ products = [], className }) => {
                                 </Link>
                                 <p>
                                     {numberOfProducts} product
-                                    {numberOfProducts > 2 && 's'}
+                                    {numberOfProducts >= 2 && 's'}
                                 </p>
                             </div>
                         </div>

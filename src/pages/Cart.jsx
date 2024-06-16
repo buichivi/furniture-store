@@ -7,14 +7,14 @@ import PropTypes from 'prop-types';
 import apiRequest from '../utils/apiRequest';
 import toast from 'react-hot-toast';
 import useDebounced from '../utils/useDebounced';
-import useCategoryStore from '../store/navigationStore';
+import useDataStore from '../store/dataStore';
 import { numberWithCommas } from '../utils/format';
 import StepProgress from '../components/StepProgress';
 
 const Cart = () => {
     const { cart, setCart } = useCartStore();
-    const { getNavigationPath } = useCategoryStore();
-    const [promo, setPromo] = useState('');
+    const { getNavigationPath, promoCode, setPromoCode } = useDataStore();
+    const [code, setCode] = useState();
 
     const handleDeleteCartItem = (id) => {
         toast.promise(
@@ -33,10 +33,10 @@ const Cart = () => {
     };
 
     const handleApplyPromoCode = () => {
-        toast.promise(apiRequest.get('/promo-code/' + promo?.code), {
+        toast.promise(apiRequest.get('/promo-code/' + promoCode?.code), {
             loading: 'Checking...',
             success: (res) => {
-                setPromo(res.data.promoCode);
+                setPromoCode(res.data.promoCode);
                 return res.data.message;
             },
             error: (err) => err.response.data.error,
@@ -56,11 +56,13 @@ const Cart = () => {
     };
 
     const discount = useMemo(() => {
-        if (!promo?.type) {
+        if (!promoCode?.type) {
             return 0;
         }
-        return promo?.type == 'coupon' ? Math.floor((cart?.subTotal * promo?.discount) / 100) : promo?.discount;
-    }, [promo, cart]);
+        return promoCode?.type == 'coupon'
+            ? Math.floor((cart?.subTotal * promoCode?.discount) / 100)
+            : promoCode?.discount;
+    }, [promoCode, cart]);
 
     return (
         <div className="my-[90px] border-t">
@@ -159,8 +161,8 @@ const Cart = () => {
                                         type="text"
                                         className="h-full flex-1 border pl-3 outline-none"
                                         placeholder="Promo code"
-                                        value={promo?.code || ''}
-                                        onChange={(e) => setPromo({ ...promo, code: e.currentTarget.value })}
+                                        value={code}
+                                        onChange={(e) => setCode(e.currentTarget.value)}
                                     />
                                     <button
                                         className="h-full basis-1/3 border border-black bg-black text-white"
@@ -178,15 +180,15 @@ const Cart = () => {
                                         <span>Discount: </span>
                                         <span>
                                             - ${discount}
-                                            {promo?.type == 'coupon' && (
-                                                <span className="text-green-400">({promo?.discount}%)</span>
+                                            {promoCode?.type == 'coupon' && (
+                                                <span className="text-green-400">({promoCode?.discount}%)</span>
                                             )}
                                         </span>
                                     </div>
-                                    {promo?.code && (
+                                    {promoCode?.code && (
                                         <span
                                             className="float-right cursor-pointer text-sm transition-all hover:text-red-400 hover:underline"
-                                            onClick={() => setPromo()}
+                                            onClick={() => setPromoCode({})}
                                         >
                                             Remove
                                         </span>
