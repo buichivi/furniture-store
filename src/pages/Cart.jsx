@@ -10,15 +10,18 @@ import useDebounced from '../utils/useDebounced';
 import useDataStore from '../store/dataStore';
 import { numberWithCommas } from '../utils/format';
 import StepProgress from '../components/StepProgress';
+import useAuthStore from '../store/authStore';
 
 const Cart = () => {
     const { cart, setCart } = useCartStore();
     const { getNavigationPath, promoCode, setPromoCode } = useDataStore();
+    const { token } = useAuthStore();
     const [code, setCode] = useState();
 
     const handleDeleteCartItem = (id) => {
         toast.promise(
             apiRequest.delete('/cart/' + id, {
+                headers: { Authorization: `Bearer ${token}` },
                 withCredentials: true,
             }),
             {
@@ -33,7 +36,7 @@ const Cart = () => {
     };
 
     const handleApplyPromoCode = () => {
-        toast.promise(apiRequest.get('/promo-code/' + promoCode?.code), {
+        toast.promise(apiRequest.get('/promo-code/' + code), {
             loading: 'Checking...',
             success: (res) => {
                 setPromoCode(res.data.promoCode);
@@ -44,7 +47,7 @@ const Cart = () => {
     };
     const handleEmptyCart = () => {
         if (confirm('Are you sure you want to clear your cart?')) {
-            toast.promise(apiRequest.delete('/cart/clear'), {
+            toast.promise(apiRequest.delete('/cart/clear', { headers: { Authorization: `Bearer ${token}` } }), {
                 loading: 'Clearing...',
                 success: (res) => {
                     setCart({ ...cart, items: [] });
@@ -159,7 +162,7 @@ const Cart = () => {
                                 <div className="flex h-14 w-full items-center py-2">
                                     <input
                                         type="text"
-                                        className="h-full flex-1 border pl-3 outline-none"
+                                        className="h-full flex-1 border pl-3 uppercase outline-none"
                                         placeholder="Promo code"
                                         value={code}
                                         onChange={(e) => setCode(e.currentTarget.value)}
@@ -195,7 +198,7 @@ const Cart = () => {
                                     )}
                                     <div className="flex w-full items-center justify-between py-1 text-lg font-bold tracking-wide">
                                         <span>Estimated total: </span>
-                                        <span>${numberWithCommas(cart?.subTotal - discount)}</span>
+                                        <span>${numberWithCommas(cart?.subTotal - discount + 10)}</span>
                                     </div>
                                 </div>
                                 <Link
@@ -228,6 +231,7 @@ const CartItemQuantity = ({ productId, colorId, quantity }) => {
     const [qty, setQty] = useState(quantity || 1);
     const _qty = useDebounced(qty, 500);
     const { setCart } = useCartStore();
+    const { token } = useAuthStore();
 
     useEffect(() => {
         if (_qty != quantity) {
@@ -239,7 +243,7 @@ const CartItemQuantity = ({ productId, colorId, quantity }) => {
                         color: colorId,
                         quantity: _qty,
                     },
-                    { withCredentials: true },
+                    { headers: { Authorization: `Bearer ${token}` }, withCredentials: true },
                 ),
                 {
                     loading: 'Update quantity...',
@@ -247,7 +251,12 @@ const CartItemQuantity = ({ productId, colorId, quantity }) => {
                         setCart(res.data.cart);
                         return res.data.message;
                     },
-                    error: (err) => err?.response?.data?.error,
+                    error: (err) => {
+                        if (err?.response?.data?.cart) {
+                            setCart(err?.response?.data?.cart);
+                        }
+                        return err?.response?.data?.error;
+                    },
                 },
             );
         }

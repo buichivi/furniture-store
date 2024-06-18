@@ -16,8 +16,8 @@ const ProductQuickView = forwardRef(function ProductQuickView() {
     const { setCart } = useCartStore();
 
     useEffect(() => {
-        if (!isOpen) setSelectedColor();
-    }, [isOpen]);
+        if (!isOpen && product?.colors?.length > 1) setSelectedColor();
+    }, [isOpen, product]);
 
     useEffect(() => {
         const closeQuickViewWithESC = (e) => {
@@ -28,15 +28,6 @@ const ProductQuickView = forwardRef(function ProductQuickView() {
             window.removeEventListener('keydown', closeQuickViewWithESC);
         };
     }, [toggleOpen]);
-
-    // useEffect(() => {
-    //     var colorIndex = null;
-    //     const isOnlyOneColor = product?.colors?.reduce((acc, cur, index) => {
-    //         if (cur?.stock) colorIndex = index;
-    //         return acc + (cur?.stock > 0);
-    //     }, 0);
-    //     if (isOnlyOneColor == 1) setSelectedColor(product?.colors[colorIndex]);
-    // }, [product]);
 
     useEffect(() => {
         if (product?.colors?.length == 1) setSelectedColor(product?.colors[0]);
@@ -189,7 +180,7 @@ const ProductQuickView = forwardRef(function ProductQuickView() {
                                 </div>
                                 <div className="h-full flex-1 shrink-0">
                                     <button
-                                        className={`h-full w-full bg-black text-sm font-semibold uppercase text-white transition-colors hover:bg-[#d10202] ${!selectedColor && 'cursor-not-allowed opacity-50'}`}
+                                        className={`h-full w-full bg-black text-sm font-semibold uppercase text-white transition-colors hover:bg-[#d10202] ${!selectedColor && 'pointer-events-none cursor-not-allowed opacity-50'} select-none`}
                                         onClick={() => handleAddToCart(product?._id, selectedColor?._id, quantity)}
                                     >
                                         Add to cart

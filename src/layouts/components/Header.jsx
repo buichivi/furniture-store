@@ -49,11 +49,12 @@ const Header = () => {
     const inputToggleMenu = useRef();
     const imageRef = useRef();
     const { currentUser, loginUser, logout } = useAuthStore();
-    const { products, setCategories, setProducts } = useDataStore();
+    const { promoCode, setPromoCode, setCategories, setProducts } = useDataStore();
     const { cart, setCart } = useCartStore();
     const token = localStorage.getItem('token');
 
-    console.log({ currentUser, products });
+    console.log('Header re-render');
+    console.log(currentUser);
 
     useEffect(() => {
         const styleHeader = () => {
@@ -77,14 +78,16 @@ const Header = () => {
 
     useEffect(() => {
         Promise.allSettled([
-            apiRequest.get('/auth/me'),
+            apiRequest.get('/auth/me', { headers: { Authorization: 'Bearer ' + token } }),
             apiRequest.get('/categories'),
             apiRequest.get('/products'),
         ]).then((results) => {
             const user = results[0].status == 'fulfilled' && results[0].value.data.user;
             const categories = results[1].status == 'fulfilled' && results[1].value.data.categories;
             const products = results[2].status == 'fulfilled' && results[2].value.data.products;
-            loginUser(user);
+            console.log(results[0].value.data.user);
+            if (user) loginUser(user);
+            else loginUser({});
             setCategories(categories);
             setProducts(products);
         });
@@ -92,32 +95,35 @@ const Header = () => {
     }, []);
 
     useEffect(() => {
+        console.log('API CART');
+        console.log(currentUser);
         apiRequest
             .get('/cart', { headers: { Authorization: 'Bearer ' + token }, withCredentials: true })
             .then((res) => setCart(res.data.cart))
             .catch((err) => console.log(err));
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [currentUser]);
+    }, [currentUser?._id]);
+
+    useEffect(() => {
+        apiRequest
+            .get('/promo-code/' + promoCode?.code)
+            .then(() => console.log('APPLY PROMO CODE SUCCESS'))
+            .catch(() => setPromoCode({}));
+    }, []);
 
     const handleLogout = () => {
-        toast.promise(
-            apiRequest.patch('/auth/logout', null, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            }),
-            {
-                loading: 'Logout...',
-                success: (res) => {
-                    logout();
-                    navigate('/');
-                    return res.data.message;
-                },
-                error: (err) => {
-                    return err.response.data.error || 'Something went wrong';
-                },
+        toast.promise(apiRequest.patch('/auth/logout', null, { headers: { Authorization: 'Bearer ' + token } }), {
+            loading: 'Logout...',
+            success: (res) => {
+                logout();
+                setCart({ items: [] });
+                navigate('/');
+                return res.data.message;
             },
-        );
+            error: (err) => {
+                return err.response.data.error || 'Something went wrong';
+            },
+        });
     };
 
     useEffect(() => {

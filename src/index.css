@@ -9,7 +9,7 @@ body {
     font-family: 'Inter', sans-serif;
     font-size: 16px;
     font-weight: 400;
-    font-variation-settings: 'wdth' 75;
+    font-variation-settings: 'width' 75;
 }
 
 /* Swiper JS */
@@ -34,7 +34,7 @@ body {
 }
 /* Scroll bar */
 html {
-    scroll-behavior: smooth;
+    /* scroll-behavior: smooth; */
     overflow-x: hidden;
     scrollbar-width: thin;
 }
@@ -156,4 +156,10 @@ input[type='number']::-webkit-inner-spin-button {
 }
 #menu:checked + .menu-clip-path + .menu--1 > label[aria-checked='true'] svg path {
     stroke: #fff;
+}
+
+/* Fix paypal button z-index */
+iframe {
+    position: relative !important;
+    z-index: 0 !important;
 }

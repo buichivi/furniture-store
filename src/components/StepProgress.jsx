@@ -11,8 +11,10 @@ const StepProgress = () => {
     useEffect(() => {
         if (location.pathname == '/cart') {
             setCurrentStep(0);
-        } else if (location.pathname == '/checkout') {
+        } else if (location.pathname == '/checkout' && location.hash == '') {
             setCurrentStep(1);
+        } else if (location.pathname == '/checkout' && location.hash == '#success') {
+            setCurrentStep(3);
         }
     }, [location]);
 
@@ -33,12 +35,8 @@ const StepProgress = () => {
                 return (
                     <React.Fragment key={index}>
                         <div
-                            className={`relative flex size-6 shrink-0 cursor-pointer items-center justify-center rounded-full 
+                            className={`relative flex size-6 shrink-0 items-center justify-center rounded-full 
                                                     ${step ? 'bg-slate-200' : ''} ${index <= currentStep ? '!border-black !bg-black' : ''} ${currentStep == index ? '!border-black !bg-white' : ''} border border-slate-300 text-center leading-10 transition-colors duration-500`}
-                            onClick={() => {
-                                if (index == 0) navigate('/cart');
-                                if (index == 1) navigate('/checkout');
-                            }}
                         >
                             <span className="relative flex size-6 items-center justify-center">
                                 <span

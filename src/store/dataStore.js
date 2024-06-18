@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+const initPromoCode = JSON.parse(localStorage.getItem('promoCode')) || {};
 
 // Hàm lọc các danh mục
 const getActiveCategories = (categories) => {
@@ -26,10 +27,13 @@ const getActiveProducts = (products, categories) => {
 const useDataStore = create((set, get) => ({
     products: [],
     categories: [],
-    promoCode: {},
+    promoCode: initPromoCode,
     setProducts: (_products) => set((state) => ({ products: getActiveProducts(_products, state.categories) })),
     setCategories: (_categories) => set(() => ({ categories: getActiveCategories(_categories) })),
-    setPromoCode: (_promoCode) => set(() => ({ promoCode: _promoCode })),
+    setPromoCode: (_promoCode) => {
+        set(() => ({ promoCode: _promoCode }));
+        localStorage.setItem('promoCode', JSON.stringify(_promoCode));
+    },
     getNavigationPath: (item, type) => {
         let paths = '/shop';
         const categories = get().categories;

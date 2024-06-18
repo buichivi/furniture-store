@@ -7,10 +7,12 @@ import apiRequest from '../utils/apiRequest';
 import useCartStore from '../store/cartStore';
 import { numberWithCommas } from '../utils/format';
 import { TrashIcon } from '@heroicons/react/24/outline';
+import useAuthStore from '../store/authStore';
 
 const CartItemMini = ({ item = {} }) => {
     const [quantity, setQuantity] = useState(item?.quantity);
     const { setCart } = useCartStore();
+    const { token } = useAuthStore();
     const qty = useDebounced(quantity, 500);
 
     useEffect(() => {
@@ -23,7 +25,7 @@ const CartItemMini = ({ item = {} }) => {
                         color: item?.color?._id,
                         quantity: qty,
                     },
-                    { withCredentials: true },
+                    { headers: { Authorization: 'Bearer ' + token }, withCredentials: true },
                 ),
                 {
                     loading: 'Update quantity...',
@@ -31,10 +33,16 @@ const CartItemMini = ({ item = {} }) => {
                         setCart(res.data.cart);
                         return res.data.message;
                     },
-                    error: (err) => err?.response?.data?.error,
+                    error: (err) => {
+                        if (err?.response?.data?.cart) {
+                            setCart(err?.response?.data?.cart);
+                        }
+                        return err?.response?.data?.error;
+                    },
                 },
             );
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [qty]);
 
     useEffect(() => {
@@ -44,6 +52,7 @@ const CartItemMini = ({ item = {} }) => {
     const handleDeleteCartItem = (id) => {
         toast.promise(
             apiRequest.delete('/cart/' + id, {
+                headers: { Authorization: 'Bearer ' + token },
                 withCredentials: true,
             }),
             {

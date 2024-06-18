@@ -65,7 +65,7 @@ const Register = () => {
             />
             <div className="min-h-[90%] w-2/3 bg-white shadow-xl">
                 <Link to="/" className="mx-auto mb-6 block w-40 py-8">
-                    <img src="src/assets/images/logo.png" alt="" />
+                    <img src="/images/logo.png" alt="" />
                 </Link>
                 {/* <h3 className="text-center text-2xl font-semibold">Registration</h3>
                 <p className="mb-4 text-center text-sm">Welcome to Fixtures</p> */}

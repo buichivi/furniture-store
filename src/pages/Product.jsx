@@ -6,6 +6,7 @@ import apiRequest from '../utils/apiRequest';
 import toast from 'react-hot-toast';
 import useCartStore from '../store/cartStore';
 import useDataStore from '../store/dataStore';
+import useAuthStore from '../store/authStore';
 
 export const loader = async ({ params }) => {
     const { productSlug } = params;
@@ -17,13 +18,15 @@ export const loader = async ({ params }) => {
 };
 
 const Product = () => {
+    const { productSlug } = useParams();
+    const { setCart } = useCartStore();
+    const { getNavigationPath } = useDataStore();
+    const { token } = useAuthStore();
+
     const [selectedColor, setSelectedColor] = useState();
     const [selectedTab, setSelectedTab] = useState(1);
     const [quantity, setQuantity] = useState(1);
     const [product, setProduct] = useState({});
-    const { setCart } = useCartStore();
-    const { getNavigationPath } = useDataStore();
-    const { productSlug } = useParams();
 
     const navigation = useNavigation();
 
@@ -55,7 +58,7 @@ const Product = () => {
                     color: colorId,
                     quantity,
                 },
-                { withCredentials: true },
+                { headers: { Authorization: `Bearer ${token}` }, withCredentials: true },
             ),
             {
                 loading: 'Adding to cart...',
@@ -167,7 +170,7 @@ const Product = () => {
                             </div>
                             <div className="h-full flex-1 shrink-0">
                                 <button
-                                    className={`h-full w-full bg-black text-sm font-semibold uppercase text-white transition-colors hover:bg-[#d10202] ${!selectedColor && 'cursor-not-allowed opacity-50'}`}
+                                    className={`h-full w-full select-none bg-black text-sm font-semibold uppercase text-white transition-colors hover:bg-[#d10202] ${(!selectedColor || !product?.isValid) && 'pointer-events-none cursor-not-allowed opacity-50'}`}
                                     onClick={() => handleAddToCart(product?._id, selectedColor?._id, quantity)}
                                 >
                                     Add to cart
@@ -175,7 +178,7 @@ const Product = () => {
                             </div>
                         </div>
                         <button
-                            className={`mt-4 h-[50px] w-full border border-black bg-transparent text-sm font-semibold uppercase text-black transition-all hover:border-[#d10202] hover:text-[#d10202] ${!selectedColor && 'cursor-not-allowed opacity-40'}`}
+                            className={`mt-4 h-[50px] w-full select-none border border-black bg-transparent text-sm font-semibold uppercase text-black transition-all hover:border-[#d10202] hover:text-[#d10202] ${!selectedColor && 'pointer-events-none cursor-not-allowed opacity-40'}`}
                         >
                             Buy now
                         </button>

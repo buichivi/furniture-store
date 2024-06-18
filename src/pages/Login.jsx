@@ -7,25 +7,16 @@ import * as Yup from 'yup';
 import { useEffect, useState } from 'react';
 
 const Login = () => {
-    const { loginUser, setToken } = useAuthStore();
+    const { currentUser, loginUser, setToken } = useAuthStore();
     const [showPass, setShowPass] = useState(false);
     const navigate = useNavigate();
-    const token = localStorage.getItem('token');
 
     useEffect(() => {
-        apiRequest
-            .get('/auth/me', {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            })
-            .then((res) => {
-                loginUser(res.data);
-                navigate('/');
-            })
-            .catch((err) => console.log(err));
+        if (currentUser?._id) {
+            navigate('/');
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [currentUser]);
 
     const formik = useFormik({
         initialValues: {
@@ -42,18 +33,26 @@ const Login = () => {
             remember: Yup.bool(),
         }),
         onSubmit: (values) => {
-            toast.promise(apiRequest.post('/auth/login', { ...values }), {
-                loading: 'Login...',
-                success: (res) => {
-                    loginUser(res.data.user);
-                    setToken(res.data.token);
-                    navigate('/');
-                    return res.data.message;
+            toast.promise(
+                apiRequest.post('/auth/login', { ...values }),
+                {
+                    loading: 'Login...',
+                    success: (res) => {
+                        loginUser(res.data.user);
+                        setToken(res.data.token);
+                        navigate('/');
+                        return res.data.message;
+                    },
+                    error: (error) => {
+                        return error.response.data.error;
+                    },
                 },
-                error: (error) => {
-                    return error.response.data.error;
+                {
+                    success: {
+                        icon: '👏',
+                    },
                 },
-            });
+            );
         },
     });
 

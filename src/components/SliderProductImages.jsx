@@ -24,10 +24,10 @@ const SliderProductImages = ({
                 secondaryZoomLevel: 2,
                 maxZoomLevel: 1,
                 showHideAnimationType: 'none',
-                arrowPrevSVG: `<i class="fa-light fa-angle-left text-white text-2xl"></i>`,
-                arrowNextSVG: `<i class="fa-light fa-angle-right text-white text-2xl"></i>`,
-                closeSVG: `<i class="fa-light fa-xmark text-2xl text-white"></i>`,
-                zoomSVG: `<i class="fa-light fa-magnifying-glass-plus text-xl text-white"></i>`,
+                arrowPrevSVG: `<i class="fa-light fa-angle-left text-white text-xl"></i>`,
+                arrowNextSVG: `<i class="fa-light fa-angle-right text-white text-xl"></i>`,
+                closeSVG: `<i class="fa-light fa-xmark text-xl text-white"></i>`,
+                zoomSVG: `<i class="fa-light fa-magnifying-glass-plus text-lg text-white"></i>`,
                 bgOpacity: 1,
             });
             lightbox.init();
@@ -116,12 +116,12 @@ const SliderProductImages = ({
                 </div>
             </div>
             {viewFullScreen && (
-                <div className="pswp-gallery fixed" id="galleryFullScreen" ref={galleryFullScreen}>
+                <div className="pswp-gallery fixed hidden" id="galleryFullScreen" ref={galleryFullScreen}>
                     {imageGallery.map((image, index) => (
                         <a
                             href={image}
-                            data-pswp-width="450"
-                            data-pswp-height="550"
+                            data-pswp-width="500"
+                            data-pswp-height="600"
                             key={'galleryFullScreen' + '-' + index}
                             target="_blank"
                             rel="noreferrer"

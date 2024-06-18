@@ -5,17 +5,12 @@ import { useNavigate } from 'react-router-dom';
 import apiRequest from '../../utils/apiRequest';
 
 const ProtectedRoute = ({ children }) => {
-    const { loginUser } = useAuthStore();
+    const { loginUser, token } = useAuthStore();
     const navigate = useNavigate();
-    const token = localStorage.getItem('token');
 
     useEffect(() => {
         apiRequest
-            .get('/auth/me', {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            })
+            .get('/auth/me', { headers: { Authorization: `Bearer ${token}` } })
             .then((res) => {
                 loginUser(res.data.user);
             })

@@ -6,11 +6,13 @@ import { useProductQuickViewStore } from '../store/productQuickViewStore';
 import toast from 'react-hot-toast';
 import apiRequest from '../utils/apiRequest';
 import useCartStore from '../store/cartStore';
+import useAuthStore from '../store/authStore';
 
 const ProductCard = ({ product = {}, isDisplayGrid = true, to = '' }) => {
     const { setProduct, toggleOpen } = useProductQuickViewStore();
     const navigate = useNavigate();
     const { setCart } = useCartStore();
+    const { token } = useAuthStore();
 
     const handleAddToCart = (productId, colorId, quantity) => {
         toast.promise(
@@ -21,7 +23,7 @@ const ProductCard = ({ product = {}, isDisplayGrid = true, to = '' }) => {
                     color: colorId,
                     quantity,
                 },
-                { withCredentials: true },
+                { headers: { Authorization: 'Bearer ' + token }, withCredentials: true },
             ),
             {
                 loading: 'Adding to cart...',
