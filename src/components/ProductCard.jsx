@@ -71,7 +71,7 @@ const ProductCard = ({ product = {}, isDisplayGrid = true, to = '' }) => {
                                     className="!bg-[#D10202] px-3 !text-sm [&.tippy-box[data-placement^=left]>.tippy-arrow:before]:border-l-[#D10202]"
                                 >
                                     <div
-                                        className="flex size-9 translate-y-3 cursor-pointer items-center justify-center rounded-full bg-white text-base opacity-0 transition-all  hover:bg-[#D10202] hover:text-white group-hover/product:translate-y-0 group-hover/product:opacity-100"
+                                        className="flex size-9 translate-y-3 cursor-pointer items-center justify-center rounded-full bg-white text-base opacity-0 transition-all delay-[50ms]  hover:bg-[#D10202] hover:text-white group-hover/product:translate-y-0 group-hover/product:opacity-100"
                                         onClick={(e) => {
                                             e.preventDefault();
                                             setProduct(product);
@@ -90,7 +90,7 @@ const ProductCard = ({ product = {}, isDisplayGrid = true, to = '' }) => {
                                     hideOnClick={false}
                                 >
                                     <div
-                                        className="flex size-9 translate-y-3 cursor-pointer items-center justify-center rounded-full bg-white text-base opacity-0 transition-all delay-[50]  hover:bg-[#D10202] hover:text-white group-hover/product:translate-y-0 group-hover/product:opacity-100"
+                                        className="flex size-9 translate-y-3 cursor-pointer items-center justify-center rounded-full bg-white text-base opacity-0 transition-all delay-[100ms]  hover:bg-[#D10202] hover:text-white group-hover/product:translate-y-0 group-hover/product:opacity-100"
                                         onClick={(e) => e.preventDefault()}
                                     >
                                         <i className="fa-light fa-code-compare"></i>
@@ -104,8 +104,7 @@ const ProductCard = ({ product = {}, isDisplayGrid = true, to = '' }) => {
                                     hideOnClick={false}
                                 >
                                     <div
-                                        className="flex size-9 translate-y-3 cursor-pointer items-center justify-center rounded-full bg-white text-base opacity-0 transition-all  hover:bg-[#D10202] 
-                                hover:text-white group-hover/product:translate-y-0 group-hover/product:opacity-100"
+                                        className="flex size-9 translate-y-3 cursor-pointer items-center justify-center rounded-full bg-white text-base opacity-0 transition-all delay-[150ms] hover:bg-[#D10202] hover:text-white group-hover/product:translate-y-0 group-hover/product:opacity-100"
                                         onClick={(e) => e.preventDefault()}
                                     >
                                         <i className="fa-sharp fa-light fa-heart"></i>

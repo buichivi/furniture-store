@@ -18,6 +18,8 @@ const Login = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentUser]);
 
+    console.log('LOGIN PAGE');
+
     const formik = useFormik({
         initialValues: {
             email: '',

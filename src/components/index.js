@@ -18,3 +18,4 @@ export { default as ProductQuickView } from './ProductQuickView';
 export { default as ReviewItem } from './ReviewItem';
 export { default as UserReview } from './UserReview';
 export { default as Pagination } from './Pagination';
+export { default as SearchShortForm } from './SearchShortForm';

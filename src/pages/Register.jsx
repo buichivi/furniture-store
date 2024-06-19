@@ -3,11 +3,11 @@ import toast from 'react-hot-toast';
 import * as Yup from 'yup';
 import apiRequest from '../utils/apiRequest';
 import { useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 const Register = () => {
     const previewAvatar = useRef();
-    const navigate = useNavigate();
+    const loginLink = useRef();
 
     const formik = useFormik({
         initialValues: {
@@ -40,12 +40,12 @@ const Register = () => {
             for (const key in values) {
                 if (key != 'confirmPassword') formData.append(key, values[key]);
             }
-            // formData.append('avatar', file);
             toast.promise(apiRequest.post('/auth/register', formData), {
                 loading: 'Registering...',
                 success: (res) => {
+                    // navigate('/login');
+                    loginLink.current.click();
                     toast.success("You'r ready to login");
-                    navigate('/login');
                     return res.data.message;
                 },
                 error: (err) => {
@@ -229,7 +229,7 @@ const Register = () => {
                 </form>
                 <p className="mt-6 text-center text-sm">
                     Already have an account?{' '}
-                    <Link to="/login" className="hover-text-effect ml-1">
+                    <Link ref={loginLink} to="/login" className="hover-text-effect ml-1">
                         Log in
                     </Link>
                 </p>

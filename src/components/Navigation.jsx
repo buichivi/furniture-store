@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
-const Navigation = ({ isShowPageName = true, paths = '' }) => {
+const Navigation = ({ isShowPageName = true, paths = '', isSearchPage = false }) => {
     let pathNames;
     if (paths.charAt(paths.length - 1) == '/') {
         pathNames = paths.slice(0, paths.length - 1).split('/');
@@ -35,7 +35,9 @@ const Navigation = ({ isShowPageName = true, paths = '' }) => {
                                         {name}
                                     </Link>
                                 ) : (
-                                    <span className="capitalize text-black hover:no-underline">{name}</span>
+                                    <span className={`${!isSearchPage && 'capitalize'} text-black hover:no-underline`}>
+                                        {name}
+                                    </span>
                                 )}
                                 {index < pathNames.length - 1 && <span className="text-[#3f3f3f]">/</span>}
                             </div>
@@ -43,7 +45,9 @@ const Navigation = ({ isShowPageName = true, paths = '' }) => {
                     })}
             </div>
             {isShowPageName && (
-                <h3 className="text-center text-4xl font-semibold capitalize tracking-wider text-black">
+                <h3
+                    className={`text-center text-4xl font-semibold ${!isSearchPage && 'capitalize'} tracking-wider text-black`}
+                >
                     {pathNames.at(-1).split('-').join(' ')}
                 </h3>
             )}
@@ -54,6 +58,7 @@ const Navigation = ({ isShowPageName = true, paths = '' }) => {
 Navigation.propTypes = {
     isShowPageName: PropTypes.bool,
     paths: PropTypes.string,
+    isSearchPage: PropTypes.bool,
 };
 
 export default Navigation;

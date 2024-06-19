@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { CartShortForm, SearchItem } from '../../components';
+import { CartShortForm, SearchShortForm } from '../../components';
 import { Link, useNavigate, useNavigation } from 'react-router-dom';
 import useAuthStore from '../../store/authStore';
 import apiRequest from '../../utils/apiRequest';
@@ -48,13 +48,11 @@ const Header = () => {
     const logo = useRef();
     const inputToggleMenu = useRef();
     const imageRef = useRef();
-    const { currentUser, loginUser, logout } = useAuthStore();
+    const { currentUser, loginUser, logout, token } = useAuthStore();
     const { promoCode, setPromoCode, setCategories, setProducts } = useDataStore();
     const { cart, setCart } = useCartStore();
-    const token = localStorage.getItem('token');
 
     console.log('Header re-render');
-    console.log(currentUser);
 
     useEffect(() => {
         const styleHeader = () => {
@@ -87,7 +85,9 @@ const Header = () => {
             const products = results[2].status == 'fulfilled' && results[2].value.data.products;
             console.log(results[0].value.data.user);
             if (user) loginUser(user);
-            else loginUser({});
+            else {
+                loginUser({});
+            }
             setCategories(categories);
             setProducts(products);
         });
@@ -320,45 +320,7 @@ const Header = () => {
             </div>
 
             {/* Search */}
-            <input
-                type="checkbox"
-                className="peer/search-short-form hidden [&:checked+div>div]:translate-x-0 [&:checked+div>label]:opacity-100"
-                id="search-short-form"
-            />
-            <div className="pointer-events-none invisible fixed right-0 top-0 z-[60] h-screen w-screen peer-checked/search-short-form:pointer-events-auto peer-checked/search-short-form:visible">
-                <label
-                    htmlFor="search-short-form"
-                    className="block h-full w-full bg-[#3f3f3f80] opacity-0 transition-all duration-500"
-                ></label>
-                <div className="absolute right-0 top-0 h-full w-[30%] translate-x-full overflow-y-auto bg-white p-[30px] transition-all duration-500 [scrollbar-width:thin] 2xl:w-1/5">
-                    <div className="mb-8 flex items-center justify-between">
-                        <h4>Search for products (0)</h4>
-                        <label htmlFor="search-short-form" className="cursor-pointer text-2xl">
-                            <i className="fa-light fa-xmark"></i>
-                        </label>
-                    </div>
-                    <div className="relative mb-6">
-                        <input
-                            type="text"
-                            placeholder="Search for products..."
-                            className="h-[50px] w-full border border-gray-400 py-3 pl-4 pr-14 outline-none"
-                        />
-                        <span className="absolute right-6 top-1/2 -translate-y-1/2 cursor-pointer text-lg">
-                            <i className="fa-light fa-magnifying-glass"></i>
-                        </span>
-                    </div>
-                    <div className="mb-8 flex flex-col gap-8">
-                        {[1, 2, 3, 4, 5, 6].map((item, index) => {
-                            return <SearchItem key={index} />;
-                        })}
-                    </div>
-                    <div className="text-center">
-                        <Link className="hover-text-effect text-sm font-bold uppercase">
-                            View all <span>6</span> results
-                        </Link>
-                    </div>
-                </div>
-            </div>
+            <SearchShortForm />
             <CartShortForm />
         </>
     );

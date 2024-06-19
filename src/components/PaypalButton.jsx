@@ -16,11 +16,9 @@ function PayPalButton({ form }) {
     const navigate = useNavigate();
 
     const initialOptions = {
-        'client-id': import.meta.env.VITE_PAYPAL_CLIENT_ID,
+        clientId: import.meta.env.VITE_PAYPAL_CLIENT_ID,
         currency: 'USD',
-        'data-page-type': 'product-details',
-        components: 'buttons',
-        'data-sdk-integration-source': 'developer-studio',
+        intent: 'capture',
     };
 
     useEffect(() => {
@@ -60,6 +58,7 @@ function PayPalButton({ form }) {
     }, [promoCode, cart]);
 
     const createOrder = (data, actions) => {
+        console.log('ORDER');
         const totalValue = (cart?.subTotal + 10 - discount).toFixed(2);
         return actions.order.create({
             intent: 'CAPTURE',
@@ -106,7 +105,7 @@ function PayPalButton({ form }) {
 
     const onApprove = async (data, actions) => {
         return actions.order.capture().then(function (details) {
-            // Call api createOrder for paypal method
+            console.log('APPROVE');
             const data = {
                 totalAmount: cart?.subTotal - discount + 10,
                 shippingAddress: form.values,
