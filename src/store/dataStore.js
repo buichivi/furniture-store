@@ -13,27 +13,41 @@ const getActiveCategories = (categories) => {
     });
 };
 
-const getActiveProducts = (products, categories) => {
-    return products.filter((prod) => {
-        if (prod?.category?.parentId && prod?.category?.active && prod?.active) {
-            const parentCate = categories.find((cate) => cate._id == prod?.category?.parentId);
-            if (parentCate) return parentCate?.active;
-            return false;
-        }
-        return prod?.category?.active && prod?.active;
-    });
+const getActiveProducts = (products, categories, wishlist) => {
+    return products
+        .filter((prod) => {
+            if (prod?.category?.parentId && prod?.category?.active && prod?.active) {
+                const parentCate = categories.find((cate) => cate._id == prod?.category?.parentId);
+                if (parentCate) return parentCate?.active;
+                return false;
+            }
+            return prod?.category?.active && prod?.active;
+        })
+        .map((prod) => {
+            let isInWishlist = false;
+            for (const item of wishlist) {
+                if (item?.product?._id == prod._id) {
+                    isInWishlist = true;
+                    break;
+                }
+            }
+            return { ...prod, isInWishlist };
+        });
 };
 
 const useDataStore = create((set, get) => ({
     products: [],
     categories: [],
+    wishlist: [],
     promoCode: initPromoCode,
-    setProducts: (_products) => set((state) => ({ products: getActiveProducts(_products, state.categories) })),
+    setProducts: (_products) =>
+        set((state) => ({ products: getActiveProducts(_products, state.categories, state.wishlist) })),
     setCategories: (_categories) => set(() => ({ categories: getActiveCategories(_categories) })),
     setPromoCode: (_promoCode) => {
         set(() => ({ promoCode: _promoCode }));
         localStorage.setItem('promoCode', JSON.stringify(_promoCode));
     },
+    setWishlist: (_wishlist) => set(() => ({ wishlist: _wishlist })),
     getNavigationPath: (item, type) => {
         let paths = '/shop';
         const categories = get().categories;

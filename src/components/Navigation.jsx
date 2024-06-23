@@ -31,7 +31,7 @@ const Navigation = ({ isShowPageName = true, paths = '', isSearchPage = false })
                         return (
                             <div key={index} className="mr-2 flex items-center gap-2">
                                 {pathNames.length != index + 1 ? (
-                                    <Link to={to} className="capitalize text-[#3f3f3f] hover:underline">
+                                    <Link to={to} className="capitalize text-[#868686] hover:underline">
                                         {name}
                                     </Link>
                                 ) : (

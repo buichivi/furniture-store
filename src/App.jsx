@@ -31,7 +31,11 @@ import { public_routes } from './routes';
 import { Login, Register } from './pages';
 import { useEffect } from 'react';
 
+const TOAST_LIMIT = 3;
+
 function App() {
+    const { toasts } = useToasterStore();
+
     const router = createBrowserRouter([
         ...public_routes.map((route) => {
             const { path, element: Element, loader } = route;
@@ -57,9 +61,6 @@ function App() {
             element: <Register />,
         },
     ]);
-    const { toasts } = useToasterStore();
-
-    const TOAST_LIMIT = 3;
 
     useEffect(() => {
         toasts

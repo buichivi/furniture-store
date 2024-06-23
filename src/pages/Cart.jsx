@@ -67,6 +67,10 @@ const Cart = () => {
             : promoCode?.discount;
     }, [promoCode, cart]);
 
+    const total = useMemo(() => {
+        return (cart?.subTotal >= discount ? cart?.subTotal - discount : 0) + 10;
+    }, [discount, cart]);
+
     return (
         <div className="my-[90px] border-t">
             <div className="container mx-auto px-5">
@@ -176,8 +180,8 @@ const Cart = () => {
                                 </div>
                                 <div className="w-full pt-8">
                                     <div className="flex w-full items-center justify-between py-1 tracking-wide">
-                                        <span>Shipping cost: </span>
-                                        <span>$10</span>
+                                        <span>Subtotal: </span>
+                                        <span>${cart?.subTotal}</span>
                                     </div>
                                     <div className="flex w-full items-center justify-between py-1 tracking-wide">
                                         <span>Discount: </span>
@@ -196,9 +200,14 @@ const Cart = () => {
                                             Remove
                                         </span>
                                     )}
+                                    <div className="flex w-full items-center justify-between py-1 tracking-wide">
+                                        <span>Shipping cost: </span>
+                                        <span>$10</span>
+                                    </div>
+
                                     <div className="flex w-full items-center justify-between py-1 text-lg font-bold tracking-wide">
                                         <span>Estimated total: </span>
-                                        <span>${numberWithCommas(cart?.subTotal - discount + 10)}</span>
+                                        <span>${numberWithCommas(total)}</span>
                                     </div>
                                 </div>
                                 <Link

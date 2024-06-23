@@ -7,12 +7,21 @@ import toast from 'react-hot-toast';
 import apiRequest from '../utils/apiRequest';
 import useCartStore from '../store/cartStore';
 import useAuthStore from '../store/authStore';
+import { useEffect, useState } from 'react';
+import useDataStore from '../store/dataStore';
+import { ArrowRightIcon, EllipsisHorizontalCircleIcon, ShoppingBagIcon } from '@heroicons/react/24/outline';
 
 const ProductCard = ({ product = {}, isDisplayGrid = true, to = '' }) => {
     const { setProduct, toggleOpen } = useProductQuickViewStore();
     const navigate = useNavigate();
     const { setCart } = useCartStore();
     const { token } = useAuthStore();
+    const { setWishlist } = useDataStore();
+    const [isFavor, setIsFavor] = useState(false);
+
+    useEffect(() => {
+        setIsFavor(product?.isInWishlist || false);
+    }, [product?.isInWishlist]);
 
     const handleAddToCart = (productId, colorId, quantity) => {
         toast.promise(
@@ -32,6 +41,33 @@ const ProductCard = ({ product = {}, isDisplayGrid = true, to = '' }) => {
                     return res.data.message;
                 },
                 error: (err) => err.response.data?.error,
+            },
+        );
+    };
+
+    const handleAddToWishlist = () => {
+        toast.promise(
+            apiRequest.post('/wishlist', { product: product?._id }, { headers: { Authorization: 'Bearer ' + token } }),
+            {
+                loading: 'Adding...',
+                success: (res) => {
+                    setWishlist(res.data?.wishlist);
+                    return res.data?.message;
+                },
+                error: (err) => err?.response?.data?.error,
+            },
+        );
+    };
+    const handleRemoveFromWishlist = () => {
+        toast.promise(
+            apiRequest.delete('/wishlist/' + product?._id, { headers: { Authorization: 'Bearer ' + token } }),
+            {
+                loading: 'Removing...',
+                success: (res) => {
+                    setWishlist(res.data?.wishlist);
+                    return res.data?.message;
+                },
+                error: (err) => err?.response?.data?.error,
             },
         );
     };
@@ -105,9 +141,17 @@ const ProductCard = ({ product = {}, isDisplayGrid = true, to = '' }) => {
                                 >
                                     <div
                                         className="flex size-9 translate-y-3 cursor-pointer items-center justify-center rounded-full bg-white text-base opacity-0 transition-all delay-[150ms] hover:bg-[#D10202] hover:text-white group-hover/product:translate-y-0 group-hover/product:opacity-100"
-                                        onClick={(e) => e.preventDefault()}
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            if (!isFavor) handleAddToWishlist();
+                                            else handleRemoveFromWishlist();
+                                        }}
                                     >
-                                        <i className="fa-sharp fa-light fa-heart"></i>
+                                        {!isFavor ? (
+                                            <i className="fa-sharp fa-light fa-heart text-xl"></i>
+                                        ) : (
+                                            <i className="fa-solid fa-heart text-xl"></i>
+                                        )}
                                     </div>
                                 </Tippy>
                             </div>
@@ -116,20 +160,22 @@ const ProductCard = ({ product = {}, isDisplayGrid = true, to = '' }) => {
                                     onClick={() => {
                                         navigate(to);
                                     }}
-                                    className={`w-full translate-y-3 bg-black py-3 text-center text-sm font-semibold uppercase text-white opacity-0 transition-all ease-out hover:bg-[#D10202] hover:text-white group-hover/product:translate-y-0 group-hover/product:opacity-100 ${!isDisplayGrid && 'hidden'}`}
+                                    className={`flex w-full translate-y-3 items-center justify-center gap-2 bg-black py-3 text-center text-base font-semibold capitalize text-white opacity-0 transition-all ease-out hover:bg-[#D10202] hover:text-white group-hover/product:translate-y-0 group-hover/product:opacity-100 ${!isDisplayGrid && 'hidden'}`}
                                 >
-                                    Select options
+                                    <span>Select options</span>
+                                    <ArrowRightIcon className="size-5" />
                                 </span>
                             )}
                             {product?.colors?.length == 1 && product?.isValid && (
                                 <div
-                                    className={`w-full translate-y-3 bg-black py-3 text-center text-sm font-semibold uppercase text-white opacity-0 transition-all ease-out hover:bg-[#D10202] hover:text-white group-hover/product:translate-y-0 group-hover/product:opacity-100 ${!isDisplayGrid && 'hidden'}`}
+                                    className={`flex w-full translate-y-3 items-center justify-center gap-2 bg-black py-3 text-center text-base font-semibold capitalize text-white opacity-0 transition-all ease-out hover:bg-[#D10202] hover:text-white group-hover/product:translate-y-0 group-hover/product:opacity-100 ${!isDisplayGrid && 'hidden'}`}
                                     onClick={(e) => {
                                         e.preventDefault();
                                         handleAddToCart(product?._id, product?.colors[0]?._id, 1);
                                     }}
                                 >
-                                    Add to cart
+                                    <span>Add to cart</span>
+                                    <ShoppingBagIcon className="size-5" />
                                 </div>
                             )}
                             {!product?.isValid && (
@@ -137,16 +183,21 @@ const ProductCard = ({ product = {}, isDisplayGrid = true, to = '' }) => {
                                     onClick={() => {
                                         navigate(to);
                                     }}
-                                    className={`w-full translate-y-3 bg-black py-3 text-center text-sm font-semibold uppercase text-white opacity-0 transition-all ease-out hover:bg-[#D10202] hover:text-white group-hover/product:translate-y-0 group-hover/product:opacity-100 ${!isDisplayGrid && 'hidden'}`}
+                                    className={`flex w-full translate-y-3 items-center justify-center gap-2 bg-black py-3 text-center text-base font-semibold capitalize text-white opacity-0 transition-all ease-out hover:bg-[#D10202] hover:text-white group-hover/product:translate-y-0 group-hover/product:opacity-100 ${!isDisplayGrid && 'hidden'}`}
                                 >
-                                    Read more
+                                    <span>Read more</span>
+                                    <EllipsisHorizontalCircleIcon className="size-5" />
                                 </span>
                             )}
                         </div>
                         <div
                             className={`absolute bottom-0 right-4 flex size-10 items-center justify-center text-xl opacity-100 transition-all duration-500 group-hover/product:pointer-events-none group-hover/product:opacity-0 ${!isDisplayGrid && 'bottom-4'}`}
                         >
-                            <i className="fa-sharp fa-light fa-heart "></i>
+                            {!isFavor ? (
+                                <i className="fa-sharp fa-light fa-heart"></i>
+                            ) : (
+                                <i className="fa-solid fa-heart"></i>
+                            )}
                         </div>
                     </div>
                 </Link>

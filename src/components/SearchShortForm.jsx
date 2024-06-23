@@ -63,7 +63,7 @@ const SearchShortForm = () => {
                             {loading ? (
                                 <i className="fa-duotone fa-spinner-third fa-spin [--fa-animation-duration:1s]"></i>
                             ) : (
-                                <Link to={`/search?query=${_query}`} onClick={() => labelSearchForm.current.click()}>
+                                <Link to={`/search/${_query}`} onClick={() => labelSearchForm.current.click()}>
                                     <i className="fa-light fa-magnifying-glass"></i>
                                 </Link>
                             )}

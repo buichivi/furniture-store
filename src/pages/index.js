@@ -7,3 +7,6 @@ export { default as Register } from './Register';
 export { default as Cart } from './Cart';
 export { default as Checkout } from './Checkout';
 export { default as Search } from './Search';
+export { default as Wishlist } from './Wishlist';
+export { default as ProductTag } from './ProductTag';
+export { default as Brand } from './Brand';

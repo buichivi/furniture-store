@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Filter, Navigation, Pagination, ProductCard, SliderCategory } from '../components';
+import { Filter, Navigation, Pagination, ProductCard } from '../components';
 import { useParams } from 'react-router-dom';
 import useDataStore from '../store/dataStore';
 import { ChevronDownIcon, XMarkIcon } from '@heroicons/react/24/outline';
@@ -23,7 +23,7 @@ const PAGE_SIZE = 4;
 const Search = () => {
     const { query } = useParams();
     const [isDisplayGrid, setIsDisplayGrid] = useState(true);
-    const { products, categories, getNavigationPath } = useDataStore();
+    const { categories, getNavigationPath } = useDataStore();
     const { parentCategorySlug, categorySlug } = useParams();
     const [filters, setFilters] = useState({ typeFilters: [], colorsFilters: [], priceRange: [], materialFilters: [] });
     const [onSaleOnly, setOnSaleOnly] = useState(false);
@@ -50,8 +50,6 @@ const Search = () => {
     useEffect(() => {
         setCurrentPage(1);
     }, [filters]);
-
-    console.log(categories);
 
     const filteredProducts = useMemo(() => {
         const { typeFilters, colorsFilters, priceRange, materialFilters } = filters;
@@ -316,7 +314,11 @@ const Search = () => {
                                 </button>
                             )}
                         </div>
-                        <img src="" alt="" />
+                        {currentData.length == 0 && (
+                            <div className="w-full bg-gray-200 px-2 py-4 text-sm">
+                                No products were found matching your selection
+                            </div>
+                        )}
                         <div
                             className={`flex-1 ${isDisplayGrid ? 'grid grid-cols-3 gap-8' : 'flex flex-col items-start gap-10'}`}
                         >

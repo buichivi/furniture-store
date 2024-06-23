@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Navigation, RelatedProducts, ReviewStars, SliderProductImages, UserReview } from '../components';
 import { numberWithCommas } from '../utils/format';
-import { Link, useNavigation, useParams } from 'react-router-dom';
+import { Link, useNavigate, useNavigation, useParams } from 'react-router-dom';
 import apiRequest from '../utils/apiRequest';
 import toast from 'react-hot-toast';
 import useCartStore from '../store/cartStore';
@@ -20,13 +20,15 @@ export const loader = async ({ params }) => {
 const Product = () => {
     const { productSlug } = useParams();
     const { setCart } = useCartStore();
-    const { getNavigationPath } = useDataStore();
+    const { getNavigationPath, products, setWishlist } = useDataStore();
+    const [isInWishlist, setIsInWishlist] = useState(false);
     const { token } = useAuthStore();
 
     const [selectedColor, setSelectedColor] = useState();
     const [selectedTab, setSelectedTab] = useState(1);
     const [quantity, setQuantity] = useState(1);
     const [product, setProduct] = useState({});
+    const navigate = useNavigate();
 
     const navigation = useNavigation();
 
@@ -49,7 +51,14 @@ const Product = () => {
         return totalReview ? totalRating / totalReview : 0;
     }, [product]);
 
-    const handleAddToCart = (productId, colorId, quantity) => {
+    useEffect(() => {
+        const _product = products.find((prod) => prod._id == product?._id);
+        if (_product) {
+            setIsInWishlist(_product?.isInWishlist);
+        }
+    }, [products, product]);
+
+    const handleAddToCart = (productId, colorId, quantity, buyNow = false) => {
         toast.promise(
             apiRequest.post(
                 '/cart',
@@ -63,10 +72,40 @@ const Product = () => {
             {
                 loading: 'Adding to cart...',
                 success: (res) => {
+                    if (buyNow) {
+                        navigate('/cart');
+                    }
                     setCart(res.data.cart);
                     return res.data.message;
                 },
                 error: (err) => err.response.data?.error,
+            },
+        );
+    };
+    const handleRemoveFromWishlist = () => {
+        toast.promise(
+            apiRequest.delete('/wishlist/' + product?._id, { headers: { Authorization: 'Bearer ' + token } }),
+            {
+                loading: 'Removing...',
+                success: (res) => {
+                    setWishlist(res.data?.wishlist);
+                    return res.data?.message;
+                },
+                error: (err) => err?.response?.data?.error,
+            },
+        );
+    };
+
+    const handleAddToWishlist = () => {
+        toast.promise(
+            apiRequest.post('/wishlist', { product: product?._id }, { headers: { Authorization: 'Bearer ' + token } }),
+            {
+                loading: 'Adding...',
+                success: (res) => {
+                    setWishlist(res.data?.wishlist);
+                    return res.data?.message;
+                },
+                error: (err) => err?.response?.data?.error,
             },
         );
     };
@@ -179,14 +218,24 @@ const Product = () => {
                         </div>
                         <button
                             className={`mt-4 h-[50px] w-full select-none border border-black bg-transparent text-sm font-semibold uppercase text-black transition-all hover:border-[#d10202] hover:text-[#d10202] ${!selectedColor && 'pointer-events-none cursor-not-allowed opacity-40'}`}
+                            onClick={() => handleAddToCart(product?._id, selectedColor?._id, quantity, true)}
                         >
                             Buy now
                         </button>
                         <div className="mt-6 flex items-center text-sm">
                             <div className="flex flex-1 items-center gap-10 text-sm">
-                                <button className="tracking-wider transition-colors hover:text-[#d10202]">
-                                    <i className="fa-light fa-heart text-base"></i>
-                                    <span className="ml-2">Add to wishlist</span>
+                                <button
+                                    className="tracking-wider transition-colors hover:text-[#d10202]"
+                                    onClick={() => {
+                                        if (!isInWishlist) {
+                                            handleAddToWishlist();
+                                        } else {
+                                            handleRemoveFromWishlist();
+                                        }
+                                    }}
+                                >
+                                    <i className={`fa-${isInWishlist ? 'solid' : 'light'} fa-heart mr-2 text-base`}></i>
+                                    {!isInWishlist ? <span>Add to wishlist</span> : <Link>Remove from wishlist</Link>}
                                 </button>
                                 <button className="tracking-wider transition-colors hover:text-[#d10202]">
                                     <i className="fa-light fa-code-compare text-base"></i>
@@ -210,17 +259,23 @@ const Product = () => {
                                 SKU: <span className="text-[#848484]">{product?.SKU}</span>
                             </p>
                             <p className="text-sm">
-                                BRAND:{' '}
-                                <Link className="text-[#848484] transition-colors hover:text-[#d10202]">
+                                BRAND:
+                                <Link
+                                    to={`/brand/${product?.brand?.name}`}
+                                    className="text-[#848484] transition-colors hover:text-[#d10202]"
+                                >
                                     {product?.brand?.name}
                                 </Link>
                             </p>
                             <div className="flex gap-1 text-sm">
-                                TAGS:{' '}
+                                TAGS:
                                 <div className="flex items-center gap-1">
                                     {product?.tags?.map((tag, index) => (
                                         <div key={index}>
-                                            <Link className="capitalize text-[#848484] transition-colors hover:text-[#d10202]">
+                                            <Link
+                                                to={`/tag/${tag?.name}`}
+                                                className="capitalize text-[#848484] transition-colors hover:text-[#d10202]"
+                                            >
                                                 {tag.name}
                                             </Link>
                                             {index <= product?.tags?.length - 2 && <span>,</span>}

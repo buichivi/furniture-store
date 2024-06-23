@@ -8,7 +8,7 @@ import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import useAuthStore from '../store/authStore';
 
-function PayPalButton({ form }) {
+function PayPalButton({ form, setOrder }) {
     const { cart, setCart } = useCartStore();
     const { promoCode, setPromoCode } = useDataStore();
     const { token } = useAuthStore();
@@ -24,7 +24,7 @@ function PayPalButton({ form }) {
     useEffect(() => {
         setKey(key + 1);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [cart]);
+    }, [cart, promoCode?.code]);
 
     useEffect(() => {
         const timerId = setTimeout(() => {
@@ -57,9 +57,13 @@ function PayPalButton({ form }) {
             : promoCode?.discount;
     }, [promoCode, cart]);
 
+    const total = useMemo(() => {
+        return (cart?.subTotal >= discount ? cart?.subTotal - discount : 0) + 10;
+    }, [discount, cart]);
+
     const createOrder = (data, actions) => {
         console.log('ORDER');
-        const totalValue = (cart?.subTotal + 10 - discount).toFixed(2);
+        const totalValue = total.toFixed(2);
         return actions.order.create({
             intent: 'CAPTURE',
             purchase_units: [
@@ -74,7 +78,7 @@ function PayPalButton({ form }) {
                             },
                             discount: {
                                 currency_code: 'USD',
-                                value: discount.toFixed(2),
+                                value: Math.min(discount, cart?.subTotal).toFixed(2),
                             },
                             shipping: {
                                 currency_code: 'USD',
@@ -107,11 +111,11 @@ function PayPalButton({ form }) {
         return actions.order.capture().then(function (details) {
             console.log('APPROVE');
             const data = {
-                totalAmount: cart?.subTotal - discount + 10,
+                totalAmount: total,
                 shippingAddress: form.values,
                 promoCode: promoCode?._id,
                 paymentMethod: 'paypal',
-                paymentStatus: 'completed',
+                paymentStatus: 'paid',
             };
             toast.promise(apiRequest.post('/orders', { ...data }, { headers: { Authorization: 'Bearer ' + token } }), {
                 loading: 'Creating order...',
@@ -119,6 +123,7 @@ function PayPalButton({ form }) {
                     setCart({ items: [] });
                     setPromoCode({});
                     navigate('/checkout#success');
+                    setOrder(res.data?.order);
                     return res.data?.message;
                 },
                 error: (err) => err?.response?.data?.error,
@@ -155,6 +160,7 @@ function PayPalButton({ form }) {
 }
 PayPalButton.propTypes = {
     form: PropTypes.object,
+    setOrder: PropTypes.func,
 };
 
 export default PayPalButton;

@@ -49,7 +49,7 @@ const Header = () => {
     const inputToggleMenu = useRef();
     const imageRef = useRef();
     const { currentUser, loginUser, logout, token } = useAuthStore();
-    const { promoCode, setPromoCode, setCategories, setProducts } = useDataStore();
+    const { products, wishlist, promoCode, setPromoCode, setCategories, setProducts, setWishlist } = useDataStore();
     const { cart, setCart } = useCartStore();
 
     console.log('Header re-render');
@@ -83,7 +83,6 @@ const Header = () => {
             const user = results[0].status == 'fulfilled' && results[0].value.data.user;
             const categories = results[1].status == 'fulfilled' && results[1].value.data.categories;
             const products = results[2].status == 'fulfilled' && results[2].value.data.products;
-            console.log(results[0].value.data.user);
             if (user) loginUser(user);
             else {
                 loginUser({});
@@ -95,21 +94,31 @@ const Header = () => {
     }, []);
 
     useEffect(() => {
-        console.log('API CART');
-        console.log(currentUser);
         apiRequest
             .get('/cart', { headers: { Authorization: 'Bearer ' + token }, withCredentials: true })
             .then((res) => setCart(res.data.cart))
             .catch((err) => console.log(err));
+        apiRequest
+            .get('/wishlist', { headers: { Authorization: 'Bearer ' + token } })
+            .then((res) => setWishlist(res.data?.wishlist))
+            .catch((err) => console.log(err));
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentUser?._id]);
+
+    useEffect(() => {
+        setProducts(products);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [wishlist]);
 
     useEffect(() => {
         apiRequest
             .get('/promo-code/' + promoCode?.code)
             .then(() => console.log('APPLY PROMO CODE SUCCESS'))
             .catch(() => setPromoCode({}));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
+    console.log(products, wishlist);
 
     const handleLogout = () => {
         toast.promise(apiRequest.patch('/auth/logout', null, { headers: { Authorization: 'Bearer ' + token } }), {
@@ -299,14 +308,21 @@ const Header = () => {
                                         );
                                     }}
                                 >
-                                    <i className="fa-light fa-user cursor-pointer text-xl"></i>
+                                    {/* <i className="fa-light fa-user cursor-pointer text-xl"></i> */}
+                                    <div className="size-7 shrink-0 cursor-pointer overflow-hidden rounded-full">
+                                        <img
+                                            src={currentUser.avatar || '/images/account-placeholder.jpg'}
+                                            alt={currentUser.name}
+                                            className="size-full object-cover"
+                                        />
+                                    </div>
                                 </Tippy>
                             </div>
                         )}
-                        <Link className="relative">
+                        <Link to="/wishlist" className="relative">
                             <i className="fa-light fa-heart hover:opacity-70"></i>
                             <div className="absolute -right-[45%] -top-[35%] flex size-5 cursor-pointer items-center justify-center rounded-full bg-black text-white">
-                                <span className="text-sm">0</span>
+                                <span className="text-sm">{wishlist?.length}</span>
                             </div>
                         </Link>
                         <label className="relative" htmlFor="cart-short-form">

@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import SliderProductImages from './SliderProductImages';
 import ReviewStars from './ReviewStars';
 import { forwardRef, useEffect, useMemo, useState } from 'react';
@@ -8,15 +8,19 @@ import { useProductQuickViewStore } from '../store/productQuickViewStore';
 import toast from 'react-hot-toast';
 import apiRequest from '../utils/apiRequest';
 import useCartStore from '../store/cartStore';
+import useAuthStore from '../store/authStore';
 
 const ProductQuickView = forwardRef(function ProductQuickView() {
     const [selectedColor, setSelectedColor] = useState();
     const [quantity, setQuantity] = useState(1);
     const { product, isOpen, toggleOpen } = useProductQuickViewStore();
     const { setCart } = useCartStore();
+    const { token } = useAuthStore();
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (!isOpen && product?.colors?.length > 1) setSelectedColor();
+        if (!isOpen) setQuantity(1);
     }, [isOpen, product]);
 
     useEffect(() => {
@@ -39,7 +43,7 @@ const ProductQuickView = forwardRef(function ProductQuickView() {
         return totalReview ? totalRating / totalReview : 0;
     }, [product]);
 
-    const handleAddToCart = (productId, colorId, quantity) => {
+    const handleAddToCart = (productId, colorId, quantity, buyNow = false) => {
         toast.promise(
             apiRequest.post(
                 '/cart',
@@ -48,11 +52,15 @@ const ProductQuickView = forwardRef(function ProductQuickView() {
                     color: colorId,
                     quantity,
                 },
-                { withCredentials: true },
+                { headers: { Authorization: 'Bearer ' + token }, withCredentials: true },
             ),
             {
                 loading: 'Adding to cart...',
                 success: (res) => {
+                    if (buyNow) {
+                        navigate('/cart');
+                        toggleOpen(false);
+                    }
                     setCart(res.data.cart);
                     return res.data.message;
                 },
@@ -192,6 +200,9 @@ const ProductQuickView = forwardRef(function ProductQuickView() {
                         {product?.isValid && (
                             <button
                                 className={`mt-4 h-[50px] w-full border border-black bg-transparent text-sm font-semibold uppercase text-black transition-all hover:border-[#d10202] hover:text-[#d10202] ${!selectedColor && 'cursor-not-allowed opacity-40'}`}
+                                onClick={() => {
+                                    handleAddToCart(product?._id, selectedColor?._id, quantity, true);
+                                }}
                             >
                                 Buy now
                             </button>
@@ -201,17 +212,25 @@ const ProductQuickView = forwardRef(function ProductQuickView() {
                                 SKU: <span className="text-[#848484]">{product?.SKU}</span>
                             </p>
                             <p>
-                                BRAND:{' '}
-                                <Link className="text-[#848484] transition-colors hover:text-[#d10202]">
+                                BRAND:
+                                <Link
+                                    to={`/brand/${product?.brand?.name}`}
+                                    onClick={() => toggleOpen(false)}
+                                    className="text-[#848484] transition-colors hover:text-[#d10202]"
+                                >
                                     {product?.brand?.name}
                                 </Link>
                             </p>
                             <div className="flex gap-1">
-                                TAGS:{' '}
+                                TAGS:
                                 <div className="flex items-center gap-1">
                                     {product?.tags?.map((tag, index) => (
                                         <div key={index}>
-                                            <Link className="capitalize text-[#848484] transition-colors hover:text-[#d10202]">
+                                            <Link
+                                                to={`/tag/${tag?.name}`}
+                                                onClick={() => toggleOpen(false)}
+                                                className="capitalize text-[#848484] transition-colors hover:text-[#d10202]"
+                                            >
                                                 {tag?.name}
                                             </Link>
                                             {index <= product?.tags?.length - 2 && <span>,</span>}

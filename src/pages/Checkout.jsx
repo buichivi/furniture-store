@@ -40,6 +40,10 @@ const Checkout = () => {
             : promoCode?.discount;
     }, [promoCode, cart]);
 
+    const total = useMemo(() => {
+        return (cart?.subTotal >= discount ? cart?.subTotal - discount : 0) + 10;
+    }, [discount, cart]);
+
     const handleApplyPromoCode = () => {
         if (code) {
             toast.promise(apiRequest.get('/promo-code/' + code), {
@@ -79,11 +83,13 @@ const Checkout = () => {
         onSubmit: (values) => {
             if (payment == 'cod') {
                 const data = {
-                    totalAmount: cart?.subTotal - discount + 10,
+                    totalAmount: total,
                     shippingAddress: values,
-                    promoCode: promoCode?._id,
                     paymentMethod: payment,
                 };
+                if (promoCode?._id) {
+                    data.promoCode = promoCode?._id;
+                }
                 toast.promise(
                     apiRequest.post('/orders', { ...data }, { headers: { Authorization: `Bearer ${token}` } }),
                     {
@@ -104,7 +110,7 @@ const Checkout = () => {
 
     useEffect(() => {
         if (payment != 'cod') customerInfo.validateForm();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [payment]);
 
     return (
@@ -117,7 +123,7 @@ const Checkout = () => {
                 {location.hash == '' && (
                     <form onSubmit={customerInfo.handleSubmit} className="flex items-start gap-10">
                         <div className="flex-1">
-                            {currentUser ? (
+                            {currentUser?._id ? (
                                 <React.Fragment>
                                     <PersonalInfo form={customerInfo} />
                                     <div className="mt-4">
@@ -226,10 +232,6 @@ const Checkout = () => {
                                     <span>${numberWithCommas(cart?.subTotal)}</span>
                                 </div>
                                 <div className="flex items-center justify-between py-1 text-base">
-                                    <span>Shipping cost: </span>
-                                    <span>$10</span>
-                                </div>
-                                <div className="flex items-center justify-between py-1 text-base">
                                     <span>Discount: </span>
                                     <span>
                                         - ${discount}
@@ -250,6 +252,12 @@ const Checkout = () => {
                                     >
                                         Change
                                     </label>
+                                    <span
+                                        onClick={() => setPromoCode({})}
+                                        className="cursor-pointer select-none transition-colors hover:text-[#d01202]"
+                                    >
+                                        Remove
+                                    </span>
                                 </div>
                                 <input
                                     type="checkbox"
@@ -280,9 +288,14 @@ const Checkout = () => {
                                         </button>
                                     </div>
                                 </div>
+                                <div className="flex items-center justify-between py-1 text-base">
+                                    <span>Shipping cost: </span>
+                                    <span>$10</span>
+                                </div>
+
                                 <div className="mt-4 flex items-center justify-between border-t py-2 text-lg font-bold">
                                     <span>Total: </span>
-                                    <span>${numberWithCommas(cart?.subTotal - discount + 10)}</span>
+                                    <span>${numberWithCommas(total)}</span>
                                 </div>
                             </div>
                             <button
@@ -292,7 +305,7 @@ const Checkout = () => {
                                 Place Order
                             </button>
                             {payment == 'paypal' && Object.keys(customerInfo.errors).length == 0 && (
-                                <PayPalButton form={customerInfo} />
+                                <PayPalButton form={customerInfo} setOrder={setOrder} />
                             )}
                         </div>
                     </form>
@@ -306,7 +319,11 @@ const Checkout = () => {
                         <div className="mt-6 flex flex-col items-center justify-center">
                             <span className="text-lg font-semibold tracking-wide">
                                 Your order #ID: {order?._id} -{' '}
-                                <span className="capitalize text-orange-500">{order?.paymentStatus}</span>
+                                <span
+                                    className={`capitalize ${order?.paymentStatus == 'pending' ? 'text-orange-500' : 'text-green-500'}`}
+                                >
+                                    {order?.paymentStatus}
+                                </span>
                             </span>
                             <span>Order date: {order?.createdAt}</span>
                         </div>
@@ -314,7 +331,10 @@ const Checkout = () => {
                             <Link className="rounded-none border border-black bg-black px-4 py-2 text-white transition-colors hover:bg-white hover:text-black">
                                 View detail
                             </Link>
-                            <Link className="flex items-center justify-center gap-2 rounded-none border border-black bg-white px-4 py-2 text-black transition-colors hover:bg-black hover:text-white">
+                            <Link
+                                to="/"
+                                className="flex items-center justify-center gap-2 rounded-none border border-black bg-white px-4 py-2 text-black transition-colors hover:bg-black hover:text-white"
+                            >
                                 <ArrowLeftIcon className="size-5" />
                                 <span>Continue Shopping</span>
                             </Link>

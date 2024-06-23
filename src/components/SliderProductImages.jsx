@@ -69,8 +69,8 @@ const SliderProductImages = ({
                 </div>
                 <div className="relative h-full flex-1">
                     <div className="absolute left-[3%] top-[3%] z-10 [&_span]:px-3 [&_span]:py-1 [&_span]:text-xs [&_span]:uppercase [&_span]:text-white">
-                        <span className="mr-1 bg-[#d10202]">Hot</span>
-                        {discount && <span className="mr-1 bg-black">Sale</span>}
+                        {isValid && <span className="mr-1 bg-[#d10202]">Hot</span>}
+                        {discount && isValid && <span className="mr-1 bg-black">Sale</span>}
                         {!isValid && <span className="bg-[#919191]">Sold out</span>}
                     </div>
                     {viewFullScreen && (

@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Filter, Navigation, Pagination, ProductCard, SliderCategory } from '../components';
+import { Filter, Navigation, Pagination, ProductCard } from '../components';
 import { useParams } from 'react-router-dom';
 import useDataStore from '../store/dataStore';
 import { ChevronDownIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import apiRequest from '../utils/apiRequest';
 
 const FILTER_OPEN_STATE = [
     { name: 'type', open: true },
@@ -19,9 +20,10 @@ const SORT_OPTIONS = [
 
 const PAGE_SIZE = 4;
 
-const Shop = () => {
+const Brand = () => {
+    const { brand } = useParams();
     const [isDisplayGrid, setIsDisplayGrid] = useState(true);
-    const { products, categories, getNavigationPath } = useDataStore();
+    const { categories, getNavigationPath } = useDataStore();
     const { parentCategorySlug, categorySlug } = useParams();
     const [filters, setFilters] = useState({ typeFilters: [], colorsFilters: [], priceRange: [], materialFilters: [] });
     const [onSaleOnly, setOnSaleOnly] = useState(false);
@@ -30,6 +32,16 @@ const Shop = () => {
     const [openState, setOpenState] = useState(FILTER_OPEN_STATE);
     const [sort, setSort] = useState(SORT_OPTIONS[0]);
     const [currentPage, setCurrentPage] = useState(1);
+    const [productBrands, setProductBrand] = useState([]);
+
+    useEffect(() => {
+        if (brand) {
+            apiRequest
+                .get('/products/brand/' + brand)
+                .then((res) => setProductBrand(res.data?.products))
+                .catch((err) => console.log(err));
+        }
+    }, [brand]);
 
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -39,11 +51,9 @@ const Shop = () => {
         setCurrentPage(1);
     }, [filters]);
 
-    console.log(categories);
-
     const filteredProducts = useMemo(() => {
         const { typeFilters, colorsFilters, priceRange, materialFilters } = filters;
-        return products
+        return productBrands
             .filter((prod) => {
                 if (parentCategorySlug && !categorySlug) {
                     const parentCategory = categories.find((cate) => cate.slug == parentCategorySlug);
@@ -78,7 +88,7 @@ const Shop = () => {
                     return b.salePrice - a.salePrice;
                 }
             });
-    }, [products, filters, onSaleOnly, sort, categories, parentCategorySlug, categorySlug]);
+    }, [productBrands, filters, onSaleOnly, sort, categories, parentCategorySlug, categorySlug]);
 
     const isFiltering = useMemo(() => {
         return (
@@ -104,12 +114,7 @@ const Shop = () => {
                     alt=""
                     className="absolute left-0 top-0 -z-10 size-full object-cover"
                 />
-                <Navigation paths={location.pathname} />
-                <div className="container mx-auto px-5">
-                    <div className="bg-transparent pb-16">
-                        {!categorySlug && <SliderCategory products={products} className="w-2/3" />}
-                    </div>
-                </div>
+                <Navigation paths={`/shop/${brand}`} />
             </div>
             <div className="container mx-auto px-5">
                 <div className="flex gap-8 border-t py-16">
@@ -342,4 +347,4 @@ const Shop = () => {
     );
 };
 
-export default Shop;
+export default Brand;
