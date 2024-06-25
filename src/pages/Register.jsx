@@ -2,12 +2,24 @@ import { useFormik } from 'formik';
 import toast from 'react-hot-toast';
 import * as Yup from 'yup';
 import apiRequest from '../utils/apiRequest';
-import { useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useRef } from 'react';
+import { Link, useNavigate, useNavigation } from 'react-router-dom';
+import useAuthStore from '../store/authStore';
+import nProgress from 'nprogress';
 
 const Register = () => {
     const previewAvatar = useRef();
     const loginLink = useRef();
+    const { currentUser } = useAuthStore();
+    const navigate = useNavigate();
+    const navigation = useNavigation();
+
+    useEffect(() => {
+        if (currentUser?._id) {
+            navigate('/');
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [currentUser]);
 
     const formik = useFormik({
         initialValues: {
@@ -43,7 +55,6 @@ const Register = () => {
             toast.promise(apiRequest.post('/auth/register', formData), {
                 loading: 'Registering...',
                 success: (res) => {
-                    // navigate('/login');
                     loginLink.current.click();
                     toast.success("You'r ready to login");
                     return res.data.message;
@@ -55,6 +66,13 @@ const Register = () => {
             });
         },
     });
+    useEffect(() => {
+        if (navigation.state == 'loading') {
+            nProgress.start();
+        } else {
+            nProgress.done();
+        }
+    }, [navigation.state]);
 
     return (
         <div className="relative flex h-screen w-screen items-center justify-center">

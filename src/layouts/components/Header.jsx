@@ -98,10 +98,12 @@ const Header = () => {
             .get('/cart', { headers: { Authorization: 'Bearer ' + token }, withCredentials: true })
             .then((res) => setCart(res.data.cart))
             .catch((err) => console.log(err));
-        apiRequest
-            .get('/wishlist', { headers: { Authorization: 'Bearer ' + token } })
-            .then((res) => setWishlist(res.data?.wishlist))
-            .catch((err) => console.log(err));
+        if (currentUser?._id) {
+            apiRequest
+                .get('/wishlist', { headers: { Authorization: 'Bearer ' + token } })
+                .then((res) => setWishlist(res.data?.wishlist))
+                .catch((err) => console.log(err));
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentUser?._id]);
 
@@ -126,6 +128,7 @@ const Header = () => {
             success: (res) => {
                 logout();
                 setCart({ items: [] });
+                setWishlist([]);
                 navigate('/');
                 return res.data.message;
             },

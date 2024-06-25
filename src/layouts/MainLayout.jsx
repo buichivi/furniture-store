@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { Header, Footer } from './components';
 import PropTypes from 'prop-types';
-import { ProductQuickView } from '../components';
+import { CompareProduct, ProductQuickView } from '../components';
 // import { useLocation } from 'react-router-dom';
 
 const MainLayout = ({ children }) => {
@@ -39,6 +39,7 @@ const MainLayout = ({ children }) => {
                 <i className="fa-light fa-arrow-up"></i>
             </div>
             <ProductQuickView />
+            <CompareProduct />
         </div>
     );
 };

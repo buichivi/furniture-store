@@ -1,15 +1,18 @@
 import apiRequest from '../utils/apiRequest';
 import useAuthStore from '../store/authStore';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useNavigation } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useEffect, useState } from 'react';
+import nProgress from 'nprogress';
 
 const Login = () => {
     const { currentUser, loginUser, setToken } = useAuthStore();
     const [showPass, setShowPass] = useState(false);
     const navigate = useNavigate();
+    const location = useLocation();
+    const navigation = useNavigation();
 
     useEffect(() => {
         if (currentUser?._id) {
@@ -35,14 +38,18 @@ const Login = () => {
             remember: Yup.bool(),
         }),
         onSubmit: (values) => {
+            nProgress.start();
             toast.promise(
                 apiRequest.post('/auth/login', { ...values }),
                 {
                     loading: 'Login...',
                     success: (res) => {
+                        nProgress.done();
                         loginUser(res.data.user);
                         setToken(res.data.token);
-                        navigate('/');
+                        if (location.state?.from) {
+                            navigate(location.state.from);
+                        }
                         return res.data.message;
                     },
                     error: (error) => {
@@ -57,6 +64,14 @@ const Login = () => {
             );
         },
     });
+
+    useEffect(() => {
+        if (navigation.state == 'loading') {
+            nProgress.start();
+        } else {
+            nProgress.done();
+        }
+    }, [navigation.state]);
 
     return (
         <div className="flex h-screen w-screen items-center">

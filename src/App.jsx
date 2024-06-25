@@ -27,38 +27,77 @@ import 'tippy.js/animations/scale.css';
 
 import MainLayout from './layouts/MainLayout';
 import { ScrollToTop } from './components';
-import { public_routes } from './routes';
-import { Login, Register } from './pages';
+import { private_routes, public_routes } from './routes';
+import { Home, Login, Register } from './pages';
 import { useEffect } from 'react';
+import { ProtectedRoute } from './layouts/components';
 
 const TOAST_LIMIT = 3;
+
+const fakeLoader = async () => {
+    return await new Promise((resolve) => setTimeout(() => resolve(null), 500));
+};
 
 function App() {
     const { toasts } = useToasterStore();
 
     const router = createBrowserRouter([
-        ...public_routes.map((route) => {
-            const { path, element: Element, loader } = route;
-            return {
-                path,
-                element: (
-                    <MainLayout>
-                        <>
-                            <ScrollToTop />
-                            <Element />
-                        </>
-                    </MainLayout>
-                ),
-                loader,
-            };
-        }),
+        {
+            path: '/',
+            element: (
+                <MainLayout>
+                    <>
+                        <ScrollToTop />
+                        <Home />
+                    </>
+                </MainLayout>
+            ),
+            loader: fakeLoader,
+        },
         {
             path: '/login',
             element: <Login />,
+            loader: fakeLoader,
         },
         {
             path: '/register',
             element: <Register />,
+            loader: fakeLoader,
+        },
+        {
+            children: public_routes.map((route) => {
+                const { path, element: Element, loader } = route;
+                return {
+                    path,
+                    element: (
+                        <MainLayout>
+                            <>
+                                <ScrollToTop />
+                                <Element />
+                            </>
+                        </MainLayout>
+                    ),
+                    loader,
+                };
+            }),
+        },
+        {
+            element: <ProtectedRoute />,
+            children: private_routes.map((route) => {
+                const { path, element: Element, loader } = route;
+                return {
+                    path,
+                    element: (
+                        <MainLayout>
+                            <>
+                                <ScrollToTop />
+                                <Element />
+                            </>
+                        </MainLayout>
+                    ),
+                    loader,
+                };
+            }),
         },
     ]);
 

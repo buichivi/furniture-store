@@ -7,10 +7,10 @@ const SearchItem = ({ item }) => {
 
     return (
         <div className="flex items-center justify-between gap-5">
-            <Link to={getNavigationPath(item, 'product')} className="inline-block shrink-0 basis-[25%]">
+            <Link to={getNavigationPath(item, 'product')} className="inline-block w-1/4 shrink-0">
                 <img src={item?.colors?.length && item?.colors[0]?.images[0]} alt="" />
             </Link>
-            <div>
+            <div className="flex-1">
                 <Link
                     to={getNavigationPath(item, 'product')}
                     className="line-clamp-2 text-base tracking-wider transition-colors hover:text-[#d10202]"

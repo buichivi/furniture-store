@@ -81,7 +81,7 @@ const SliderProductImages = ({
                                 galleryFullScreen.current.children[index].click();
                             }}
                         >
-                            <i className="fa-light fa-magnifying-glass"></i>
+                            <i className="fa-regular fa-expand text-xl"></i>
                         </span>
                     )}
                     <div className="relative h-full w-full overflow-hidden">

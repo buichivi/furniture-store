@@ -22,7 +22,7 @@ const ReviewStars = ({ stars = 5, size = '4px' }) => {
                         </span>
                     );
                 })}
-            {decimal < 5 && decimal > 0 && (
+            {decimal < 5 && decimal > 0 && fractional > 0 && (
                 <span
                     className={`relative`}
                     style={{

@@ -1,26 +1,9 @@
-import {
-    Home,
-    Shop,
-    Product,
-    Profile,
-    productLoader,
-    Cart,
-    Checkout,
-    Search,
-    Wishlist,
-    ProductTag,
-    Brand,
-} from '../pages';
+import { Shop, Product, Profile, productLoader, Cart, Checkout, Search, Wishlist, ProductTag, Brand } from '../pages';
 const fakeLoader = async () => {
     return await new Promise((resolve) => setTimeout(() => resolve(null), 500));
 };
 
 const public_routes = [
-    {
-        path: '/',
-        element: Home,
-        loader: fakeLoader,
-    },
     {
         path: '/shop/:parentCategorySlug/:categorySlug/:productSlug',
         element: Product,
@@ -56,11 +39,7 @@ const public_routes = [
         element: Search,
         loader: fakeLoader,
     },
-    {
-        path: '/wishlist',
-        element: Wishlist,
-        loader: fakeLoader,
-    },
+
     {
         path: '/tag/:tag',
         element: ProductTag,
@@ -77,6 +56,11 @@ const private_routes = [
     {
         path: '/profile',
         element: Profile,
+    },
+    {
+        path: '/wishlist',
+        element: Wishlist,
+        loader: fakeLoader,
     },
 ];
 

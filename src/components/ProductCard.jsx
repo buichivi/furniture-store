@@ -9,7 +9,7 @@ import useCartStore from '../store/cartStore';
 import useAuthStore from '../store/authStore';
 import { useEffect, useState } from 'react';
 import useDataStore from '../store/dataStore';
-import { ArrowRightIcon, EllipsisHorizontalCircleIcon, ShoppingBagIcon } from '@heroicons/react/24/outline';
+import { useCompareProductsStore } from '../store/compareProductsStore.js';
 
 const ProductCard = ({ product = {}, isDisplayGrid = true, to = '' }) => {
     const { setProduct, toggleOpen } = useProductQuickViewStore();
@@ -18,6 +18,7 @@ const ProductCard = ({ product = {}, isDisplayGrid = true, to = '' }) => {
     const { token } = useAuthStore();
     const { setWishlist } = useDataStore();
     const [isFavor, setIsFavor] = useState(false);
+    const { toggleOpen: toggleOpenCompare, setCompares, compareProducts } = useCompareProductsStore();
 
     useEffect(() => {
         setIsFavor(product?.isInWishlist || false);
@@ -127,7 +128,16 @@ const ProductCard = ({ product = {}, isDisplayGrid = true, to = '' }) => {
                                 >
                                     <div
                                         className="flex size-9 translate-y-3 cursor-pointer items-center justify-center rounded-full bg-white text-base opacity-0 transition-all delay-[100ms]  hover:bg-[#D10202] hover:text-white group-hover/product:translate-y-0 group-hover/product:opacity-100"
-                                        onClick={(e) => e.preventDefault()}
+                                        onClick={(e) => {
+                                            const existedProd = compareProducts.find(
+                                                (prod) => prod?._id == product?._id,
+                                            );
+                                            if (!existedProd) {
+                                                setCompares([...compareProducts, product]);
+                                            }
+                                            toggleOpenCompare(true);
+                                            e.preventDefault();
+                                        }}
                                     >
                                         <i className="fa-light fa-code-compare"></i>
                                     </div>
@@ -160,22 +170,20 @@ const ProductCard = ({ product = {}, isDisplayGrid = true, to = '' }) => {
                                     onClick={() => {
                                         navigate(to);
                                     }}
-                                    className={`flex w-full translate-y-3 items-center justify-center gap-2 bg-black py-3 text-center text-base font-semibold capitalize text-white opacity-0 transition-all ease-out hover:bg-[#D10202] hover:text-white group-hover/product:translate-y-0 group-hover/product:opacity-100 ${!isDisplayGrid && 'hidden'}`}
+                                    className={`flex w-full translate-y-3 items-center justify-center gap-2 bg-black py-3 text-center text-sm font-semibold uppercase text-white opacity-0 transition-all ease-out hover:bg-[#D10202] hover:text-white group-hover/product:translate-y-0 group-hover/product:opacity-100 ${!isDisplayGrid && 'hidden'}`}
                                 >
                                     <span>Select options</span>
-                                    <ArrowRightIcon className="size-5" />
                                 </span>
                             )}
                             {product?.colors?.length == 1 && product?.isValid && (
                                 <div
-                                    className={`flex w-full translate-y-3 items-center justify-center gap-2 bg-black py-3 text-center text-base font-semibold capitalize text-white opacity-0 transition-all ease-out hover:bg-[#D10202] hover:text-white group-hover/product:translate-y-0 group-hover/product:opacity-100 ${!isDisplayGrid && 'hidden'}`}
+                                    className={`flex w-full translate-y-3 items-center justify-center gap-2 bg-black py-3 text-center text-sm font-semibold uppercase text-white opacity-0 transition-all ease-out hover:bg-[#D10202] hover:text-white group-hover/product:translate-y-0 group-hover/product:opacity-100 ${!isDisplayGrid && 'hidden'}`}
                                     onClick={(e) => {
                                         e.preventDefault();
                                         handleAddToCart(product?._id, product?.colors[0]?._id, 1);
                                     }}
                                 >
                                     <span>Add to cart</span>
-                                    <ShoppingBagIcon className="size-5" />
                                 </div>
                             )}
                             {!product?.isValid && (
@@ -183,10 +191,9 @@ const ProductCard = ({ product = {}, isDisplayGrid = true, to = '' }) => {
                                     onClick={() => {
                                         navigate(to);
                                     }}
-                                    className={`flex w-full translate-y-3 items-center justify-center gap-2 bg-black py-3 text-center text-base font-semibold capitalize text-white opacity-0 transition-all ease-out hover:bg-[#D10202] hover:text-white group-hover/product:translate-y-0 group-hover/product:opacity-100 ${!isDisplayGrid && 'hidden'}`}
+                                    className={`flex w-full translate-y-3 items-center justify-center gap-2 bg-black py-3 text-center text-sm font-semibold uppercase text-white opacity-0 transition-all ease-out hover:bg-[#D10202] hover:text-white group-hover/product:translate-y-0 group-hover/product:opacity-100 ${!isDisplayGrid && 'hidden'}`}
                                 >
                                     <span>Read more</span>
-                                    <EllipsisHorizontalCircleIcon className="size-5" />
                                 </span>
                             )}
                         </div>

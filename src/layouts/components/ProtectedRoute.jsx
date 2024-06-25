@@ -1,30 +1,11 @@
 import useAuthStore from '../../store/authStore';
-import PropTypes from 'prop-types';
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import apiRequest from '../../utils/apiRequest';
+import { Navigate, Outlet, useLocation } from 'react-router-dom';
 
-const ProtectedRoute = ({ children }) => {
-    const { loginUser, token } = useAuthStore();
-    const navigate = useNavigate();
+const ProtectedRoute = () => {
+    const { currentUser } = useAuthStore();
+    const location = useLocation();
 
-    useEffect(() => {
-        apiRequest
-            .get('/auth/me', { headers: { Authorization: `Bearer ${token}` } })
-            .then((res) => {
-                loginUser(res.data.user);
-            })
-            .catch(() => {
-                console.log('error');
-                navigate('/login');
-            });
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-    return children;
-};
-
-ProtectedRoute.propTypes = {
-    children: PropTypes.element,
+    return currentUser?._id ? <Outlet /> : <Navigate to="/login" replace state={{ from: location }} />;
 };
 
 export default ProtectedRoute;

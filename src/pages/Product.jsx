@@ -7,6 +7,7 @@ import toast from 'react-hot-toast';
 import useCartStore from '../store/cartStore';
 import useDataStore from '../store/dataStore';
 import useAuthStore from '../store/authStore';
+import { useCompareProductsStore } from '../store/compareProductsStore';
 
 export const loader = async ({ params }) => {
     const { productSlug } = params;
@@ -27,8 +28,9 @@ const Product = () => {
     const [selectedColor, setSelectedColor] = useState();
     const [selectedTab, setSelectedTab] = useState(1);
     const [quantity, setQuantity] = useState(1);
-    const [product, setProduct] = useState({});
+    const [product, setProduct] = useState({ reviews: [] });
     const navigate = useNavigate();
+    const { toggleOpen, setCompares, compareProducts } = useCompareProductsStore();
 
     const navigation = useNavigation();
 
@@ -37,7 +39,7 @@ const Product = () => {
         apiRequest
             .get('/products/' + productSlug)
             .then((res) => {
-                if (res.data.product?.colors?.length == 1) {
+                if (res.data.product?.colors?.length >= 1) {
                     setSelectedColor(res.data.product?.colors[0]);
                 }
                 setProduct(res.data.product);
@@ -179,14 +181,6 @@ const Product = () => {
                                         );
                                     })}
                                 </div>
-                                {selectedColor && (
-                                    <button
-                                        className="absolute left-0 top-full text-[#d10202]"
-                                        onClick={() => setSelectedColor()}
-                                    >
-                                        Clear
-                                    </button>
-                                )}
                             </div>
                         )}
                         <div className="flex h-[50px] w-full items-center gap-4">
@@ -237,7 +231,16 @@ const Product = () => {
                                     <i className={`fa-${isInWishlist ? 'solid' : 'light'} fa-heart mr-2 text-base`}></i>
                                     {!isInWishlist ? <span>Add to wishlist</span> : <Link>Remove from wishlist</Link>}
                                 </button>
-                                <button className="tracking-wider transition-colors hover:text-[#d10202]">
+                                <button
+                                    className="tracking-wider transition-colors hover:text-[#d10202]"
+                                    onClick={() => {
+                                        const existedProd = compareProducts.find((prod) => prod?._id == product?._id);
+                                        if (!existedProd) {
+                                            setCompares([...compareProducts, product]);
+                                        }
+                                        toggleOpen(true);
+                                    }}
+                                >
                                     <i className="fa-light fa-code-compare text-base"></i>
                                     <span className="ml-2">Compare</span>
                                 </button>
@@ -340,11 +343,13 @@ const Product = () => {
                                 </div>
                             </div>
                         )}
-                        {selectedTab == 3 && <UserReview product={product} averageRating={averageRating} />}
+                        {selectedTab == 3 && (
+                            <UserReview product={product} averageRating={averageRating} setProduct={setProduct} />
+                        )}
                     </div>
                 </div>
                 <div className="mb-20">
-                    <RelatedProducts />
+                    <RelatedProducts product={product} />
                 </div>
             </div>
         </div>

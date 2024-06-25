@@ -34,7 +34,7 @@ const ProductQuickView = forwardRef(function ProductQuickView() {
     }, [toggleOpen]);
 
     useEffect(() => {
-        if (product?.colors?.length == 1) setSelectedColor(product?.colors[0]);
+        if (product?.colors?.length >= 1) setSelectedColor(product?.colors[0]);
     }, [product]);
 
     const averageRating = useMemo(() => {
@@ -150,14 +150,6 @@ const ProductQuickView = forwardRef(function ProductQuickView() {
                                         </div>
                                     ))}
                                 </div>
-                                {selectedColor && (
-                                    <button
-                                        className="text-sm font-normal text-[#d10202]"
-                                        onClick={() => setSelectedColor()}
-                                    >
-                                        Clear
-                                    </button>
-                                )}
                             </div>
                         )}
                         {product?.isValid && (

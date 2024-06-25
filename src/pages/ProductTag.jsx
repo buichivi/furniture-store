@@ -71,7 +71,7 @@ const ProductTag = () => {
                     colorsFilters.filter((color) => color.selected) == 0 ||
                     colorsFilters
                         .filter((color) => color.selected)
-                        .some((color) => prod.colors.some((cl) => cl._id == color._id));
+                        .some((color) => prod.colors.some((cl) => cl?.name == color?.name));
                 const priceMatch = prod.salePrice >= priceRange[0] && prod.salePrice <= priceRange[1];
                 const materialMatch =
                     materialFilters.filter((mt) => mt.selected) == 0 ||

@@ -19,3 +19,4 @@ export { default as ReviewItem } from './ReviewItem';
 export { default as UserReview } from './UserReview';
 export { default as Pagination } from './Pagination';
 export { default as SearchShortForm } from './SearchShortForm';
+export { default as CompareProduct } from './CompareProduct';
