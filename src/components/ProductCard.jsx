@@ -11,13 +11,14 @@ import { useEffect, useState } from 'react';
 import useDataStore from '../store/dataStore';
 import { useCompareProductsStore } from '../store/compareProductsStore.js';
 
-const ProductCard = ({ product = {}, isDisplayGrid = true, to = '' }) => {
+const ProductCard = ({ product = {}, isDisplayGrid = true }) => {
     const { setProduct, toggleOpen } = useProductQuickViewStore();
     const navigate = useNavigate();
     const { setCart } = useCartStore();
     const { token } = useAuthStore();
     const { setWishlist } = useDataStore();
     const [isFavor, setIsFavor] = useState(false);
+    const { getNavigationPath } = useDataStore();
     const { toggleOpen: toggleOpenCompare, setCompares, compareProducts } = useCompareProductsStore();
 
     useEffect(() => {
@@ -76,7 +77,7 @@ const ProductCard = ({ product = {}, isDisplayGrid = true, to = '' }) => {
         <>
             <div className={`group/product w-full ${!isDisplayGrid && 'flex items-center gap-[50px]'}`}>
                 <Link
-                    to={to}
+                    to={getNavigationPath(product, 'product')}
                     className={`group/product-img relative w-full shrink-0 overflow-hidden ${!isDisplayGrid && 'basis-[40%]'}`}
                 >
                     <img
@@ -168,7 +169,7 @@ const ProductCard = ({ product = {}, isDisplayGrid = true, to = '' }) => {
                             {product?.colors?.length >= 2 && product?.isValid && (
                                 <span
                                     onClick={() => {
-                                        navigate(to);
+                                        navigate(getNavigationPath(product, 'product'));
                                     }}
                                     className={`flex w-full translate-y-3 items-center justify-center gap-2 bg-black py-3 text-center text-sm font-semibold uppercase text-white opacity-0 transition-all ease-out hover:bg-[#D10202] hover:text-white group-hover/product:translate-y-0 group-hover/product:opacity-100 ${!isDisplayGrid && 'hidden'}`}
                                 >
@@ -189,7 +190,7 @@ const ProductCard = ({ product = {}, isDisplayGrid = true, to = '' }) => {
                             {!product?.isValid && (
                                 <span
                                     onClick={() => {
-                                        navigate(to);
+                                        navigate(getNavigationPath(product, 'product'));
                                     }}
                                     className={`flex w-full translate-y-3 items-center justify-center gap-2 bg-black py-3 text-center text-sm font-semibold uppercase text-white opacity-0 transition-all ease-out hover:bg-[#D10202] hover:text-white group-hover/product:translate-y-0 group-hover/product:opacity-100 ${!isDisplayGrid && 'hidden'}`}
                                 >
@@ -211,7 +212,7 @@ const ProductCard = ({ product = {}, isDisplayGrid = true, to = '' }) => {
                 <div className="mt-2">
                     {product?.discount > 0 && <span className="text-sm text-green-400">-{product?.discount}%</span>}
                     <Link
-                        to={to}
+                        to={getNavigationPath(product, 'product')}
                         className={`mb-3 line-clamp-2 cursor-pointer text-base tracking-wide transition-colors hover:text-[#D10202] ${!isDisplayGrid && '!text-xl font-normal tracking-wider'}`}
                     >
                         {product?.name}
@@ -237,7 +238,7 @@ const ProductCard = ({ product = {}, isDisplayGrid = true, to = '' }) => {
                             {product?.colors?.length >= 2 && product?.isValid && (
                                 <button
                                     onClick={() => {
-                                        navigate(to);
+                                        navigate(getNavigationPath(product, 'product'));
                                     }}
                                     className="mt-6 bg-black px-24 py-4 text-sm font-bold uppercase tracking-wider text-white transition-colors hover:bg-[#D10202]"
                                 >
@@ -258,7 +259,7 @@ const ProductCard = ({ product = {}, isDisplayGrid = true, to = '' }) => {
                             {!product?.isValid && (
                                 <button
                                     onClick={() => {
-                                        navigate(to);
+                                        navigate(getNavigationPath(product, 'product'));
                                     }}
                                     className="mt-6 bg-black px-24 py-4 text-sm font-bold uppercase tracking-wider text-white transition-colors hover:bg-[#D10202]"
                                 >

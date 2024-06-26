@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import useDataStore from '../store/dataStore';
 
 const Home = () => {
-    const { products, getNavigationPath } = useDataStore();
+    const { products } = useDataStore();
 
     return (
         <>
@@ -34,7 +34,7 @@ const Home = () => {
                 </div>
                 <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
                     {products?.map((product, index) => {
-                        return <ProductCard key={index} product={product} to={getNavigationPath(product, 'product')} />;
+                        return <ProductCard key={index} product={product} />;
                     })}
                 </div>
             </div>

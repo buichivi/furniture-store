@@ -292,11 +292,14 @@ const Header = () => {
                                                         <p>{currentUser.email}</p>
                                                     </div>
                                                 </div>
-                                                <Link className="flex items-center px-5 py-2 text-sm transition-colors hover:bg-[#eeeeee6e]">
+                                                <Link
+                                                    to="/account/orders"
+                                                    className="flex items-center px-5 py-2 text-sm transition-colors hover:bg-[#eeeeee6e]"
+                                                >
                                                     <span className="min-w-[20%] text-base">
                                                         <i className="fa-light fa-user"></i>
                                                     </span>
-                                                    My account
+                                                    <span>Account</span>
                                                 </Link>
                                                 <div
                                                     className="flex cursor-pointer items-center px-5 py-2 text-sm transition-colors hover:bg-[#eeeeee6e]"
@@ -305,7 +308,7 @@ const Header = () => {
                                                     <span className="min-w-[20%] text-base">
                                                         <i className="fa-light fa-arrow-left-from-bracket"></i>
                                                     </span>
-                                                    Log out
+                                                    <span>Log out</span>
                                                 </div>
                                             </div>
                                         );

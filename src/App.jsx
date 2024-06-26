@@ -57,7 +57,6 @@ function App() {
         {
             path: '/login',
             element: <Login />,
-            loader: fakeLoader,
         },
         {
             path: '/register',

@@ -108,7 +108,7 @@ const CompareProduct = () => {
                                                                     product?.colors?.length &&
                                                                     product?.colors[0]?.images[0]
                                                                 }
-                                                                alt=""
+                                                                alt={product?.name}
                                                                 className="size-full object-contain"
                                                             />
                                                         </Link>

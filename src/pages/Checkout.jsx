@@ -86,9 +86,12 @@ const Checkout = () => {
                     totalAmount: total,
                     shippingAddress: values,
                     paymentMethod: payment,
+                    discount,
+                    subTotal: cart?.subTotal,
+                    shippingFee: 10,
                 };
                 if (promoCode?._id) {
-                    data.promoCode = promoCode?._id;
+                    data.promoCode = promoCode._id;
                 }
                 toast.promise(
                     apiRequest.post('/orders', { ...data }, { headers: { Authorization: `Bearer ${token}` } }),
@@ -216,7 +219,7 @@ const Checkout = () => {
                                                         {item?.product?.name}
                                                     </Link>
                                                     <div className="flex flex-col align-top">
-                                                        <span className="text-sm">{item?.color?.name}d</span>
+                                                        <span className="text-sm">{item?.color?.name}</span>
                                                         <span className="text-sm">x {item?.quantity}</span>
                                                     </div>
                                                 </div>
@@ -280,12 +283,12 @@ const Checkout = () => {
                                             value={code}
                                             onChange={(e) => setCode(e.currentTarget.value)}
                                         />
-                                        <button
-                                            className={`shrink-0 basis-1/3 border border-black bg-white py-1 text-sm text-black transition-colors hover:bg-black hover:text-white ${code ? 'pointer-events-auto cursor-pointer opacity-100' : 'pointer-events-none cursor-default opacity-50'}`}
+                                        <span
+                                            className={`inline-block shrink-0 basis-1/3 border border-black bg-white py-1 text-center text-sm text-black transition-colors hover:bg-black hover:text-white ${code ? 'pointer-events-auto cursor-pointer opacity-100' : 'pointer-events-none cursor-default opacity-50'}`}
                                             onClick={() => handleApplyPromoCode()}
                                         >
                                             Apply
-                                        </button>
+                                        </span>
                                     </div>
                                 </div>
                                 <div className="flex items-center justify-between py-1 text-base">
