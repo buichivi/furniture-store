@@ -10,6 +10,7 @@ import axios from 'axios';
 import PropTypes from 'prop-types';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
+import Tippy from '@tippyjs/react';
 
 const ORDER_STATUS = [
     { status: 'pending', color: 'orange' },
@@ -31,6 +32,7 @@ const MyAccount = () => {
     const [addresses, setAddresses] = useState([]);
 
     const [currentViewOrder, setCurrentViewOrder] = useState({});
+    const [currentViewAddress, setCurrentViewAddress] = useState({});
 
     useEffect(() => {
         if (option == 'orders') {
@@ -43,14 +45,32 @@ const MyAccount = () => {
     }, [option]);
 
     useEffect(() => {
-        if (location.search) {
-            const orderId = location.search.slice(1).split('=')[1];
-            const order = orders.find((od) => od?._id == orderId);
-            if (order) setCurrentViewOrder(order);
-            else location.search = '';
+        console.log(location);
+        const opt = location.search.slice(1).split('=')[0];
+        if (option == 'orders') {
+            setCurrentViewAddress({});
+            if (opt == 'viewOrder' && !currentViewOrder?._id) {
+                const orderId = location.search.slice(1).split('=')[1];
+                const order = orders.find((od) => od?._id == orderId);
+                if (order) setCurrentViewOrder(order);
+            } else {
+                location.search = '';
+                setCurrentViewOrder({});
+            }
+        }
+        if (option == 'addresses') {
+            setCurrentViewOrder({});
+            if (opt == 'viewAddress' && !currentViewAddress?._id) {
+                const addressId = location.search.slice(1).split('=')[1];
+                const address = addresses.find((ad) => ad?._id == addressId);
+                if (address) setCurrentViewAddress(address);
+            } else {
+                location.search = '';
+                setCurrentViewAddress({});
+            }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [location.search]);
+    }, [location.search, option]);
 
     useEffect(() => {
         setAddresses(currentUser?.addresses ?? []);
@@ -376,7 +396,7 @@ const MyAccount = () => {
                                 </div>
                             </div>
                         )}
-                        {option == 'addresses' && (
+                        {option == 'addresses' && !currentViewAddress?._id && (
                             <React.Fragment>
                                 <div className="bg-white p-4">
                                     <div className="flex items-center justify-between ">
@@ -387,11 +407,6 @@ const MyAccount = () => {
                                         <label
                                             htmlFor="address-form"
                                             className="inline-block min-w-32 cursor-pointer border border-black bg-black px-4 py-2 text-center text-white transition-colors hover:bg-white hover:text-black"
-                                            onClick={(e) => {
-                                                if (!e.currentTarget.parentElement.nextElementSibling.checked) {
-                                                    e.currentTarget.textContent = 'Cancel';
-                                                } else e.currentTarget.textContent = 'Add';
-                                            }}
                                         >
                                             Add
                                         </label>
@@ -420,51 +435,56 @@ const MyAccount = () => {
                                                                 {address?.district?.name}, {address?.city?.name}
                                                             </p>
                                                         </div>
-                                                        <span
-                                                            className="cursor-pointer"
-                                                            onClick={() => handleSetDefaultAddress(address?._id)}
-                                                        >
-                                                            {address?.isDefault ? (
-                                                                <svg
-                                                                    xmlns="http://www.w3.org/2000/svg"
-                                                                    viewBox="0 0 24 24"
-                                                                    fill="currentColor"
-                                                                    className="size-5"
-                                                                >
-                                                                    <path
-                                                                        fillRule="evenodd"
-                                                                        d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z"
-                                                                        clipRule="evenodd"
-                                                                    />
-                                                                </svg>
-                                                            ) : (
-                                                                <svg
-                                                                    xmlns="http://www.w3.org/2000/svg"
-                                                                    fill="none"
-                                                                    viewBox="0 0 24 24"
-                                                                    strokeWidth={1.5}
-                                                                    stroke="currentColor"
-                                                                    className="size-5"
-                                                                >
-                                                                    <path
-                                                                        strokeLinecap="round"
-                                                                        strokeLinejoin="round"
-                                                                        d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"
-                                                                    />
-                                                                </svg>
-                                                            )}
-                                                        </span>
+                                                        <Tippy content="Set default address" animation="shift-toward">
+                                                            <span
+                                                                className="cursor-pointer"
+                                                                onClick={() => handleSetDefaultAddress(address?._id)}
+                                                            >
+                                                                {address?.isDefault ? (
+                                                                    <svg
+                                                                        xmlns="http://www.w3.org/2000/svg"
+                                                                        viewBox="0 0 24 24"
+                                                                        fill="currentColor"
+                                                                        className="size-5"
+                                                                    >
+                                                                        <path
+                                                                            fillRule="evenodd"
+                                                                            d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z"
+                                                                            clipRule="evenodd"
+                                                                        />
+                                                                    </svg>
+                                                                ) : (
+                                                                    <svg
+                                                                        xmlns="http://www.w3.org/2000/svg"
+                                                                        fill="none"
+                                                                        viewBox="0 0 24 24"
+                                                                        strokeWidth={1.5}
+                                                                        stroke="currentColor"
+                                                                        className="size-5"
+                                                                    >
+                                                                        <path
+                                                                            strokeLinecap="round"
+                                                                            strokeLinejoin="round"
+                                                                            d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"
+                                                                        />
+                                                                    </svg>
+                                                                )}
+                                                            </span>
+                                                        </Tippy>
                                                     </div>
-                                                    <div className="flex items-center justify-end gap-4">
+                                                    <div className="mt-4 flex items-center justify-end gap-4">
                                                         <button
                                                             className="inline-block cursor-pointer border border-black bg-white px-4 py-2 text-center text-xs font-bold uppercase text-black transition-all hover:bg-black hover:text-white"
                                                             onClick={() => handleDeleteAddress(address?._id)}
                                                         >
                                                             Delete address
                                                         </button>
-                                                        <button className="inline-block min-w-32 cursor-pointer border border-black bg-black px-4 py-2 text-center text-xs font-bold uppercase text-white transition-colors hover:bg-white hover:text-black">
+                                                        <Link
+                                                            className="inline-block min-w-32 cursor-pointer border border-black bg-black px-4 py-2 text-center text-xs font-bold uppercase text-white transition-colors hover:bg-white hover:text-black"
+                                                            to={`/account/addresses?viewAddress=${address?._id}`}
+                                                        >
                                                             Edit address
-                                                        </button>
+                                                        </Link>
                                                     </div>
                                                 </div>
                                             );
@@ -472,6 +492,11 @@ const MyAccount = () => {
                                     </div>
                                 )}
                             </React.Fragment>
+                        )}
+                        {option == 'addresses' && currentViewAddress?._id && (
+                            <div className="bg-white p-6">
+                                <EditAddressForm address={currentViewAddress} setAddresses={setAddresses} />
+                            </div>
                         )}
                     </div>
                 </div>
@@ -517,14 +542,13 @@ const AddAddressForm = ({ setAddresses }) => {
                     loading: 'Posting...',
                     success: (res) => {
                         resetForm();
-                        inputToggleForm.current.checked = !inputToggleForm.current.checked;
+                        inputToggleForm.current.click();
                         setAddresses(res.data?.addresses);
                         return res.data?.message;
                     },
                     error: (err) => err?.response?.data?.error,
                 },
             );
-            console.log(values);
         },
     });
 
@@ -568,9 +592,16 @@ const AddAddressForm = ({ setAddresses }) => {
                 ref={inputToggleForm}
                 id="address-form"
                 className="hidden [&:checked+div]:grid-rows-[1fr]"
+                onChange={(e) => {
+                    const label = e.currentTarget.previousElementSibling.children[1];
+                    if (e.currentTarget.checked) {
+                        label.textContent = 'Cancel';
+                    } else label.textContent = 'Add';
+                }}
+                readOnly
             />
             <div className="grid grid-rows-[0fr] transition-[grid-template-rows] duration-500 ease-out">
-                <form onSubmit={addressForm.handleSubmit} className="overflow-hidden">
+                <form onSubmit={addressForm.handleSubmit} className="overflow-hidden text-sm">
                     <div className="mt-4 w-full">
                         <div className="flex w-full items-start gap-6">
                             <div className="flex flex-1 flex-col items-start">
@@ -761,7 +792,307 @@ const AddAddressForm = ({ setAddresses }) => {
     );
 };
 
+const EditAddressForm = ({ address, setAddresses }) => {
+    const [cities, setCities] = useState([]);
+    const [districts, setDistricts] = useState([]);
+    const [wards, setWards] = useState([]);
+    const { token } = useAuthStore();
+    const navigate = useNavigate();
+
+    const addressForm = useFormik({
+        initialValues: {
+            firstName: address?.firstName,
+            lastName: address?.lastName,
+            email: address?.email,
+            phoneNumber: address?.phoneNumber,
+            city: address?.city,
+            district: address?.district,
+            ward: address?.ward,
+            addressLine: address?.addressLine,
+        },
+        enableReinitialize: true,
+        validationSchema: Yup.object().shape({
+            firstName: Yup.string().required('First name is required'),
+            lastName: Yup.string().required('Last name is required'),
+            email: Yup.string().email('Invalid email format').required('Email is required'),
+            phoneNumber: Yup.string()
+                .matches(/^[0-9]{10}$/, 'Phone number should be 10 digits')
+                .required('Phone number is required'),
+            city: Yup.object().required('City is required'),
+            district: Yup.object().required('District is required'),
+            ward: Yup.object().required('Province is required'),
+            addressLine: Yup.string().required('Address line is required'),
+        }),
+        onSubmit: (values) => {
+            toast.promise(
+                apiRequest.put(
+                    '/addresses/' + address?._id,
+                    { ...values },
+                    { headers: { Authorization: 'Bearer ' + token } },
+                ),
+                {
+                    loading: 'Posting...',
+                    success: (res) => {
+                        setAddresses(res.data?.addresses);
+                        navigate('/account/addresses');
+                        return res.data?.message;
+                    },
+                    error: (err) => err?.response?.data?.error,
+                },
+            );
+        },
+    });
+
+    useEffect(() => {
+        axios
+            .get('https://esgoo.net/api-tinhthanh/1/0.htm')
+            .then((res) => setCities(res.data?.data))
+            .catch((err) => console.log(err));
+    }, []);
+
+    useEffect(() => {
+        if (addressForm.values.city?.id) {
+            if (addressForm.values.city?.id != address?.city?.id) {
+                addressForm.setFieldValue('district', '');
+                addressForm.setFieldValue('ward', '');
+            }
+            axios
+                .get(`https://esgoo.net/api-tinhthanh/2/${addressForm.values.city.id}.htm`)
+                .then((res) => setDistricts(res.data?.data))
+                .catch((err) => console.log(err));
+        }
+        setDistricts([]);
+        setWards([]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [addressForm.values.city?.id]);
+
+    useEffect(() => {
+        if (addressForm.values.district?.id) {
+            if (addressForm.values.district?.id != address?.district?.id) {
+                addressForm.setFieldValue('ward', '');
+            }
+            axios
+                .get(`https://esgoo.net/api-tinhthanh/3/${addressForm.values.district.id}.htm`)
+                .then((res) => setWards(res.data?.data))
+                .catch((err) => console.log(err));
+        }
+        setWards([]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [addressForm.values.district?.id]);
+
+    return (
+        <React.Fragment>
+            <div className="">
+                <Link
+                    to="/account/addresses"
+                    className="flex w-fit items-center gap-2 border border-black bg-black p-2 text-sm text-white transition-all hover:bg-white hover:text-black"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={1.5}
+                        stroke="currentColor"
+                        className="size-5"
+                    >
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+                    </svg>
+
+                    <span>Back</span>
+                </Link>
+                <form onSubmit={addressForm.handleSubmit} className="overflow-hidden text-sm">
+                    <div className="mt-4 w-full">
+                        <div className="flex w-full items-start gap-6">
+                            <div className="flex flex-1 flex-col items-start">
+                                <div className="mb-2 flex w-full items-center justify-between">
+                                    <span>First name</span>
+                                    {addressForm.errors.firstName && (
+                                        <span className="text-sm text-[#d10202]">{addressForm.errors.firstName}</span>
+                                    )}
+                                </div>
+                                <input
+                                    placeholder="Ex: John,..."
+                                    type="text"
+                                    name="firstName"
+                                    value={addressForm.values.firstName}
+                                    onChange={addressForm.handleChange}
+                                    className="w-full rounded-lg border-2 py-2 pl-4 text-sm outline-none transition-colors focus:border-black"
+                                />
+                            </div>
+                            <div className="flex flex-1 flex-col items-start">
+                                <div className="mb-2 flex w-full items-center justify-between">
+                                    <span>Last name</span>
+                                    {addressForm.errors.lastName && (
+                                        <span className="text-sm text-[#d10202]">{addressForm.errors.lastName}</span>
+                                    )}
+                                </div>
+                                <input
+                                    placeholder="Ex: Smith,..."
+                                    type="text"
+                                    name="lastName"
+                                    value={addressForm.values.lastName}
+                                    onChange={addressForm.handleChange}
+                                    className="w-full rounded-lg border-2 py-2 pl-4 text-sm outline-none transition-colors focus:border-black"
+                                />
+                            </div>
+                        </div>
+                        <div className="mt-2 flex w-full items-start gap-6">
+                            <div className="flex flex-1 flex-col items-start">
+                                <div className="mb-2 flex w-full items-center justify-between">
+                                    <span>Email address</span>
+                                    {addressForm.errors.email && (
+                                        <span className="text-sm text-[#d10202]">{addressForm.errors.email}</span>
+                                    )}
+                                </div>
+                                <input
+                                    type="email"
+                                    name="email"
+                                    value={addressForm.values.email}
+                                    onChange={addressForm.handleChange}
+                                    placeholder="Ex: abc@email.com"
+                                    className="w-full rounded-lg border-2 py-2 pl-4 text-sm outline-none transition-colors focus:border-black"
+                                />
+                            </div>
+                            <div className="flex flex-1 flex-col items-start">
+                                <div className="mb-2 flex w-full items-center justify-between">
+                                    <span>Phone number</span>
+                                    {addressForm.errors.phoneNumber && (
+                                        <span className="text-sm text-[#d10202]">{addressForm.errors.phoneNumber}</span>
+                                    )}
+                                </div>
+                                <input
+                                    placeholder="Ex: 0987654321"
+                                    type="text"
+                                    name="phoneNumber"
+                                    value={addressForm.values.phoneNumber}
+                                    onChange={addressForm.handleChange}
+                                    className="w-full rounded-lg border-2 py-2 pl-4 text-sm outline-none transition-colors focus:border-black"
+                                />
+                            </div>
+                        </div>
+                        <div className="mt-2 flex flex-col items-start">
+                            <div className="mb-2 flex w-full items-center justify-between">
+                                <span>Provinces/ City</span>
+                                {addressForm.errors.city && (
+                                    <span className="text-sm text-[#d10202]">{addressForm.errors.city}</span>
+                                )}
+                            </div>
+                            <select
+                                className="w-full rounded-lg border-2 px-2 py-2 text-sm outline-none transition-colors focus:border-black"
+                                value={addressForm.values.city?.id}
+                                onChange={(e) => {
+                                    const cityId = e.currentTarget.value;
+                                    const city = cities.find((city) => city.id == cityId);
+                                    addressForm.setFieldValue('city', city);
+                                }}
+                            >
+                                <option value="">Please select provinces/city</option>
+                                {cities.map((city) => {
+                                    return (
+                                        <option key={city.id} value={city.id}>
+                                            {city.name}
+                                        </option>
+                                    );
+                                })}
+                            </select>
+                        </div>
+                        <div className="mt-2 flex w-full items-start gap-6">
+                            <div className="flex flex-1 flex-col items-start">
+                                <div className="mb-2 flex w-full items-center justify-between">
+                                    <span>District</span>
+                                    {addressForm.errors.district && (
+                                        <span className="text-sm text-[#d10202]">{addressForm.errors.district}</span>
+                                    )}
+                                </div>
+                                <select
+                                    className="w-full rounded-lg border-2 px-2 py-2 text-sm outline-none transition-colors focus:border-black"
+                                    value={addressForm.values.district?.id}
+                                    onChange={(e) => {
+                                        const districtId = e.currentTarget.value;
+                                        const district = districts.find((district) => district.id == districtId);
+                                        addressForm.setFieldValue('district', district);
+                                    }}
+                                >
+                                    <option value="">Please select district</option>
+                                    {districts.map((district) => {
+                                        return (
+                                            <option key={district.id} value={district.id}>
+                                                {district.name}
+                                            </option>
+                                        );
+                                    })}
+                                </select>
+                            </div>
+                            <div className="flex flex-1 flex-col items-start">
+                                <div className="mb-2 flex w-full items-center justify-between">
+                                    <span>Ward</span>
+                                    {addressForm.errors.ward && (
+                                        <span className="text-sm text-[#d10202]">{addressForm.errors.ward}</span>
+                                    )}
+                                </div>
+                                <select
+                                    className="w-full rounded-lg border-2 px-2 py-2 text-sm outline-none transition-colors focus:border-black"
+                                    value={addressForm.values.ward?.id}
+                                    onChange={(e) => {
+                                        const wardId = e.currentTarget.value;
+                                        const ward = wards.find((ward) => ward.id == wardId);
+                                        addressForm.setFieldValue('ward', ward);
+                                    }}
+                                >
+                                    <option value="">Please select ward</option>
+                                    {wards.map((ward) => {
+                                        return (
+                                            <option key={ward.id} value={ward.id}>
+                                                {ward.name}
+                                            </option>
+                                        );
+                                    })}
+                                </select>
+                            </div>
+                        </div>
+                        <div className="mt-2 flex flex-col items-start">
+                            <div className="mb-2 flex w-full items-center justify-between">
+                                <span>Detail address</span>
+                                {addressForm.errors.addressLine && (
+                                    <span className="text-sm text-[#d10202]">{addressForm.errors.addressLine}</span>
+                                )}
+                            </div>
+                            <textarea
+                                rows={5}
+                                name="addressLine"
+                                value={addressForm.values.addressLine}
+                                onChange={addressForm.handleChange}
+                                placeholder="Ex: House number, alley,..."
+                                spellCheck={false}
+                                className="w-full resize-y rounded-lg border-2 p-2 outline-none transition-colors focus:border-black"
+                            ></textarea>
+                        </div>
+                    </div>
+                    <div className="mt-4 flex items-center justify-end gap-6">
+                        <Link
+                            to="/account/addresses"
+                            className="inline-block cursor-pointer border border-black bg-white px-4 py-2 text-center text-black transition-all hover:bg-black hover:text-white"
+                        >
+                            Cancel
+                        </Link>
+                        <button
+                            type="submit"
+                            className="border border-black bg-black px-4 py-2 text-white transition-all hover:bg-white hover:text-black"
+                        >
+                            Save address
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </React.Fragment>
+    );
+};
+
 AddAddressForm.propTypes = {
+    setAddresses: PropTypes.func,
+};
+EditAddressForm.propTypes = {
+    address: PropTypes.object,
     setAddresses: PropTypes.func,
 };
 

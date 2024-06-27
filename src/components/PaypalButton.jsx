@@ -8,7 +8,7 @@ import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import useAuthStore from '../store/authStore';
 
-function PayPalButton({ form, setOrder }) {
+function PayPalButton({ address, setOrder }) {
     const { cart, setCart } = useCartStore();
     const { promoCode, setPromoCode } = useDataStore();
     const { token } = useAuthStore();
@@ -32,7 +32,7 @@ function PayPalButton({ form, setOrder }) {
         }, 2000);
         () => clearTimeout(timerId);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [form.values]);
+    }, [address]);
 
     const items = useMemo(() => {
         return cart.items.map((item) => {
@@ -89,12 +89,12 @@ function PayPalButton({ form, setOrder }) {
                     items: items,
                     shipping: {
                         name: {
-                            full_name: form.values.firstName + ' ' + form.values.lastName,
+                            full_name: address?.firstName + ' ' + address?.lastName,
                         },
                         address: {
-                            address_line_1: form.values.addressLine + ', ' + form.values.ward.name,
-                            admin_area_1: form.values.city.name,
-                            admin_area_2: form.values.district.name,
+                            address_line_1: address?.addressLine + ', ' + address?.ward.name,
+                            admin_area_1: address?.city.name,
+                            admin_area_2: address?.district.name,
                             postal_code: '100000',
                             country_code: 'VN',
                         },
@@ -110,9 +110,11 @@ function PayPalButton({ form, setOrder }) {
     const onApprove = async (data, actions) => {
         return actions.order.capture().then(function (details) {
             console.log('APPROVE');
+            // eslint-disable-next-line no-unused-vars
+            const { _id, isDefault, ...rest } = address;
             const data = {
                 totalAmount: total,
-                shippingAddress: form.values,
+                shippingAddress: rest,
                 promoCode: promoCode?._id,
                 paymentMethod: 'paypal',
                 paymentStatus: 'paid',
@@ -159,7 +161,7 @@ function PayPalButton({ form, setOrder }) {
     );
 }
 PayPalButton.propTypes = {
-    form: PropTypes.object,
+    address: PropTypes.object,
     setOrder: PropTypes.func,
 };
 

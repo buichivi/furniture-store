@@ -48,9 +48,10 @@ const CompareProduct = () => {
                 type="checkbox"
                 id="compare-products"
                 checked={isOpen}
+                onChange={(e) => toggleOpen(e.currentTarget.checked)}
                 className="[&:checked+div>div]:scale-100 [&:checked+div>div]:opacity-100 [&:checked+div]:pointer-events-auto [&:checked+div]:opacity-100"
             />
-            <div className="pointer-events-none fixed left-0 top-0 z-50 flex size-full items-center justify-center opacity-0">
+            <div className="pointer-events-none fixed left-0 top-0 z-50 flex size-full items-center justify-center opacity-0 transition-all">
                 <span
                     className="absolute left-0 top-0 -z-10 size-full bg-[#000000c7]"
                     onClick={() => {
@@ -175,7 +176,6 @@ const CompareProduct = () => {
                                                             height: '80px',
                                                             textOverflow: 'ellipsis',
                                                             display: '-webkit-box',
-                                                            '-webkit-box-orient': 'vertical',
                                                         }}
                                                     ></div>
                                                 </td>

@@ -120,8 +120,6 @@ const Header = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    console.log(products, wishlist);
-
     const handleLogout = () => {
         toast.promise(apiRequest.patch('/auth/logout', null, { headers: { Authorization: 'Bearer ' + token } }), {
             loading: 'Logout...',
@@ -129,7 +127,6 @@ const Header = () => {
                 logout();
                 setCart({ items: [] });
                 setWishlist([]);
-                navigate('/');
                 return res.data.message;
             },
             error: (err) => {
