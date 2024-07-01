@@ -34,11 +34,6 @@ const Checkout = () => {
     const [cities, setCities] = useState([]);
 
     useEffect(() => {
-        if (cart?.items?.length == 0) navigate('/cart');
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [cart]);
-
-    useEffect(() => {
         axios
             .get('https://esgoo.net/api-tinhthanh/1/0.htm')
             .then((res) => setCities(res.data?.data))

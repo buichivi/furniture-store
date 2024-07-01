@@ -26,7 +26,7 @@ const Home = () => {
                 <div className="mb-[30px] flex items-center justify-between">
                     <h4 className="text-center text-2xl font-medium">Best Modern Furniture</h4>
                     <div className="text-center">
-                        <Link className="text-base transition-colors hover:text-[#D10202]">
+                        <Link to="/shop" className="text-base transition-colors hover:text-[#D10202]">
                             See all {'>'}
                             {'>'}
                         </Link>
@@ -34,7 +34,8 @@ const Home = () => {
                 </div>
                 <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
                     {products?.map((product, index) => {
-                        return <ProductCard key={index} product={product} />;
+                        if (index <= 7) return <ProductCard key={index} product={product} />;
+                        return null;
                     })}
                 </div>
             </div>

@@ -17,8 +17,7 @@ const SORT_OPTIONS = [
     { name: 'Sort by price: Low to high', option: 'priceAsc' },
     { name: 'Sort by price: High to low', option: 'priceDesc' },
 ];
-
-const PAGE_SIZE = 4;
+const PAGE_SIZE = import.meta.env.VITE_PAGE_SIZE || 10;
 
 const ProductTag = () => {
     const { tag } = useParams();
@@ -110,9 +109,9 @@ const ProductTag = () => {
         <div className="mt-[90px] border-t">
             <div className="relative">
                 <img
-                    src="https://images.unsplash.com/photo-1533090161767-e6ffed986c88?q=80&w=1469&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                    src="https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?q=80&w=1467&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                     alt=""
-                    className="absolute left-0 top-0 -z-10 size-full object-cover"
+                    className="absolute left-0 top-0 -z-10 size-full object-cover object-top"
                 />
                 <Navigation paths={`/shop/Products tagged “${tag}”`} />
             </div>

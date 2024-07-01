@@ -2,8 +2,20 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination, Autoplay } from 'swiper/modules';
 import { Link } from 'react-router-dom';
 import { EffectFade } from 'swiper/modules';
+import { useEffect, useState } from 'react';
+import apiRequest from '../utils/apiRequest';
+import useAuthStore from '../store/authStore';
 
 const Slider = () => {
+    const [sliders, setSliders] = useState([]);
+    const { token } = useAuthStore();
+
+    useEffect(() => {
+        apiRequest
+            .get('/sliders', { headers: { Authorization: 'Bearer ' + token } })
+            .then((res) => setSliders(res.data?.sliders?.filter((sld) => sld?.active)))
+            .catch((err) => console.log(err));
+    }, [token]);
     return (
         <Swiper
             pagination={{
@@ -21,32 +33,7 @@ const Slider = () => {
             }}
             loop={true}
         >
-            {[
-                {
-                    title: 'New arrivals',
-                    heading: "Chairs & Seating You'll love",
-                    des: 'Designer chair styles for every space - ',
-                    des_focus: 'Free shipping',
-                    url_img:
-                        'https://nooni-be87.kxcdn.com/nooni/wp-content/uploads/revslider/furniture-1/slide-1-home1-2.png',
-                },
-                {
-                    title: 'Sale off 30%',
-                    heading: 'Lamps And Lighting Great Low Prices',
-                    des: 'Free standard shipping',
-                    des_focus: 'with $35',
-                    url_img:
-                        'https://nooni-be87.kxcdn.com/nooni/wp-content/uploads/revslider/furniture-1/slide-2-home1-1.png',
-                },
-                {
-                    title: 'Sale off 25%',
-                    heading: 'Discover Living Room Tables',
-                    des: 'Free standard shipping',
-                    des_focus: 'with $45',
-                    url_img:
-                        'https://nooni-be87.kxcdn.com/nooni/wp-content/uploads/revslider/furniture-1/slide-3-home1-1.png',
-                },
-            ].map(({ title, heading, des, des_focus, url_img }, index) => {
+            {sliders.map(({ title, heading, description, image, link }, index) => {
                 return (
                     <SwiperSlide key={index} className="">
                         {({ isActive }) => (
@@ -66,13 +53,13 @@ const Slider = () => {
                                     <h2 className="w-[40%] text-[48px] font-medium tracking-wider delay-300">
                                         {heading}
                                     </h2>
-                                    <p className="text-lg font-normal delay-500">
-                                        {des} <span className="font-bold">{des_focus}</span>
-                                    </p>
-                                    <Link className="hover-text-effect mt-10 delay-700">SHOP NOW</Link>
+                                    <p className="text-lg font-normal delay-500">{description}</p>
+                                    <Link to={link} className="hover-text-effect mt-10 delay-700">
+                                        SHOP NOW
+                                    </Link>
                                 </div>
                                 <img
-                                    src={url_img}
+                                    src={image}
                                     alt=""
                                     className={`slide-img absolute right-0 top-[25%] h-auto w-1/2 transition-all duration-1000 ${
                                         isActive ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'
