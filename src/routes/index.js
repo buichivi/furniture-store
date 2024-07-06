@@ -1,24 +1,20 @@
-import { Shop, Product, productLoader, Cart, Checkout, Search, Wishlist, ProductTag, Brand, MyAccount } from '../pages';
+import { Shop, Product, productLoader, Cart, Checkout, Wishlist, MyAccount, Blog, BlogDetail } from '../pages';
 const fakeLoader = async () => {
     return await new Promise((resolve) => setTimeout(() => resolve(null), 500));
 };
 
 const public_routes = [
     {
-        path: '/shop/:parentCategorySlug/:categorySlug/:productSlug',
+        path: '/product/:productSlug',
         element: Product,
         loader: productLoader,
     },
     {
-        path: '/shop/:parentCategorySlug/:categorySlug',
+        path: '/shop/:categorySlug',
         element: Shop,
         loader: fakeLoader,
     },
-    {
-        path: '/shop/:parentCategorySlug',
-        element: Shop,
-        loader: fakeLoader,
-    },
+
     {
         path: '/shop',
         element: Shop,
@@ -36,18 +32,28 @@ const public_routes = [
     },
     {
         path: '/search/:query',
-        element: Search,
+        element: Shop,
         loader: fakeLoader,
     },
 
     {
         path: '/tag/:tag',
-        element: ProductTag,
+        element: Shop,
         loader: fakeLoader,
     },
     {
         path: '/brand/:brand',
-        element: Brand,
+        element: Shop,
+        loader: fakeLoader,
+    },
+    {
+        path: '/blog/:blogSlug',
+        element: BlogDetail,
+        loader: fakeLoader,
+    },
+    {
+        path: '/blog',
+        element: Blog,
         loader: fakeLoader,
     },
 ];

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import SearchItem from './SearchItem';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import useDebounced from '../utils/useDebounced';
 import apiRequest from '../utils/apiRequest';
 
@@ -16,6 +16,7 @@ const SearchShortForm = () => {
     const _query = useDebounced(query, 700);
     const [loading, setLoading] = useState(false);
     const labelSearchForm = useRef();
+    const navigate = useNavigate();
     useEffect(() => {
         const getSearchedProducts = async () => {
             if (_query) {
@@ -56,6 +57,12 @@ const SearchShortForm = () => {
                             type="text"
                             value={query}
                             onChange={(e) => setQuery(e.currentTarget.value)}
+                            onKeyDown={(e) => {
+                                if (e.which == 13) {
+                                    labelSearchForm.current.click();
+                                    navigate('/search/' + query);
+                                }
+                            }}
                             placeholder="Search for products..."
                             className="h-[50px] w-full border border-gray-400 py-3 pl-4 pr-14 outline-none"
                         />

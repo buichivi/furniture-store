@@ -25,7 +25,7 @@ const PAYMENT_METHODS = [
 const Checkout = () => {
     const { currentUser, token } = useAuthStore();
     const { cart, setCart } = useCartStore();
-    const { getNavigationPath, promoCode, setPromoCode } = useDataStore();
+    const { promoCode, setPromoCode } = useDataStore();
     const [code, setCode] = useState('');
     const [payment, setPayment] = useState('cod');
     const [order, setOrder] = useState({});
@@ -99,7 +99,7 @@ const Checkout = () => {
         });
     };
     return (
-        <div className="my-[90px] border-t">
+        <div className="my-header border-t">
             <div className="container mx-auto px-5">
                 <Navigation paths="/checkout" />
                 <div className="w-full">
@@ -237,7 +237,7 @@ const Checkout = () => {
                                     return (
                                         <div key={index} className="mb-4 flex h-auto items-center gap-6">
                                             <Link
-                                                to={getNavigationPath(item.product, 'product')}
+                                                to={`/product/${item?.product?.slug}`}
                                                 className="inline-block shrink-0 basis-1/5 bg-white"
                                             >
                                                 <img
@@ -249,7 +249,7 @@ const Checkout = () => {
                                             <div className="flex size-full items-start justify-between">
                                                 <div className="flex h-full flex-1 flex-col gap-4">
                                                     <Link
-                                                        to={getNavigationPath(item.product, 'product')}
+                                                        to={`/product/${item?.product?.slug}`}
                                                         className="w-fit font-semibold transition-colors hover:text-[#d10202]"
                                                     >
                                                         {item?.product?.name}
@@ -394,15 +394,16 @@ const AddressShipping = ({ onSubmit, toggleOpenForm, cities }) => {
 
     const addressShippingForm = useFormik({
         initialValues: {
-            firstName: '',
-            lastName: '',
-            email: '',
-            phoneNumber: '',
+            firstName: currentUser?.firstName ?? '',
+            lastName: currentUser?.lastName ?? '',
+            email: currentUser?.email ?? '',
+            phoneNumber: currentUser?.phoneNumber ?? '',
             city: '',
             district: '',
             ward: '',
             addressLine: '',
         },
+        enableReinitialize: true,
         validationSchema: Yup.object().shape({
             firstName: Yup.string().required('First name is required'),
             lastName: Yup.string().required('Last name is required'),

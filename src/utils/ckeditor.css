@@ -1,0 +1,39 @@
+@import url('https://cdn.ckeditor.com/ckeditor5/42.0.0/ckeditor5.css');
+
+h1 {
+    @apply text-2xl;
+}
+h2 {
+    @apply text-xl;
+}
+h3 {
+    @apply text-lg;
+}
+
+.ck-content .image.image-style-align-left {
+    margin-right: 0;
+}
+.ck-content .image.image-style-align-right {
+    margin-left: 0;
+}
+
+.ck-content .image {
+    margin-top: 0;
+}
+
+blockquote {
+    padding: 0 60px;
+    padding: 10px;
+    padding-left: 55px;
+}
+
+blockquote:before {
+    display: block;
+    font-size: 250%;
+    content: open-quote;
+    opacity: 0.5;
+    height: 1px;
+    margin-left: -0.55em;
+    position: relative;
+    top: -20px;
+}

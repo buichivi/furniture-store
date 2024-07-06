@@ -35,39 +35,42 @@ const getActiveProducts = (products, categories, wishlist) => {
         });
 };
 
-const useDataStore = create((set, get) => ({
+const getCategoryTree = (categories) => {
+    const categoryMap = {};
+    categories.forEach((cate) => (categoryMap[cate._id] = { ...cate, child: [], selected: false }));
+
+    const categoryTree = [];
+    categories.forEach((cate) => {
+        if (cate.parentId === '') {
+            categoryTree.push(categoryMap[cate._id]);
+        } else {
+            categoryMap[cate.parentId]?.child.push(categoryMap[cate._id]);
+        }
+    });
+    return categoryTree;
+};
+
+const useDataStore = create((set) => ({
     products: [],
     categories: [],
     wishlist: [],
+    blogs: [],
     promoCode: initPromoCode,
+    categoryTree: [],
     setProducts: (_products) =>
         set((state) => ({ products: getActiveProducts(_products, state.categories, state.wishlist) })),
-    setCategories: (_categories) => set(() => ({ categories: getActiveCategories(_categories) })),
+    setCategories: (_categories) =>
+        set(() => ({
+            categories: getActiveCategories(_categories),
+            categoryTree: getCategoryTree(getActiveCategories(_categories)),
+        })),
+    setCategoryTree: (_categoryTree) => set(() => ({ categoryTree: _categoryTree })),
     setPromoCode: (_promoCode) => {
         set(() => ({ promoCode: _promoCode }));
         localStorage.setItem('promoCode', JSON.stringify(_promoCode));
     },
     setWishlist: (_wishlist) => set(() => ({ wishlist: _wishlist })),
-    getNavigationPath: (item, type) => {
-        let paths = '/shop';
-        const categories = get().categories;
-        if (type == 'category') {
-            if (item.parentId) {
-                const parent = categories.find((cate) => cate._id == item.parentId);
-                if (parent) paths += '/' + parent.slug;
-            }
-            paths += '/' + item.slug;
-        } else if (type == 'product') {
-            const productCate = categories.find((cate) => cate?._id == item?.category?._id);
-            if (productCate?.parentId) {
-                const parent = categories.find((cate) => cate?._id == productCate?.parentId);
-                if (parent) paths += '/' + parent?.slug;
-            }
-            paths += '/' + productCate?.slug;
-            paths += '/' + item?.slug;
-        }
-        return paths;
-    },
+    setBlogs: (_blogs) => set(() => ({ blogs: _blogs })),
 }));
 
 // eslint-disable-next-line react-hooks/rules-of-hooks

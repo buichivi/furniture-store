@@ -68,11 +68,14 @@ const CartItemMini = ({ item = {} }) => {
 
     return (
         <div className="flex h-auto w-full items-center justify-between gap-4">
-            <Link to={`/shop/${item?.product?._id}`} className="inline-block shrink-0 basis-[35%]">
+            <Link to={`/product/${item?.product?.slug}`} className="inline-block shrink-0 basis-[35%]">
                 <img src={item?.productImage} alt={item?.product?.name} className="w-full object-contain" />
             </Link>
             <div className="flex-1">
-                <Link className="mb-4 inline-block text-base tracking-wide transition-colors hover:text-[#d10202]">
+                <Link
+                    to={`/product/${item?.product?.slug}`}
+                    className="mb-4 inline-block text-base tracking-wide transition-colors hover:text-[#d10202]"
+                >
                     {item?.product?.name}
                 </Link>
                 <div className="mb-2 w-full">
@@ -96,7 +99,7 @@ const CartItemMini = ({ item = {} }) => {
                         </span>
                     </div>
                 </div>
-                <span>${numberWithCommas(item?.itemPrice)}</span>
+                <span className="font-semibold">${numberWithCommas(item?.itemPrice)}</span>
             </div>
             <span
                 className="cursor-pointer pr-2 text-xl transition-colors hover:text-[#d10202]"

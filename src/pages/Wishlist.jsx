@@ -8,7 +8,7 @@ import useCartStore from '../store/cartStore';
 import useAuthStore from '../store/authStore';
 
 const Wishlist = () => {
-    const { wishlist, getNavigationPath, setWishlist } = useDataStore();
+    const { wishlist, setWishlist } = useDataStore();
     const { token } = useAuthStore();
     const { setCart } = useCartStore();
 
@@ -21,7 +21,10 @@ const Wishlist = () => {
                     color: colorId,
                     quantity,
                 },
-                { headers: { Authorization: 'Bearer ' + token }, withCredentials: true },
+                {
+                    headers: { Authorization: 'Bearer ' + token },
+                    withCredentials: true,
+                },
             ),
             {
                 loading: 'Adding to cart...',
@@ -34,18 +37,23 @@ const Wishlist = () => {
         );
     };
     const handleRemoveFromWishlist = (productId) => {
-        toast.promise(apiRequest.delete('/wishlist/' + productId, { headers: { Authorization: 'Bearer ' + token } }), {
-            loading: 'Removing...',
-            success: (res) => {
-                setWishlist(res.data?.wishlist);
-                return res.data?.message;
+        toast.promise(
+            apiRequest.delete('/wishlist/' + productId, {
+                headers: { Authorization: 'Bearer ' + token },
+            }),
+            {
+                loading: 'Removing...',
+                success: (res) => {
+                    setWishlist(res.data?.wishlist);
+                    return res.data?.message;
+                },
+                error: (err) => err?.response?.data?.error,
             },
-            error: (err) => err?.response?.data?.error,
-        });
+        );
     };
 
     return (
-        <div className="mt-[90px] border-t">
+        <div className="mt-content-top border-t">
             <div className="relative">
                 <img
                     src="https://images.unsplash.com/photo-1533090161767-e6ffed986c88?q=80&w=1469&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
@@ -56,7 +64,9 @@ const Wishlist = () => {
             </div>
             <div className="container mx-auto mt-10 px-5 py-5">
                 {wishlist?.length == 0 ? (
-                    <p className="block h-20 py-4 text-center">No products added to the wishlist</p>
+                    <p className="block h-20 py-4 text-center">
+                        No products added to the wishlist
+                    </p>
                 ) : (
                     <table className="w-full">
                         <thead>
@@ -73,17 +83,26 @@ const Wishlist = () => {
                         <tbody>
                             {wishlist?.map((item, index) => {
                                 return (
-                                    <tr key={index} className={`${index < wishlist.length - 1 && 'border-b'}`}>
+                                    <tr
+                                        key={index}
+                                        className={`${index < wishlist.length - 1 && 'border-b'}`}
+                                    >
                                         <td className="py-2">
                                             <div className="flex items-center gap-2">
                                                 <Link
-                                                    to={getNavigationPath(item?.product, 'product')}
+                                                    to={`/product/${item?.product?.slug}`}
                                                     className="inline-block w-1/3 shrink-0"
                                                 >
-                                                    <img src={item?.product?.productImage} alt="" />
+                                                    <img
+                                                        src={
+                                                            item?.product
+                                                                ?.productImage
+                                                        }
+                                                        alt=""
+                                                    />
                                                 </Link>
                                                 <Link
-                                                    to={getNavigationPath(item?.product, 'product')}
+                                                    to={`/product/${item?.product?.slug}`}
                                                     className="transition-colors hover:text-[#d10202]"
                                                 >
                                                     {item?.product?.name}
@@ -94,7 +113,9 @@ const Wishlist = () => {
                                             <span className="mr-3 text-gray-400 line-through">
                                                 ${item?.product?.price}
                                             </span>
-                                            <span className="font-semibold">${item?.product?.salePrice}</span>
+                                            <span className="font-semibold">
+                                                ${item?.product?.salePrice}
+                                            </span>
                                         </td>
                                         <td>
                                             {item?.product?.isValid ? (
@@ -110,35 +131,46 @@ const Wishlist = () => {
                                             )}
                                         </td>
                                         <td>
-                                            <span className="text-sm">{item?.addedAt}</span>
+                                            <span className="text-sm">
+                                                {item?.addedAt}
+                                            </span>
                                         </td>
                                         <td>
                                             <div className="flex items-center justify-between gap-4">
-                                                {item?.product?.colors?.length == 1 && item?.product?.isValid && (
-                                                    <button
-                                                        className="w-2/3 bg-black py-3 text-sm font-semibold uppercase tracking-wide text-white transition-colors hover:bg-[#d10202]"
-                                                        onClick={() =>
-                                                            handleAddToCart(
-                                                                item?.product?._id,
-                                                                item?.product?.colors[0]._id,
-                                                                1,
-                                                            )
-                                                        }
-                                                    >
-                                                        Add to cart
-                                                    </button>
-                                                )}
-                                                {item?.product?.colors?.length >= 2 && item?.product?.isValid && (
-                                                    <Link
-                                                        to={getNavigationPath(item?.product, 'product')}
-                                                        className="inline-block w-2/3 bg-black py-3 text-center text-sm font-semibold uppercase tracking-wide text-white transition-colors hover:bg-[#d10202]"
-                                                    >
-                                                        Select options
-                                                    </Link>
-                                                )}
+                                                {item?.product?.colors
+                                                    ?.length == 1 &&
+                                                    item?.product?.isValid && (
+                                                        <button
+                                                            className="w-2/3 bg-black py-3 text-sm font-semibold uppercase tracking-wide text-white transition-colors hover:bg-[#d10202]"
+                                                            onClick={() =>
+                                                                handleAddToCart(
+                                                                    item
+                                                                        ?.product
+                                                                        ?._id,
+                                                                    item
+                                                                        ?.product
+                                                                        ?.colors[0]
+                                                                        ._id,
+                                                                    1,
+                                                                )
+                                                            }
+                                                        >
+                                                            Add to cart
+                                                        </button>
+                                                    )}
+                                                {item?.product?.colors
+                                                    ?.length >= 2 &&
+                                                    item?.product?.isValid && (
+                                                        <Link
+                                                            to={`/product/${item?.product?.slug}`}
+                                                            className="inline-block w-2/3 bg-black py-3 text-center text-sm font-semibold uppercase tracking-wide text-white transition-colors hover:bg-[#d10202]"
+                                                        >
+                                                            Select options
+                                                        </Link>
+                                                    )}
                                                 {!item?.product?.isValid && (
                                                     <Link
-                                                        to={getNavigationPath(item?.product, 'product')}
+                                                        to={`/product/${item?.product?.slug}`}
                                                         className="inline-block w-2/3 bg-black py-3 text-center text-sm font-semibold uppercase tracking-wide text-white transition-colors hover:bg-[#d10202]"
                                                     >
                                                         Read more
@@ -146,7 +178,11 @@ const Wishlist = () => {
                                                 )}
                                                 <TrashIcon
                                                     className="size-5 cursor-pointer transition-colors hover:text-[#d10202]"
-                                                    onClick={() => handleRemoveFromWishlist(item?.product?._id)}
+                                                    onClick={() =>
+                                                        handleRemoveFromWishlist(
+                                                            item?.product?._id,
+                                                        )
+                                                    }
                                                 />
                                             </div>
                                         </td>

@@ -1,8 +1,15 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Filter, Navigation, Pagination, ProductCard, SliderCategory } from '../components';
+import {
+    Filter,
+    Navigation,
+    Pagination,
+    ProductCard,
+    SliderCategory,
+} from '../components';
 import { useParams } from 'react-router-dom';
 import useDataStore from '../store/dataStore';
 import { ChevronDownIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import apiRequest from '../utils/apiRequest';
 
 const FILTER_OPEN_STATE = [
     { name: 'type', open: true },
@@ -17,13 +24,91 @@ const SORT_OPTIONS = [
     { name: 'Sort by price: High to low', option: 'priceDesc' },
 ];
 
-const PAGE_SIZE = import.meta.env.VITE_PAGE_SIZE || 10;
+const PAGE_SIZE = Number(import.meta.env.VITE_PAGE_SIZE) || 10;
+
+const getSelectedCategories = (categories) => {
+    const selectedCategories = [];
+
+    const traverse = (categoryList) => {
+        categoryList.forEach((category) => {
+            if (category.selected) {
+                selectedCategories.push(category);
+            }
+            if (category.child.length > 0) {
+                traverse(category.child);
+            }
+        });
+    };
+
+    traverse(categories);
+    return selectedCategories;
+};
+
+const updateSelection = (categories, id, selected) => {
+    // Hàm đệ quy để cập nhật trạng thái của tất cả các danh mục con
+    const updateChildren = (categoryList, selected) => {
+        return categoryList.map((category) => {
+            category.selected = selected;
+            if (category.child.length > 0) {
+                category.child = updateChildren(category.child, selected);
+            }
+            return category;
+        });
+    };
+
+    // Hàm chính để tìm và cập nhật trạng thái của danh mục cha và các danh mục con
+    const updateRecursive = (categoryList) => {
+        return categoryList.map((category) => {
+            if (category._id === id) {
+                // Cập nhật trạng thái cho danh mục được chọn
+                category.selected = selected;
+                if (category.child.length > 0) {
+                    // Cập nhật trạng thái cho tất cả các danh mục con
+                    category.child = updateChildren(category.child, selected);
+                }
+            } else if (category.child.length > 0) {
+                // Tiếp tục đệ quy nếu không phải danh mục cần cập nhật
+                category.child = updateRecursive(category.child);
+            }
+            return category;
+        });
+    };
+
+    // Cập nhật danh sách danh mục từ gốc
+    return updateRecursive(categories);
+};
+
+const updateParentSelection = (categories) => {
+    return categories.map((category) => {
+        if (category.child.length > 0) {
+            category.child = updateParentSelection(category.child);
+            const allChildrenSelected = category.child.every(
+                (child) => child.selected,
+            );
+            console.log(allChildrenSelected);
+            category.selected = allChildrenSelected;
+        }
+        return category;
+    });
+};
+
+const handleCategorySelect = (id, selected, categories) => {
+    let updatedCategories = updateSelection(categories, id, selected);
+    updatedCategories = updateParentSelection(updatedCategories);
+    return updatedCategories;
+};
 
 const Shop = () => {
+    const { query, tag, brand, categorySlug } = useParams();
     const [isDisplayGrid, setIsDisplayGrid] = useState(true);
-    const { products, categories, getNavigationPath } = useDataStore();
-    const { parentCategorySlug, categorySlug } = useParams();
-    const [filters, setFilters] = useState({ typeFilters: [], colorsFilters: [], priceRange: [], materialFilters: [] });
+    const { products, categories, categoryTree, setCategoryTree } =
+        useDataStore();
+    const [filters, setFilters] = useState({
+        typeFilters: [],
+        colorsFilters: [],
+        priceRange: [],
+        materialFilters: [],
+    });
     const [onSaleOnly, setOnSaleOnly] = useState(false);
     const [resetPrice, setResetPrice] = useState(false);
     const [key, setKey] = useState(0);
@@ -31,43 +116,101 @@ const Shop = () => {
     const [sort, setSort] = useState(SORT_OPTIONS[0]);
     const [currentPage, setCurrentPage] = useState(1);
 
+    // Search page
+    const [searchedProducts, setSearchedProducts] = useState([]);
     useEffect(() => {
-        window.scrollTo(0, 0);
+        if (query) {
+            apiRequest
+                .get('/products/search/' + query)
+                .then((res) => setSearchedProducts(res.data?.products))
+                .catch((err) => console.log(err));
+        }
+    }, [query]);
+
+    // Tag page
+    const [productTags, setProductTags] = useState([]);
+    useEffect(() => {
+        if (tag) {
+            apiRequest
+                .get('/products/tag/' + tag)
+                .then((res) => setProductTags(res.data?.products))
+                .catch((err) => console.log(err));
+        }
+    }, [tag]);
+
+    // Brang page
+    const [productBrands, setProductBrand] = useState([]);
+    useEffect(() => {
+        if (brand) {
+            apiRequest
+                .get('/products/brand/' + brand)
+                .then((res) => setProductBrand(res.data?.products))
+                .catch((err) => console.log(err));
+        }
+    }, [brand]);
+
+    useEffect(() => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth',
+        });
     }, [currentPage]);
 
     useEffect(() => {
         setCurrentPage(1);
     }, [filters]);
 
-    console.log(categories);
+    useEffect(() => {
+        const category = categories.find((cate) => cate.slug == categorySlug);
+        if (category) {
+            setCategoryTree(
+                handleCategorySelect(category._id, true, categoryTree),
+            );
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [categorySlug, categories]);
+
+    console.log(categoryTree);
 
     const filteredProducts = useMemo(() => {
-        const { typeFilters, colorsFilters, priceRange, materialFilters } = filters;
-        return products
-            .filter((prod) => {
-                if (parentCategorySlug && !categorySlug) {
-                    const parentCategory = categories.find((cate) => cate.slug == parentCategorySlug);
-                    return prod.category.parentId == parentCategory._id;
-                } else if (categorySlug) {
-                    return prod.category.slug == categorySlug;
-                }
-                return prod;
-            })
+        let listProducts = [];
+        const { typeFilters, colorsFilters, priceRange, materialFilters } =
+            filters;
+        if (query) listProducts = searchedProducts;
+        else if (tag) listProducts = productTags;
+        else if (brand) listProducts = productBrands;
+        else listProducts = products;
+
+        return listProducts
             .filter((prod) => {
                 const typeMatch =
-                    typeFilters.filter((type) => type.selected) == 0 ||
-                    typeFilters.filter((type) => type.selected).find((type) => type._id == prod.category._id);
+                    getSelectedCategories(typeFilters).length == 0 ||
+                    getSelectedCategories(typeFilters).find(
+                        (type) => type._id == prod.category._id,
+                    );
                 const colorMatch =
                     colorsFilters.filter((color) => color.selected) == 0 ||
                     colorsFilters
                         .filter((color) => color.selected)
-                        .some((color) => prod.colors.some((cl) => cl?.name == color?.name));
-                const priceMatch = prod.salePrice >= priceRange[0] && prod.salePrice <= priceRange[1];
+                        .some((color) =>
+                            prod.colors.some((cl) => cl?.name == color?.name),
+                        );
+                const priceMatch =
+                    prod.salePrice >= priceRange[0] &&
+                    prod.salePrice <= priceRange[1];
                 const materialMatch =
                     materialFilters.filter((mt) => mt.selected) == 0 ||
-                    materialFilters.filter((mt) => mt.selected).find((mt) => mt.name == prod.material);
+                    materialFilters
+                        .filter((mt) => mt.selected)
+                        .find((mt) => mt.name == prod.material);
                 const onSaleMatch = !onSaleOnly || prod.discount;
-                return typeMatch && colorMatch && priceMatch && materialMatch && onSaleMatch;
+                return (
+                    typeMatch &&
+                    colorMatch &&
+                    priceMatch &&
+                    materialMatch &&
+                    onSaleMatch
+                );
             })
             .sort((a, b) => {
                 if (sort.option == 'latest') {
@@ -78,12 +221,21 @@ const Shop = () => {
                     return b.salePrice - a.salePrice;
                 }
             });
-    }, [products, filters, onSaleOnly, sort, categories, parentCategorySlug, categorySlug]);
+    }, [
+        products,
+        filters,
+        onSaleOnly,
+        sort,
+        query,
+        tag,
+        brand,
+        location.pathname,
+    ]);
 
     const isFiltering = useMemo(() => {
         return (
-            filters?.typeFilters?.filter((type) => type.selected).length > 0 ||
-            filters?.colorsFilters?.filter((color) => color.selected).length > 0 ||
+            filters?.colorsFilters?.filter((color) => color.selected).length >
+                0 ||
             filters?.materialFilters?.filter((mt) => mt.selected).length > 0 ||
             (filters?.priceRange?.length > 0 && filters?.priceRange[0] > 0) ||
             (filters?.priceRange?.length > 0 && filters?.priceRange[1] < 2000)
@@ -97,17 +249,28 @@ const Shop = () => {
     }, [currentPage, filteredProducts]);
 
     return (
-        <div className="mt-[90px] border-t">
+        <div className="mt-content-top border-t">
             <div className="relative">
                 <img
                     src="https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?q=80&w=1467&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                     alt=""
                     className="absolute left-0 top-0 -z-10 size-full object-cover"
                 />
-                <Navigation paths={location.pathname} />
+                {!query ? (
+                    <Navigation paths={location.pathname} />
+                ) : (
+                    <Navigation
+                        paths={`/search/Search results for "${query}"`}
+                    />
+                )}
                 <div className="container mx-auto px-5">
                     <div className="bg-transparent pb-16">
-                        {!categorySlug && <SliderCategory products={products} className="w-2/3" />}
+                        {!categorySlug && !query && !tag && !brand && (
+                            <SliderCategory
+                                products={products}
+                                className="w-2/3"
+                            />
+                        )}
                     </div>
                 </div>
             </div>
@@ -144,11 +307,19 @@ const Shop = () => {
                                     <input
                                         type="checkbox"
                                         checked={onSaleOnly}
-                                        onChange={(e) => setOnSaleOnly(e.currentTarget.checked)}
+                                        onChange={(e) =>
+                                            setOnSaleOnly(
+                                                e.currentTarget.checked,
+                                            )
+                                        }
                                         className="hidden [&:checked+span]:bg-black [&:checked+span_path]:[stroke-dashoffset:0] [&:checked+span_path]:[stroke:#fff]"
                                     />
                                     <span className="inline-block size-5 bg-transparent ring-1 ring-[#b1b1b1] transition-colors ">
-                                        <svg className="" viewBox="0 0 100 100" fill="none">
+                                        <svg
+                                            className=""
+                                            viewBox="0 0 100 100"
+                                            fill="none"
+                                        >
                                             <path
                                                 d="m 20 55 l 20 20 l 41 -50"
                                                 stroke="#000"
@@ -179,9 +350,18 @@ const Shop = () => {
                                         className="hidden [&:checked+div]:pointer-events-auto [&:checked+div]:translate-y-0 [&:checked+div]:opacity-100"
                                         id="sort"
                                         onChange={(e) => {
-                                            const sortIcon = e.currentTarget.previousElementSibling.children[1];
-                                            if (e.currentTarget.checked) sortIcon.classList.add('rotate-180');
-                                            else sortIcon.classList.remove('rotate-180');
+                                            const sortIcon =
+                                                e.currentTarget
+                                                    .previousElementSibling
+                                                    .children[1];
+                                            if (e.currentTarget.checked)
+                                                sortIcon.classList.add(
+                                                    'rotate-180',
+                                                );
+                                            else
+                                                sortIcon.classList.remove(
+                                                    'rotate-180',
+                                                );
                                         }}
                                     />
                                     <div className="pointer-events-none absolute left-0 top-[115%] z-20 flex w-full translate-y-10 flex-col gap-2 border border-gray-100 bg-white px-4 py-2 opacity-0 shadow-lg transition-all duration-500 [&>*:hover]:cursor-pointer [&>*:hover]:opacity-50 [&>*]:text-sm [&>*]:transition-all">
@@ -191,8 +371,11 @@ const Shop = () => {
                                                     key={index}
                                                     onClick={(e) => {
                                                         const input =
-                                                            e.currentTarget.parentElement.previousElementSibling;
-                                                        input.checked = !input.checked;
+                                                            e.currentTarget
+                                                                .parentElement
+                                                                .previousElementSibling;
+                                                        input.checked =
+                                                            !input.checked;
                                                         setSort(op);
                                                     }}
                                                     className="py-1"
@@ -206,31 +389,9 @@ const Shop = () => {
                             </div>
                         </div>
                         <div className="mb-6 flex flex-wrap items-center gap-2">
-                            {filters?.typeFilters?.filter((type) => type.selected).length > 0 && (
-                                <div className="flex gap-2">
-                                    {filters?.typeFilters
-                                        ?.filter((type) => type.selected)
-                                        .map((type, index) => (
-                                            <div
-                                                key={index}
-                                                className="flex cursor-pointer items-center gap-2 bg-gray-200 px-2 py-1 transition-colors hover:bg-black hover:text-white"
-                                                onClick={() => {
-                                                    setFilters((filters) => ({
-                                                        ...filters,
-                                                        typeFilters: filters.typeFilters.map((tp) => {
-                                                            return tp._id == type._id ? { ...tp, selected: false } : tp;
-                                                        }),
-                                                    }));
-                                                }}
-                                            >
-                                                <span className="text-sm">Type: </span>
-                                                <span className="text-sm italic">{type.name}</span>
-                                                <XMarkIcon className="size-4" />
-                                            </div>
-                                        ))}
-                                </div>
-                            )}
-                            {filters?.colorsFilters?.filter((color) => color.selected).length > 0 && (
+                            {filters?.colorsFilters?.filter(
+                                (color) => color.selected,
+                            ).length > 0 && (
                                 <div className="flex gap-2">
                                     {filters?.colorsFilters
                                         ?.filter((color) => color.selected)
@@ -241,22 +402,35 @@ const Shop = () => {
                                                 onClick={() => {
                                                     setFilters((filters) => ({
                                                         ...filters,
-                                                        colorsFilters: filters.colorsFilters.map((cl) => {
-                                                            return cl._id == color._id
-                                                                ? { ...cl, selected: false }
-                                                                : cl;
-                                                        }),
+                                                        colorsFilters:
+                                                            filters.colorsFilters.map(
+                                                                (cl) => {
+                                                                    return cl._id ==
+                                                                        color._id
+                                                                        ? {
+                                                                              ...cl,
+                                                                              selected: false,
+                                                                          }
+                                                                        : cl;
+                                                                },
+                                                            ),
                                                     }));
                                                 }}
                                             >
-                                                <span className="text-sm">Color: </span>
-                                                <span className="text-sm italic">{color.name}</span>
+                                                <span className="text-sm">
+                                                    Color:{' '}
+                                                </span>
+                                                <span className="text-sm italic">
+                                                    {color.name}
+                                                </span>
                                                 <XMarkIcon className="size-4" />
                                             </div>
                                         ))}
                                 </div>
                             )}
-                            {filters?.materialFilters?.filter((mt) => mt.selected).length > 0 && (
+                            {filters?.materialFilters?.filter(
+                                (mt) => mt.selected,
+                            ).length > 0 && (
                                 <div className="flex gap-2">
                                     {filters?.materialFilters
                                         ?.filter((mt) => mt.selected)
@@ -267,33 +441,53 @@ const Shop = () => {
                                                 onClick={() => {
                                                     setFilters((filters) => ({
                                                         ...filters,
-                                                        materialFilters: filters.materialFilters.map((_mt) => {
-                                                            return _mt._id == mt._id
-                                                                ? { ..._mt, selected: false }
-                                                                : _mt;
-                                                        }),
+                                                        materialFilters:
+                                                            filters.materialFilters.map(
+                                                                (_mt) => {
+                                                                    return _mt._id ==
+                                                                        mt._id
+                                                                        ? {
+                                                                              ..._mt,
+                                                                              selected: false,
+                                                                          }
+                                                                        : _mt;
+                                                                },
+                                                            ),
                                                     }));
                                                 }}
                                             >
-                                                <span className="text-sm">Material: </span>
-                                                <span className="text-sm italic">{mt.name}</span>
+                                                <span className="text-sm">
+                                                    Material:{' '}
+                                                </span>
+                                                <span className="text-sm italic">
+                                                    {mt.name}
+                                                </span>
                                                 <XMarkIcon className="size-4" />
                                             </div>
                                         ))}
                                 </div>
                             )}
                             {filters?.priceRange?.length > 0 &&
-                                (filters?.priceRange[0] > 0 || filters.priceRange[1] < 2000) && (
+                                (filters?.priceRange[0] > 0 ||
+                                    filters.priceRange[1] < 2000) && (
                                     <div
                                         className="flex cursor-pointer items-center gap-2 bg-gray-200 px-2 py-1 transition-colors hover:bg-black hover:text-white"
                                         onClick={() => {
-                                            setFilters((filters) => ({ ...filters, priceRange: [0, 2000] }));
-                                            setResetPrice((resetPrice) => !resetPrice);
+                                            setFilters((filters) => ({
+                                                ...filters,
+                                                priceRange: [0, 2000],
+                                            }));
+                                            setResetPrice(
+                                                (resetPrice) => !resetPrice,
+                                            );
                                         }}
                                     >
-                                        <span className="text-sm">Price range: </span>
+                                        <span className="text-sm">
+                                            Price range:{' '}
+                                        </span>
                                         <span className="text-sm italic">
-                                            ${filters?.priceRange[0]} - ${filters?.priceRange[1]}
+                                            ${filters?.priceRange[0]} - $
+                                            {filters?.priceRange[1]}
                                         </span>
                                         <XMarkIcon className="size-4" />
                                     </div>
@@ -323,7 +517,6 @@ const Shop = () => {
                                         key={index}
                                         product={product}
                                         isDisplayGrid={isDisplayGrid}
-                                        to={getNavigationPath(product, 'product')}
                                     />
                                 );
                             })}

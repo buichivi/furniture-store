@@ -34,7 +34,14 @@ const ProductQuickView = forwardRef(function ProductQuickView() {
     }, [toggleOpen]);
 
     useEffect(() => {
-        if (product?.colors?.length >= 1) setSelectedColor(product?.colors[0]);
+        if (product?.colors?.length >= 1) {
+            for (const color of product.colors) {
+                if (color?.stock > 0) {
+                    setSelectedColor(color);
+                    break;
+                }
+            }
+        }
     }, [product]);
 
     const averageRating = useMemo(() => {
@@ -106,7 +113,7 @@ const ProductQuickView = forwardRef(function ProductQuickView() {
                             <div className="text-base">
                                 <span>Stock: </span>
                                 {product?.isValid ? (
-                                    <span className="text-green-400">In Stock</span>
+                                    <span className="text-green-400">{selectedColor?.stock} In Stock</span>
                                 ) : (
                                     <span className="text-red-400">Out Of Stock</span>
                                 )}
@@ -118,7 +125,7 @@ const ProductQuickView = forwardRef(function ProductQuickView() {
                                 ${numberWithCommas(product?.price)}
                             </span>
                             {product?.discount > 0 && (
-                                <span className="text-lg text-red-500">(-{product?.discount}%)</span>
+                                <span className="text-lg text-green-500">(-{product?.discount}%)</span>
                             )}
                         </div>
                         <p
@@ -208,7 +215,7 @@ const ProductQuickView = forwardRef(function ProductQuickView() {
                                 <Link
                                     to={`/brand/${product?.brand?.name}`}
                                     onClick={() => toggleOpen(false)}
-                                    className="text-[#848484] transition-colors hover:text-[#d10202]"
+                                    className="ml-1 text-[#848484] transition-colors hover:text-[#d10202]"
                                 >
                                     {product?.brand?.name}
                                 </Link>

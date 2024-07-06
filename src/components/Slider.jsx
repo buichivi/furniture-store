@@ -50,7 +50,7 @@ const Slider = () => {
                                     }`}
                                 >
                                     <h4 className="mb-4 font-inter uppercase delay-100">{title}</h4>
-                                    <h2 className="w-[40%] text-[48px] font-medium tracking-wider delay-300">
+                                    <h2 className="w-[40%] text-[48px] font-medium leading-normal tracking-wider delay-300">
                                         {heading}
                                     </h2>
                                     <p className="text-lg font-normal delay-500">{description}</p>

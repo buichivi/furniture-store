@@ -14,7 +14,7 @@ import useAuthStore from '../store/authStore';
 
 const Cart = () => {
     const { cart, setCart } = useCartStore();
-    const { getNavigationPath, promoCode, setPromoCode } = useDataStore();
+    const { promoCode, setPromoCode } = useDataStore();
     const { token } = useAuthStore();
     const [code, setCode] = useState();
 
@@ -72,7 +72,7 @@ const Cart = () => {
     }, [discount, cart]);
 
     return (
-        <div className="my-[90px] border-t">
+        <div className="my-header border-t">
             <div className="container mx-auto px-5">
                 <Navigation isShowPageName={true} paths="/cart" />
                 <StepProgress />
@@ -103,7 +103,7 @@ const Cart = () => {
                                                 <td className="w-2/5 border-b py-5">
                                                     <div className="flex w-full items-center gap-4">
                                                         <Link
-                                                            to={getNavigationPath(item?.product, 'product')}
+                                                            to={`/product/${item?.product?.slug}`}
                                                             className="w-28 shrink-0"
                                                         >
                                                             <img
@@ -112,7 +112,7 @@ const Cart = () => {
                                                             />
                                                         </Link>
                                                         <Link
-                                                            to={getNavigationPath(item?.product, 'product')}
+                                                            to={`/product/${item?.product?.slug}`}
                                                             className="flex-1 text-wrap text-base transition-colors hover:text-[#D10202]"
                                                         >
                                                             {item?.product?.name}

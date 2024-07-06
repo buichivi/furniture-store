@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import { useMemo } from 'react';
 
 const SliderCategory = ({ products = [], className }) => {
-    const { categories, getNavigationPath } = useDataStore();
+    const { categories } = useDataStore();
 
     console.log('Slider category re-render');
 
@@ -51,7 +51,7 @@ const SliderCategory = ({ products = [], className }) => {
                     <SwiperSlide key={index}>
                         <div className="flex h-[120px] items-center justify-center">
                             <Link
-                                to={getNavigationPath(category, 'category')}
+                                to={`/shop/${category?.slug}`}
                                 className="group relative mr-[25px] h-[120px] w-[120px] shrink-0 overflow-hidden rounded-full "
                             >
                                 <img
@@ -63,7 +63,10 @@ const SliderCategory = ({ products = [], className }) => {
                                 <i className="fa-regular fa-link-simple absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rotate-[145deg] text-white opacity-0 duration-500 group-hover:opacity-100"></i>
                             </Link>
                             <div>
-                                <Link className="font-bold transition-colors hover:text-[#D10202]">
+                                <Link
+                                    to={`/shop/${category?.slug}`}
+                                    className="font-bold transition-colors hover:text-[#D10202]"
+                                >
                                     {category.name}
                                 </Link>
                                 <p>

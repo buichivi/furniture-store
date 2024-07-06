@@ -1,11 +1,16 @@
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import React, { useMemo } from 'react';
 
 const Navigation = ({ isShowPageName = true, paths = '', isSearchPage = false }) => {
-    let pathNames;
-    if (paths.charAt(paths.length - 1) == '/') {
-        pathNames = paths.slice(0, paths.length - 1).split('/');
-    } else pathNames = paths.split('/');
+    const { brand, tag, query, productSlug } = useParams();
+
+    const pathNames = useMemo(() => {
+        if (paths.charAt(paths.length - 1) == '/') {
+            return paths.slice(0, paths.length - 1).split('/');
+        } else return paths.split('/');
+    }, [paths]);
+
     return (
         <div className="py-14">
             <div className="mb-6 flex justify-center">
@@ -30,16 +35,38 @@ const Navigation = ({ isShowPageName = true, paths = '', isSearchPage = false })
                     .map(({ name, to }, index) => {
                         return (
                             <div key={index} className="mr-2 flex items-center gap-2">
-                                {pathNames.length != index + 1 ? (
-                                    <Link to={to} className="capitalize text-[#868686] hover:underline">
-                                        {name}
-                                    </Link>
-                                ) : (
-                                    <span className={`${!isSearchPage && 'capitalize'} text-black hover:no-underline`}>
-                                        {name}
-                                    </span>
+                                {!tag && !brand && !query && !productSlug && (
+                                    <React.Fragment>
+                                        {pathNames.length - 1 == index ? (
+                                            <span
+                                                className={`${!isSearchPage && 'capitalize'} text-black hover:no-underline`}
+                                            >
+                                                {name}
+                                            </span>
+                                        ) : (
+                                            <Link to={to} className="capitalize text-[#868686] hover:underline">
+                                                {name}
+                                            </Link>
+                                        )}
+                                        {index < pathNames.length - 1 && <span className="text-[#3f3f3f]">/</span>}
+                                    </React.Fragment>
                                 )}
-                                {index < pathNames.length - 1 && <span className="text-[#3f3f3f]">/</span>}
+                                {(tag || brand || query || productSlug) && (
+                                    <React.Fragment>
+                                        {index > 0 ? (
+                                            <span
+                                                className={`${!isSearchPage && 'capitalize'} text-black hover:no-underline`}
+                                            >
+                                                {name}
+                                            </span>
+                                        ) : (
+                                            <Link to={to} className="capitalize text-[#868686] hover:underline">
+                                                {name}
+                                            </Link>
+                                        )}
+                                        {index < pathNames.length - 1 && <span className="text-[#3f3f3f]">/</span>}
+                                    </React.Fragment>
+                                )}
                             </div>
                         );
                     })}

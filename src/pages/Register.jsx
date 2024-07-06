@@ -29,7 +29,6 @@ const Register = () => {
             firstName: '',
             lastName: '',
             phoneNumber: '',
-            dateOfBirth: '',
             avatar: '',
         },
         validationSchema: Yup.object({
@@ -44,7 +43,6 @@ const Register = () => {
             firstName: Yup.string().required('This field is required'),
             lastName: Yup.string().required('This field is required'),
             phoneNumber: Yup.string().required('This field is required'),
-            dateOfBirth: Yup.date().required('This field is required'),
             avatar: Yup.mixed(),
         }),
         onSubmit: (values) => {
@@ -122,57 +120,42 @@ const Register = () => {
                             )}
                         </label>
                     </div>
-                    <div className="flex items-center gap-10">
-                        <label className="relative block flex-1 pb-2 pt-4">
-                            <input
-                                type="tel"
-                                name="phoneNumber"
-                                value={formik.values.phoneNumber}
-                                onBlur={formik.handleBlur}
-                                onChange={formik.handleChange}
-                                placeholder="Phone number"
-                                className="w-full border-b py-2 pl-2 outline-none transition-colors duration-500 placeholder:font-light focus:border-b-black"
-                            />
-                            {formik.errors.phoneNumber && (
-                                <span className="absolute left-0 top-0 text-sm text-[#d10202dc]">
-                                    {formik.errors.phoneNumber}
-                                </span>
-                            )}
-                        </label>
-                        <label className="relative block flex-1 pb-2 pt-4">
-                            <input
-                                type="date"
-                                name="dateOfBirth"
-                                value={formik.values.dateOfBirth}
-                                onBlur={formik.handleBlur}
-                                onChange={formik.handleChange}
-                                placeholder="Date of birth"
-                                className="w-full border-b py-2 pl-2 outline-none transition-colors duration-500 placeholder:font-light focus:border-b-black"
-                            />
-                            {formik.errors.dateOfBirth && (
-                                <span className="absolute left-0 top-0 text-sm text-[#d10202dc]">
-                                    {formik.errors.dateOfBirth}
-                                </span>
-                            )}
-                        </label>
-                    </div>
-                    <div className="flex items-center gap-10">
-                        <label className="relative block flex-1 pb-2 pt-4">
-                            <input
-                                type="email"
-                                name="email"
-                                value={formik.values.email}
-                                onBlur={formik.handleBlur}
-                                onChange={formik.handleChange}
-                                placeholder="Email"
-                                className="w-full border-b py-2 pl-2 outline-none transition-colors duration-500 placeholder:font-light focus:border-b-black"
-                            />
-                            {formik.errors.email && (
-                                <span className="absolute left-0 top-0 text-sm text-[#d10202dc]">
-                                    {formik.errors.email}
-                                </span>
-                            )}
-                        </label>
+
+                    <div className="flex items-center justify-between gap-10">
+                        <div className="flex-1">
+                            <label className="relative block flex-1 pb-2 pt-4">
+                                <input
+                                    type="tel"
+                                    name="phoneNumber"
+                                    value={formik.values.phoneNumber}
+                                    onBlur={formik.handleBlur}
+                                    onChange={formik.handleChange}
+                                    placeholder="Phone number"
+                                    className="w-full border-b py-2 pl-2 outline-none transition-colors duration-500 placeholder:font-light focus:border-b-black"
+                                />
+                                {formik.errors.phoneNumber && (
+                                    <span className="absolute left-0 top-0 text-sm text-[#d10202dc]">
+                                        {formik.errors.phoneNumber}
+                                    </span>
+                                )}
+                            </label>
+                            <label className="relative block flex-1 pb-2 pt-4">
+                                <input
+                                    type="email"
+                                    name="email"
+                                    value={formik.values.email}
+                                    onBlur={formik.handleBlur}
+                                    onChange={formik.handleChange}
+                                    placeholder="Email"
+                                    className="w-full border-b py-2 pl-2 outline-none transition-colors duration-500 placeholder:font-light focus:border-b-black"
+                                />
+                                {formik.errors.email && (
+                                    <span className="absolute left-0 top-0 text-sm text-[#d10202dc]">
+                                        {formik.errors.email}
+                                    </span>
+                                )}
+                            </label>
+                        </div>
                         <label className="relative block flex-1 pb-2 pt-4">
                             <input
                                 type="file"
@@ -186,16 +169,19 @@ const Register = () => {
                                 }}
                                 className="hidden w-full border-b py-2 pl-2 outline-none transition-colors duration-500 placeholder:font-light focus:border-b-black"
                             />
-                            <label htmlFor="avatar" className="flex cursor-pointer items-center gap-2">
-                                <span className="size-20 border border-dashed border-black">
+                            <label htmlFor="avatar" className="flex cursor-pointer items-center gap-4">
+                                <span className="size-32 overflow-hidden rounded-full border">
                                     <img
                                         ref={previewAvatar}
-                                        src="src/assets/images/select-image.png"
+                                        src="/images/account-placeholder.jpg"
                                         alt=""
-                                        className="size-full object-contain p-1"
+                                        className="size-full object-cover object-center p-1"
                                     />
                                 </span>
-                                <span className="text-sm">Select your avatar</span>
+                                <div className="flex flex-col items-center">
+                                    <i className="fa-light fa-cloud-arrow-up text-xl"></i>
+                                    <span className="text-sm">Select your avatar</span>
+                                </div>
                             </label>
                             {formik.errors.avatar && (
                                 <span className="absolute left-0 top-0 text-sm text-[#d10202dc]">

@@ -3,6 +3,11 @@ export default {
     content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
     theme: {
         extend: {
+            spacing: {
+                header: '70px',
+                nav: '35px',
+                'content-top': '105px',
+            },
             colors: {
                 main: '#F2F2F2',
             },

@@ -6,13 +6,11 @@ import toast from 'react-hot-toast';
 import apiRequest from '../utils/apiRequest';
 import useAuthStore from '../store/authStore';
 import useCartStore from '../store/cartStore';
-import useDataStore from '../store/dataStore';
 
 const CompareProduct = () => {
     const { isOpen, toggleOpen, compareProducts, setCompares } = useCompareProductsStore();
     const { setCart } = useCartStore();
     const { token } = useAuthStore();
-    const { getNavigationPath } = useDataStore();
     const compareTableWrapper = useRef();
 
     useEffect(() => {
@@ -49,7 +47,7 @@ const CompareProduct = () => {
                 id="compare-products"
                 checked={isOpen}
                 onChange={(e) => toggleOpen(e.currentTarget.checked)}
-                className="[&:checked+div>div]:scale-100 [&:checked+div>div]:opacity-100 [&:checked+div]:pointer-events-auto [&:checked+div]:opacity-100"
+                className="hidden [&:checked+div>div]:scale-100 [&:checked+div>div]:opacity-100 [&:checked+div]:pointer-events-auto [&:checked+div]:opacity-100"
             />
             <div className="pointer-events-none fixed left-0 top-0 z-50 flex size-full items-center justify-center opacity-0 transition-all">
                 <span
@@ -101,7 +99,7 @@ const CompareProduct = () => {
                                                             <TrashIcon className="size-5 opacity-70" />
                                                         </span>
                                                         <Link
-                                                            to={getNavigationPath(product, 'product')}
+                                                            to={`/product/${product?.slug}`}
                                                             className="inline-block min-h-[300px] w-[80%] flex-1 shrink-0 py-2"
                                                         >
                                                             <img
@@ -115,7 +113,7 @@ const CompareProduct = () => {
                                                         </Link>
                                                         <div className="w-full shrink-0">
                                                             <Link
-                                                                to={getNavigationPath(product, 'product')}
+                                                                to={`/product/${product?.slug}`}
                                                                 className="inline-block py-2 transition-colors hover:text-[#d10202]"
                                                             >
                                                                 {product?.name}
@@ -142,7 +140,7 @@ const CompareProduct = () => {
                                                             )}
                                                             {product?.colors?.length > 1 && product?.isValid && (
                                                                 <Link
-                                                                    to={getNavigationPath(product, 'product')}
+                                                                    to={`/product/${product?.slug}`}
                                                                     className="inline-block w-2/3 border border-black bg-black py-3 text-sm font-semibold uppercase text-white transition-colors hover:bg-white hover:text-black"
                                                                 >
                                                                     Select options
@@ -150,7 +148,7 @@ const CompareProduct = () => {
                                                             )}
                                                             {!product?.isValid && (
                                                                 <Link
-                                                                    to={getNavigationPath(product, 'product')}
+                                                                    to={`/product/${product?.slug}`}
                                                                     className="inline-block w-2/3 border border-black bg-black py-3 text-sm font-semibold uppercase text-white transition-colors hover:bg-white hover:text-black"
                                                                 >
                                                                     Read more
