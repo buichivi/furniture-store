@@ -3,7 +3,7 @@ import SliderPrice from './SliderPrice';
 import PropTypes from 'prop-types';
 import useDataStore from '../store/dataStore';
 import { useParams } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ChevronDownIcon } from '@heroicons/react/24/outline';
 
 const updateSelection = (categories, id, selected) => {
@@ -59,6 +59,16 @@ const handleCategorySelect = (id, selected, categories) => {
     return updatedCategories;
 };
 
+function isDescendant(parent, childSlug) {
+    if (parent?.slug == childSlug) return true;
+    if (parent?.child?.length) {
+        for (const child of parent.child) {
+            if (isDescendant(child, childSlug)) return true;
+        }
+    }
+    return false;
+}
+
 const Filter = ({
     filters,
     setFilters,
@@ -66,7 +76,8 @@ const Filter = ({
     openState,
     setOpenState,
 }) => {
-    const { products, categories, categoryTree } = useDataStore();
+    const { products, categories, categoryTree, setCategoryTree } =
+        useDataStore();
     const { categorySlug } = useParams();
     const [priceRange, setPriceRange] = useState([0, 2000]);
 
@@ -113,6 +124,15 @@ const Filter = ({
         setFilters((filters) => ({ ...filters, priceRange }));
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [priceRange]);
+
+    useEffect(() => {
+        console.log('CHANG PATH NAME');
+        const resetCategoryTree = categoryTree;
+        for (const cate of resetCategoryTree) {
+            updateSelection(resetCategoryTree, cate._id, false);
+        }
+        setCategoryTree(resetCategoryTree);
+    }, [location.pathname]);
 
     return (
         <div className="shrink-0 overflow-hidden transition-all duration-500">
@@ -382,15 +402,18 @@ const Filter = ({
 };
 
 const TypeItem = ({ category, isChild = false }) => {
+    const { categorySlug } = useParams();
     const { categoryTree, setCategoryTree } = useDataStore();
 
-    console.log('TYPE_ITEM');
+    const isChildren = useMemo(() => {
+        return isDescendant(category, categorySlug);
+    }, [categorySlug, category]);
 
     return (
         <div className={`${isChild && 'ml-8 mt-2'}`}>
             <input
                 type="checkbox"
-                defaultChecked={true}
+                checked={categorySlug == category?.slug || isChildren}
                 className="hidden [&:checked+div+div]:grid-rows-[1fr] [&:checked+div>div.expand-icon>svg]:rotate-180"
             />
             <div className="flex items-center justify-between">
@@ -404,10 +427,6 @@ const TypeItem = ({ category, isChild = false }) => {
                         className="hidden [&:checked+span]:bg-black [&:checked+span]:ring-black [&:checked+span_path]:[stroke-dashoffset:0] [&:checked+span_path]:[stroke:#fff]"
                         onChange={(e) => {
                             const selected = e.currentTarget.checked;
-                            // setFilters((filters) => ({
-                            //     ...filters,
-                            //     typeFilters: handleCategorySelect(category._id, selected, categoryTree),
-                            // }));
                             setCategoryTree(
                                 handleCategorySelect(
                                     category._id,

@@ -18,7 +18,11 @@ const ProductCard = ({ product = {}, isDisplayGrid = true }) => {
     const { token } = useAuthStore();
     const { setWishlist } = useDataStore();
     const [isFavor, setIsFavor] = useState(false);
-    const { toggleOpen: toggleOpenCompare, setCompares, compareProducts } = useCompareProductsStore();
+    const {
+        toggleOpen: toggleOpenCompare,
+        setCompares,
+        compareProducts,
+    } = useCompareProductsStore();
 
     useEffect(() => {
         setIsFavor(product?.isInWishlist || false);
@@ -33,7 +37,10 @@ const ProductCard = ({ product = {}, isDisplayGrid = true }) => {
                     color: colorId,
                     quantity,
                 },
-                { headers: { Authorization: 'Bearer ' + token }, withCredentials: true },
+                {
+                    headers: { Authorization: 'Bearer ' + token },
+                    withCredentials: true,
+                },
             ),
             {
                 loading: 'Adding to cart...',
@@ -48,7 +55,11 @@ const ProductCard = ({ product = {}, isDisplayGrid = true }) => {
 
     const handleAddToWishlist = () => {
         toast.promise(
-            apiRequest.post('/wishlist', { product: product?._id }, { headers: { Authorization: 'Bearer ' + token } }),
+            apiRequest.post(
+                '/wishlist',
+                { product: product?._id },
+                { headers: { Authorization: 'Bearer ' + token } },
+            ),
             {
                 loading: 'Adding...',
                 success: (res) => {
@@ -61,7 +72,9 @@ const ProductCard = ({ product = {}, isDisplayGrid = true }) => {
     };
     const handleRemoveFromWishlist = () => {
         toast.promise(
-            apiRequest.delete('/wishlist/' + product?._id, { headers: { Authorization: 'Bearer ' + token } }),
+            apiRequest.delete('/wishlist/' + product?._id, {
+                headers: { Authorization: 'Bearer ' + token },
+            }),
             {
                 loading: 'Removing...',
                 success: (res) => {
@@ -74,28 +87,42 @@ const ProductCard = ({ product = {}, isDisplayGrid = true }) => {
     };
     return (
         <>
-            <div className={`group/product w-full ${!isDisplayGrid && 'flex items-center gap-[50px]'}`}>
+            <div
+                className={`group/product h-fit w-full transition-all duration-500 ${!isDisplayGrid && 'flex items-center gap-[50px]'}`}
+            >
                 <Link
                     to={`/product/${product?.slug}`}
                     className={`group/product-img relative w-full shrink-0 overflow-hidden ${!isDisplayGrid && 'basis-[40%]'}`}
                 >
                     <img
-                        src={product?.colors?.length && product?.colors[0]?.images[0]}
+                        src={
+                            product?.colors?.length &&
+                            product?.colors[0]?.images[0]
+                        }
                         alt=""
                         className="h-[350px] w-full object-contain transition-all duration-500 group-hover/product-img:opacity-0"
                     />
                     <img
-                        src={product?.colors?.length && product?.colors[0]?.images[1]}
+                        src={
+                            product?.colors?.length &&
+                            product?.colors[0]?.images[1]
+                        }
                         alt=""
                         className="absolute left-0 top-0 -z-10 h-[350px] w-full object-contain"
                     />
                     <div className="absolute left-0 top-0 z-10 h-full w-full p-4">
-                        <span className="mr-1 bg-[#D10202] px-3 py-[2px] text-xs uppercase text-white">Hot</span>
+                        <span className="mr-1 bg-[#D10202] px-3 py-[2px] text-xs uppercase text-white">
+                            Hot
+                        </span>
                         {product?.discount > 0 && (
-                            <span className="mr-1 bg-[#000] px-3 py-[2px] text-xs uppercase text-white">Sale</span>
+                            <span className="mr-1 bg-[#000] px-3 py-[2px] text-xs uppercase text-white">
+                                Sale
+                            </span>
                         )}
                         {!product?.isValid && (
-                            <span className="bg-[#919191] px-3 py-[2px] text-xs uppercase text-white">Sold out</span>
+                            <span className="bg-[#919191] px-3 py-[2px] text-xs uppercase text-white">
+                                Sold out
+                            </span>
                         )}
                     </div>
                     <div className="absolute right-0 top-0 z-10 h-full w-full">
@@ -115,7 +142,12 @@ const ProductCard = ({ product = {}, isDisplayGrid = true }) => {
                                             toggleOpen(true);
                                         }}
                                     >
-                                        <label htmlFor={'product-quick-view-' + product?.id}></label>
+                                        <label
+                                            htmlFor={
+                                                'product-quick-view-' +
+                                                product?.id
+                                            }
+                                        ></label>
                                         <i className="fa-light fa-magnifying-glass"></i>
                                     </div>
                                 </Tippy>
@@ -129,11 +161,17 @@ const ProductCard = ({ product = {}, isDisplayGrid = true }) => {
                                     <div
                                         className="flex size-9 translate-y-3 cursor-pointer items-center justify-center rounded-full bg-white text-base opacity-0 transition-all delay-[100ms]  hover:bg-[#D10202] hover:text-white group-hover/product:translate-y-0 group-hover/product:opacity-100"
                                         onClick={(e) => {
-                                            const existedProd = compareProducts.find(
-                                                (prod) => prod?._id == product?._id,
-                                            );
+                                            const existedProd =
+                                                compareProducts.find(
+                                                    (prod) =>
+                                                        prod?._id ==
+                                                        product?._id,
+                                                );
                                             if (!existedProd) {
-                                                setCompares([...compareProducts, product]);
+                                                setCompares([
+                                                    ...compareProducts,
+                                                    product,
+                                                ]);
                                             }
                                             toggleOpenCompare(true);
                                             e.preventDefault();
@@ -165,27 +203,35 @@ const ProductCard = ({ product = {}, isDisplayGrid = true }) => {
                                     </div>
                                 </Tippy>
                             </div>
-                            {product?.colors?.length >= 2 && product?.isValid && (
-                                <span
-                                    onClick={() => {
-                                        navigate(`/product/${product?.slug}`);
-                                    }}
-                                    className={`flex w-full translate-y-3 items-center justify-center gap-2 bg-black py-3 text-center text-sm font-semibold uppercase text-white opacity-0 transition-all ease-out hover:bg-[#D10202] hover:text-white group-hover/product:translate-y-0 group-hover/product:opacity-100 ${!isDisplayGrid && 'hidden'}`}
-                                >
-                                    <span>Select options</span>
-                                </span>
-                            )}
-                            {product?.colors?.length == 1 && product?.isValid && (
-                                <div
-                                    className={`flex w-full translate-y-3 items-center justify-center gap-2 bg-black py-3 text-center text-sm font-semibold uppercase text-white opacity-0 transition-all ease-out hover:bg-[#D10202] hover:text-white group-hover/product:translate-y-0 group-hover/product:opacity-100 ${!isDisplayGrid && 'hidden'}`}
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        handleAddToCart(product?._id, product?.colors[0]?._id, 1);
-                                    }}
-                                >
-                                    <span>Add to cart</span>
-                                </div>
-                            )}
+                            {product?.colors?.length >= 2 &&
+                                product?.isValid && (
+                                    <span
+                                        onClick={() => {
+                                            navigate(
+                                                `/product/${product?.slug}`,
+                                            );
+                                        }}
+                                        className={`flex w-full translate-y-3 items-center justify-center gap-2 bg-black py-3 text-center text-sm font-semibold uppercase text-white opacity-0 transition-all ease-out hover:bg-[#D10202] hover:text-white group-hover/product:translate-y-0 group-hover/product:opacity-100 ${!isDisplayGrid && 'hidden'}`}
+                                    >
+                                        <span>Select options</span>
+                                    </span>
+                                )}
+                            {product?.colors?.length == 1 &&
+                                product?.isValid && (
+                                    <div
+                                        className={`flex w-full translate-y-3 items-center justify-center gap-2 bg-black py-3 text-center text-sm font-semibold uppercase text-white opacity-0 transition-all ease-out hover:bg-[#D10202] hover:text-white group-hover/product:translate-y-0 group-hover/product:opacity-100 ${!isDisplayGrid && 'hidden'}`}
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            handleAddToCart(
+                                                product?._id,
+                                                product?.colors[0]?._id,
+                                                1,
+                                            );
+                                        }}
+                                    >
+                                        <span>Add to cart</span>
+                                    </div>
+                                )}
                             {!product?.isValid && (
                                 <span
                                     onClick={() => {
@@ -209,21 +255,31 @@ const ProductCard = ({ product = {}, isDisplayGrid = true }) => {
                     </div>
                 </Link>
                 <div className="mt-2">
-                    {product?.discount > 0 && <span className="text-sm text-green-400">-{product?.discount}%</span>}
+                    {product?.discount > 0 && (
+                        <span className="text-sm text-green-400">
+                            -{product?.discount}%
+                        </span>
+                    )}
                     <Link
                         to={`/product/${product?.slug}`}
                         className={`mb-3 line-clamp-2 cursor-pointer text-base tracking-wide transition-colors hover:text-[#D10202] ${!isDisplayGrid && '!text-xl font-normal tracking-wider'}`}
                     >
                         {product?.name}
                     </Link>
-                    <div className={`flex items-center gap-4 text-base tracking-wide ${!isDisplayGrid && 'text-xl'}`}>
+                    <div
+                        className={`flex items-center gap-4 text-base tracking-wide ${!isDisplayGrid && 'text-xl'}`}
+                    >
                         {product?.discount > 0 && (
                             <span className="font-semibold">
                                 <span>$</span>
-                                <span>{numberWithCommas(product?.salePrice)}</span>
+                                <span>
+                                    {numberWithCommas(product?.salePrice)}
+                                </span>
                             </span>
                         )}
-                        <span className={`${product?.discount > 0 ? 'text-[#959595] line-through' : 'font-semibold'}`}>
+                        <span
+                            className={`${product?.discount > 0 ? 'text-[#959595] line-through' : 'font-semibold'}`}
+                        >
                             <span>$</span>
                             <span>{numberWithCommas(product?.price)}</span>
                         </span>
@@ -232,29 +288,39 @@ const ProductCard = ({ product = {}, isDisplayGrid = true }) => {
                         <>
                             <p
                                 className="mt-6 line-clamp-3 text-sm text-[#848484]"
-                                dangerouslySetInnerHTML={{ __html: product?.description }}
+                                dangerouslySetInnerHTML={{
+                                    __html: product?.description,
+                                }}
                             ></p>
-                            {product?.colors?.length >= 2 && product?.isValid && (
-                                <button
-                                    onClick={() => {
-                                        navigate(`/product/${product?.slug}`);
-                                    }}
-                                    className="mt-6 bg-black px-24 py-4 text-sm font-bold uppercase tracking-wider text-white transition-colors hover:bg-[#D10202]"
-                                >
-                                    Select options
-                                </button>
-                            )}
-                            {product?.colors?.length == 1 && product?.isValid && (
-                                <button
-                                    className="mt-6 bg-black px-24 py-4 text-sm font-bold uppercase tracking-wider text-white transition-colors hover:bg-[#D10202]"
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        handleAddToCart(product?._id, product?.colors[0]?._id, 1);
-                                    }}
-                                >
-                                    Add to cart
-                                </button>
-                            )}
+                            {product?.colors?.length >= 2 &&
+                                product?.isValid && (
+                                    <button
+                                        onClick={() => {
+                                            navigate(
+                                                `/product/${product?.slug}`,
+                                            );
+                                        }}
+                                        className="mt-6 bg-black px-24 py-4 text-sm font-bold uppercase tracking-wider text-white transition-colors hover:bg-[#D10202]"
+                                    >
+                                        Select options
+                                    </button>
+                                )}
+                            {product?.colors?.length == 1 &&
+                                product?.isValid && (
+                                    <button
+                                        className="mt-6 bg-black px-24 py-4 text-sm font-bold uppercase tracking-wider text-white transition-colors hover:bg-[#D10202]"
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            handleAddToCart(
+                                                product?._id,
+                                                product?.colors[0]?._id,
+                                                1,
+                                            );
+                                        }}
+                                    >
+                                        Add to cart
+                                    </button>
+                                )}
                             {!product?.isValid && (
                                 <button
                                     onClick={() => {

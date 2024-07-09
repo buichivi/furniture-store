@@ -4,9 +4,9 @@ export default {
     theme: {
         extend: {
             spacing: {
-                header: '70px',
-                nav: '35px',
-                'content-top': '105px',
+                header: '80px',
+                nav: '40px',
+                'content-top': '120px',
             },
             colors: {
                 main: '#F2F2F2',

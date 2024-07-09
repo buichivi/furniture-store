@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Navigation } from '../components';
 import StepProgress from '../components/StepProgress';
 import useCartStore from '../store/cartStore';
@@ -13,8 +13,17 @@ import apiRequest from '../utils/apiRequest';
 import toast from 'react-hot-toast';
 import PayPalButton from '../components/PaypalButton';
 import PropTypes from 'prop-types';
-import { CheckCircleIcon } from '@heroicons/react/24/solid';
-import { ArrowLeftIcon, CreditCardIcon, MapPinIcon, PlusCircleIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import {
+    CheckCircleIcon,
+    ExclamationCircleIcon,
+} from '@heroicons/react/24/solid';
+import {
+    ArrowLeftIcon,
+    CreditCardIcon,
+    MapPinIcon,
+    PlusCircleIcon,
+    XMarkIcon,
+} from '@heroicons/react/24/outline';
 
 const PAYMENT_METHODS = [
     { name: 'Cash On Delivery', value: 'cod' },
@@ -30,8 +39,10 @@ const Checkout = () => {
     const [payment, setPayment] = useState('cod');
     const [order, setOrder] = useState({});
     const navigate = useNavigate();
+    const location = useLocation();
     const [address, setAddresses] = useState({});
     const [cities, setCities] = useState([]);
+    const [isOrderCreated, setIsOrderCreated] = useState(false);
 
     useEffect(() => {
         axios
@@ -39,6 +50,8 @@ const Checkout = () => {
             .then((res) => setCities(res.data?.data))
             .catch((err) => console.log(err));
     }, []);
+
+    useEffect(() => {}, [location]);
 
     const discount = useMemo(() => {
         if (!promoCode?.type) {
@@ -50,11 +63,15 @@ const Checkout = () => {
     }, [promoCode, cart]);
 
     const total = useMemo(() => {
-        return (cart?.subTotal >= discount ? cart?.subTotal - discount : 0) + 10;
+        return (
+            (cart?.subTotal >= discount ? cart?.subTotal - discount : 0) + 10
+        );
     }, [discount, cart]);
 
     useEffect(() => {
-        setAddresses(currentUser?.addresses?.find((add) => add?.isDefault) ?? {});
+        setAddresses(
+            currentUser?.addresses?.find((add) => add?.isDefault) ?? {},
+        );
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentUser?._id]);
 
@@ -71,37 +88,104 @@ const Checkout = () => {
         }
     };
 
-    const handleCreateOrder = () => {
+    const handleCreateOrder = (
+        paymentStatus = 'unpaid',
+        paymentMethod = payment,
+    ) => {
         // eslint-disable-next-line no-unused-vars
         const { _id, isDefault, ...rest } = address;
 
         const data = {
             totalAmount: total,
             shippingAddress: rest,
-            paymentMethod: payment,
+            paymentMethod,
             discount,
             subTotal: cart?.subTotal,
             shippingFee: 10,
+            paymentStatus,
         };
         if (promoCode?._id) {
             data.promoCode = promoCode._id;
         }
-        toast.promise(apiRequest.post('/orders', { ...data }, { headers: { Authorization: `Bearer ${token}` } }), {
-            loading: 'Creating order...',
-            success: (res) => {
-                setCart({ items: [] });
-                setOrder(res.data?.order);
-                setPromoCode({});
-                navigate('/checkout#success');
-                return res.data?.message;
+        toast.promise(
+            apiRequest.post(
+                '/orders',
+                { ...data },
+                { headers: { Authorization: `Bearer ${token}` } },
+            ),
+            {
+                loading: 'Creating order...',
+                success: (res) => {
+                    setCart({ items: [] });
+                    setOrder(res.data?.order);
+                    setPromoCode({});
+                    navigate('/checkout#success');
+                    return res.data?.message;
+                },
+                error: (err) => {
+                    console.log(err);
+                    return err?.response?.data?.error;
+                },
             },
-            error: (err) => err?.response?.data?.error,
-        });
+        );
     };
+
+    const handleCreateVNPayUrl = () => {
+        apiRequest
+            .post(
+                '/orders/create-vnpay-url',
+                {
+                    amount: total * 25415,
+                    orderInfo: 'Thanh toan don hang',
+                },
+                { headers: { Authorization: 'Bearer ' + token } },
+            )
+            .then((res) => {
+                const openInNewTab = (url) => {
+                    const newWindow = window.open(
+                        url,
+                        '_parent',
+                        'noopener,noreferrer',
+                    );
+                    if (newWindow) newWindow.opener = null;
+                };
+                openInNewTab(res.data?.paymentUrl);
+            })
+            .catch((err) => console.log(err));
+    };
+
+    useEffect(() => {
+        if (
+            location.search != '' &&
+            address?._id != undefined &&
+            cart?.items?.length > 0 &&
+            !isOrderCreated
+        ) {
+            console.log('Call create order');
+            apiRequest
+                .get('/orders/vnpay-return' + location.search, {
+                    headers: { Authorization: 'Bearer ' + token },
+                })
+                .then((res) => {
+                    if (res.data?.code == '00') {
+                        toast.success(res.data?.message);
+                        handleCreateOrder('paid', 'vnpay');
+                        setIsOrderCreated(true);
+                    }
+                })
+                .catch((err) => {
+                    navigate('/checkout#fail');
+                    toast.error(
+                        err?.response?.data?.error || 'Transaction error',
+                    );
+                });
+        }
+    }, [location, cart, isOrderCreated]);
+
     return (
-        <div className="my-header border-t">
+        <div className="my-content-top border-t">
             <div className="container mx-auto px-5">
-                <Navigation paths="/checkout" />
+                <Navigation isShowPageName={false} paths="/checkout" />
                 <div className="w-full">
                     <StepProgress />
                 </div>
@@ -114,13 +198,13 @@ const Checkout = () => {
                                         <h4>Please login to checkout!</h4>
                                         <div className="mt-4">
                                             <Link
-                                                to="/login"
+                                                to="/login?redirectPath=checkout"
                                                 className="border border-black bg-black px-4 py-2 text-white transition-colors hover:bg-white hover:text-black"
                                             >
                                                 Login
                                             </Link>
                                             <Link
-                                                to="/register"
+                                                to="/register?redirectPath=checkout"
                                                 className="ml-4 border border-black px-4 py-2 transition-colors hover:bg-black hover:text-white"
                                             >
                                                 Register
@@ -141,7 +225,9 @@ const Checkout = () => {
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-2">
                                         <MapPinIcon className="size-5" />
-                                        <h4 className="mt-2 text-lg font-bold">Address shipping</h4>
+                                        <h4 className="mt-2 text-lg font-bold">
+                                            Address shipping
+                                        </h4>
                                     </div>
                                     <label
                                         htmlFor="select-address"
@@ -155,31 +241,45 @@ const Checkout = () => {
                                         <p>
                                             Name:{' '}
                                             <span className="font-semibold">
-                                                {address?.firstName + ' ' + address?.lastName}
+                                                {address?.firstName +
+                                                    ' ' +
+                                                    address?.lastName}
                                             </span>
                                         </p>
                                         <p>
-                                            Phone number: <span className="font-semibold">{address?.phoneNumber}</span>
+                                            Phone number:{' '}
+                                            <span className="font-semibold">
+                                                {address?.phoneNumber}
+                                            </span>
                                         </p>
                                         <p>
-                                            Email: <span className="font-semibold">{address?.email}</span>
+                                            Email:{' '}
+                                            <span className="font-semibold">
+                                                {address?.email}
+                                            </span>
                                         </p>
                                         <p>
                                             Address:{' '}
                                             <span className="font-semibold">
-                                                {address?.addressLine}, {address?.ward?.name}, {address?.district?.name}
-                                                , {address?.city?.name}
+                                                {address?.addressLine},{' '}
+                                                {address?.ward?.name},{' '}
+                                                {address?.district?.name},{' '}
+                                                {address?.city?.name}
                                             </span>
                                         </p>
                                     </div>
                                 ) : (
-                                    <p className="p-7">You don{"'"}t have any address.</p>
+                                    <p className="p-7">
+                                        You don{"'"}t have any address.
+                                    </p>
                                 )}
                             </div>
                             <div className="mt-4">
                                 <div className="flex items-center gap-2">
                                     <CreditCardIcon className="size-5" />
-                                    <h4 className="text-lg font-bold">Payment Method</h4>
+                                    <h4 className="text-lg font-bold">
+                                        Payment Method
+                                    </h4>
                                 </div>
                                 <div className="mt-4 grid grid-cols-3 gap-4">
                                     {PAYMENT_METHODS.map((method, index) => {
@@ -193,9 +293,16 @@ const Checkout = () => {
                                                         type="radio"
                                                         name="payment"
                                                         className="hidden accent-black"
-                                                        defaultChecked={payment == method.value}
+                                                        defaultChecked={
+                                                            payment ==
+                                                            method.value
+                                                        }
                                                         value={method.value}
-                                                        onClick={() => setPayment(method.value)}
+                                                        onClick={() =>
+                                                            setPayment(
+                                                                method.value,
+                                                            )
+                                                        }
                                                     />
                                                     {method.value == 'cod' && (
                                                         <img
@@ -204,14 +311,16 @@ const Checkout = () => {
                                                             className="w-20 object-contain"
                                                         />
                                                     )}
-                                                    {method.value == 'paypal' && (
+                                                    {method.value ==
+                                                        'paypal' && (
                                                         <img
                                                             src="https://1000logos.net/wp-content/uploads/2021/04/Paypal-logo.png"
                                                             alt=""
                                                             className="w-20 object-contain"
                                                         />
                                                     )}
-                                                    {method.value == 'vnpay' && (
+                                                    {method.value ==
+                                                        'vnpay' && (
                                                         <img
                                                             src="https://stcd02206177151.cloud.edgevnpay.vn/assets/images/logo-icon/logo-primary.svg"
                                                             alt=""
@@ -227,15 +336,23 @@ const Checkout = () => {
                         </div>
                         <div className="basis-2/5 bg-gray-100 p-6">
                             <div className="flex items-center justify-between">
-                                <h3 className="text-base font-semibold">Cart Summary</h3>
-                                <Link to="/cart" className="text-sm hover:text-[#d10202]">
+                                <h3 className="text-base font-semibold">
+                                    Cart Summary
+                                </h3>
+                                <Link
+                                    to="/cart"
+                                    className="text-sm hover:text-[#d10202]"
+                                >
                                     Edit
                                 </Link>
                             </div>
                             <div className="mt-6 border-b pb-4">
                                 {cart?.items.map((item, index) => {
                                     return (
-                                        <div key={index} className="mb-4 flex h-auto items-center gap-6">
+                                        <div
+                                            key={index}
+                                            className="mb-4 flex h-auto items-center gap-6"
+                                        >
                                             <Link
                                                 to={`/product/${item?.product?.slug}`}
                                                 className="inline-block shrink-0 basis-1/5 bg-white"
@@ -255,11 +372,20 @@ const Checkout = () => {
                                                         {item?.product?.name}
                                                     </Link>
                                                     <div className="flex flex-col align-top">
-                                                        <span className="text-sm">{item?.color?.name}</span>
-                                                        <span className="text-sm">x {item?.quantity}</span>
+                                                        <span className="text-sm">
+                                                            {item?.color?.name}
+                                                        </span>
+                                                        <span className="text-sm">
+                                                            x {item?.quantity}
+                                                        </span>
                                                     </div>
                                                 </div>
-                                                <span className="font-bold">${numberWithCommas(item?.itemPrice)}</span>
+                                                <span className="font-bold">
+                                                    $
+                                                    {numberWithCommas(
+                                                        item?.itemPrice,
+                                                    )}
+                                                </span>
                                             </div>
                                         </div>
                                     );
@@ -268,14 +394,18 @@ const Checkout = () => {
                             <div className="mt-4">
                                 <div className="flex items-center justify-between py-1 text-base">
                                     <span>Subtotal: </span>
-                                    <span>${numberWithCommas(cart?.subTotal)}</span>
+                                    <span>
+                                        ${numberWithCommas(cart?.subTotal)}
+                                    </span>
                                 </div>
                                 <div className="flex items-center justify-between py-1 text-base">
                                     <span>Discount: </span>
                                     <span>
                                         - ${discount}
                                         {promoCode?.type == 'coupon' && (
-                                            <span className="text-green-400">({promoCode?.discount}%)</span>
+                                            <span className="text-green-400">
+                                                ({promoCode?.discount}%)
+                                            </span>
                                         )}
                                     </span>
                                 </div>
@@ -283,7 +413,10 @@ const Checkout = () => {
                                     className={`flex items-center justify-end gap-4 py-1 text-sm ${promoCode?.code ? 'flex' : 'hidden'}`}
                                 >
                                     <span>
-                                        Promo code: <span className="font-semibold italic">{promoCode?.code}</span>
+                                        Promo code:{' '}
+                                        <span className="font-semibold italic">
+                                            {promoCode?.code}
+                                        </span>
                                     </span>
                                     <label
                                         htmlFor="change-promo-code"
@@ -304,8 +437,11 @@ const Checkout = () => {
                                     className="hidden [&:checked+div]:grid-rows-[1fr]"
                                     onChange={(e) => {
                                         if (e.currentTarget.checked)
-                                            e.currentTarget.previousElementSibling.children[1].textContent = 'Cancel';
-                                        else e.currentTarget.previousElementSibling.children[1].textContent = 'Change';
+                                            e.currentTarget.previousElementSibling.children[1].textContent =
+                                                'Cancel';
+                                        else
+                                            e.currentTarget.previousElementSibling.children[1].textContent =
+                                                'Change';
                                     }}
                                 />
                                 <div
@@ -317,11 +453,15 @@ const Checkout = () => {
                                             className="flex-1 border border-transparent py-1 pl-4 text-base uppercase outline-none placeholder:text-sm"
                                             placeholder="Promo code"
                                             value={code}
-                                            onChange={(e) => setCode(e.currentTarget.value)}
+                                            onChange={(e) =>
+                                                setCode(e.currentTarget.value)
+                                            }
                                         />
                                         <span
                                             className={`inline-block shrink-0 basis-1/3 border border-black bg-white py-1 text-center text-sm text-black transition-colors hover:bg-black hover:text-white ${code ? 'pointer-events-auto cursor-pointer opacity-100' : 'pointer-events-none cursor-default opacity-50'}`}
-                                            onClick={() => handleApplyPromoCode()}
+                                            onClick={() =>
+                                                handleApplyPromoCode()
+                                            }
                                         >
                                             Apply
                                         </span>
@@ -339,14 +479,30 @@ const Checkout = () => {
                             </div>
                             {address?._id != undefined && (
                                 <button
-                                    onClick={handleCreateOrder}
+                                    onClick={() => handleCreateOrder()}
                                     className={`mt-4 w-full border border-black bg-black py-4 text-sm font-semibold uppercase text-white transition-colors hover:bg-white hover:text-black ${payment == 'cod' ? 'block' : 'hidden'}`}
                                 >
                                     Place Order
                                 </button>
                             )}
-                            {payment == 'paypal' && address?._id != undefined && (
-                                <PayPalButton address={address} setOrder={setOrder} />
+                            {payment == 'paypal' &&
+                                address?._id != undefined && (
+                                    <PayPalButton
+                                        address={address}
+                                        setOrder={setOrder}
+                                    />
+                                )}
+                            {payment == 'vnpay' && (
+                                <button
+                                    className="flex w-full items-center justify-center border bg-white py-4 transition-colors hover:bg-gray-100"
+                                    onClick={handleCreateVNPayUrl}
+                                >
+                                    <img
+                                        src="https://stcd02206177151.cloud.edgevnpay.vn/assets/images/logo-icon/logo-primary.svg"
+                                        alt=""
+                                        className="w-20 object-contain"
+                                    />
+                                </button>
                             )}
                         </div>
                     </div>
@@ -355,7 +511,9 @@ const Checkout = () => {
                     <div>
                         <div className="flex flex-col items-center justify-center">
                             <CheckCircleIcon className="size-16 text-green-500" />
-                            <span className="mt-1 text-4xl font-bold">Thank you for your order!</span>
+                            <span className="mt-1 text-4xl font-bold">
+                                Thank you for your order!
+                            </span>
                         </div>
                         <div className="mt-6 flex flex-col items-center justify-center">
                             <span className="text-lg font-semibold tracking-wide">
@@ -378,6 +536,25 @@ const Checkout = () => {
                             >
                                 <ArrowLeftIcon className="size-5" />
                                 <span>Continue Shopping</span>
+                            </Link>
+                        </div>
+                    </div>
+                )}
+                {location.hash == '#fail' && (
+                    <div>
+                        <div className="flex flex-col items-center justify-center">
+                            <ExclamationCircleIcon className="size-16 text-red-500" />
+                            <span className="mt-1 text-4xl font-bold">
+                                An error occurred during the payment process!
+                            </span>
+                        </div>
+                        <div className="mt-10 flex items-center justify-center gap-10">
+                            <Link
+                                to="/checkout"
+                                className="flex items-center justify-center gap-2 rounded-none border border-black bg-white px-4 py-2 text-black transition-colors hover:bg-black hover:text-white"
+                            >
+                                <ArrowLeftIcon className="size-5" />
+                                <span>Back to checkout page</span>
                             </Link>
                         </div>
                     </div>
@@ -407,7 +584,9 @@ const AddressShipping = ({ onSubmit, toggleOpenForm, cities }) => {
         validationSchema: Yup.object().shape({
             firstName: Yup.string().required('First name is required'),
             lastName: Yup.string().required('Last name is required'),
-            email: Yup.string().email('Invalid email format').required('Email is required'),
+            email: Yup.string()
+                .email('Invalid email format')
+                .required('Email is required'),
             phoneNumber: Yup.string()
                 .matches(/^[0-9]{10}$/, 'Phone number should be 10 digits')
                 .required('Phone number is required'),
@@ -418,13 +597,20 @@ const AddressShipping = ({ onSubmit, toggleOpenForm, cities }) => {
         }),
         onSubmit: (values, { resetForm }) => {
             toast.promise(
-                apiRequest.post('/addresses', { ...values }, { headers: { Authorization: 'Bearer ' + token } }),
+                apiRequest.post(
+                    '/addresses',
+                    { ...values },
+                    { headers: { Authorization: 'Bearer ' + token } },
+                ),
                 {
                     loading: 'Posting...',
                     success: (res) => {
                         resetForm();
                         onSubmit();
-                        loginUser({ ...currentUser, addresses: res.data?.addresses });
+                        loginUser({
+                            ...currentUser,
+                            addresses: res.data?.addresses,
+                        });
                         return res.data?.message;
                     },
                     error: (err) => err?.response?.data?.error,
@@ -438,7 +624,9 @@ const AddressShipping = ({ onSubmit, toggleOpenForm, cities }) => {
             addressShippingForm.setFieldValue('district', '');
             addressShippingForm.setFieldValue('ward', '');
             axios
-                .get(`https://esgoo.net/api-tinhthanh/2/${addressShippingForm.values.city.id}.htm`)
+                .get(
+                    `https://esgoo.net/api-tinhthanh/2/${addressShippingForm.values.city.id}.htm`,
+                )
                 .then((res) => setDistricts(res.data?.data))
                 .catch((err) => console.log(err));
         }
@@ -451,7 +639,9 @@ const AddressShipping = ({ onSubmit, toggleOpenForm, cities }) => {
         if (addressShippingForm.values.district?.id) {
             addressShippingForm.setFieldValue('ward', '');
             axios
-                .get(`https://esgoo.net/api-tinhthanh/3/${addressShippingForm.values.district.id}.htm`)
+                .get(
+                    `https://esgoo.net/api-tinhthanh/3/${addressShippingForm.values.district.id}.htm`,
+                )
                 .then((res) => setWards(res.data?.data))
                 .catch((err) => console.log(err));
         }
@@ -460,13 +650,18 @@ const AddressShipping = ({ onSubmit, toggleOpenForm, cities }) => {
     }, [addressShippingForm.values.district?.id]);
 
     return (
-        <form onSubmit={addressShippingForm.handleSubmit} className="w-full px-6 py-4 text-sm">
+        <form
+            onSubmit={addressShippingForm.handleSubmit}
+            className="w-full px-6 py-4 text-sm"
+        >
             <div className="flex w-full items-start gap-6">
                 <div className="flex flex-1 flex-col items-start">
                     <div className="mb-2 flex w-full items-center justify-between">
                         <span>First name</span>
                         {addressShippingForm.errors.firstName && (
-                            <span className="text-sm text-[#d10202]">{addressShippingForm.errors.firstName}</span>
+                            <span className="text-sm text-[#d10202]">
+                                {addressShippingForm.errors.firstName}
+                            </span>
                         )}
                     </div>
                     <input
@@ -482,7 +677,9 @@ const AddressShipping = ({ onSubmit, toggleOpenForm, cities }) => {
                     <div className="mb-2 flex w-full items-center justify-between">
                         <span>Last name</span>
                         {addressShippingForm.errors.lastName && (
-                            <span className="text-sm text-[#d10202]">{addressShippingForm.errors.lastName}</span>
+                            <span className="text-sm text-[#d10202]">
+                                {addressShippingForm.errors.lastName}
+                            </span>
                         )}
                     </div>
                     <input
@@ -500,7 +697,9 @@ const AddressShipping = ({ onSubmit, toggleOpenForm, cities }) => {
                     <div className="mb-2 flex w-full items-center justify-between">
                         <span>Email address</span>
                         {addressShippingForm.errors.email && (
-                            <span className="text-sm text-[#d10202]">{addressShippingForm.errors.email}</span>
+                            <span className="text-sm text-[#d10202]">
+                                {addressShippingForm.errors.email}
+                            </span>
                         )}
                     </div>
                     <input
@@ -516,7 +715,9 @@ const AddressShipping = ({ onSubmit, toggleOpenForm, cities }) => {
                     <div className="mb-2 flex w-full items-center justify-between">
                         <span>Phone number</span>
                         {addressShippingForm.errors.phoneNumber && (
-                            <span className="text-sm text-[#d10202]">{addressShippingForm.errors.phoneNumber}</span>
+                            <span className="text-sm text-[#d10202]">
+                                {addressShippingForm.errors.phoneNumber}
+                            </span>
                         )}
                     </div>
                     <input
@@ -533,7 +734,9 @@ const AddressShipping = ({ onSubmit, toggleOpenForm, cities }) => {
                 <div className="mb-2 flex w-full items-center justify-between">
                     <span>Provinces/ City</span>
                     {addressShippingForm.errors.city && (
-                        <span className="text-sm text-[#d10202]">{addressShippingForm.errors.city}</span>
+                        <span className="text-sm text-[#d10202]">
+                            {addressShippingForm.errors.city}
+                        </span>
                     )}
                 </div>
                 <select
@@ -560,7 +763,9 @@ const AddressShipping = ({ onSubmit, toggleOpenForm, cities }) => {
                     <div className="mb-2 flex w-full items-center justify-between">
                         <span>District</span>
                         {addressShippingForm.errors.district && (
-                            <span className="text-sm text-[#d10202]">{addressShippingForm.errors.district}</span>
+                            <span className="text-sm text-[#d10202]">
+                                {addressShippingForm.errors.district}
+                            </span>
                         )}
                     </div>
                     <select
@@ -568,8 +773,13 @@ const AddressShipping = ({ onSubmit, toggleOpenForm, cities }) => {
                         value={addressShippingForm.values.district?.id}
                         onChange={(e) => {
                             const districtId = e.currentTarget.value;
-                            const district = districts.find((district) => district.id == districtId);
-                            addressShippingForm.setFieldValue('district', district);
+                            const district = districts.find(
+                                (district) => district.id == districtId,
+                            );
+                            addressShippingForm.setFieldValue(
+                                'district',
+                                district,
+                            );
                         }}
                     >
                         <option value="">Please select district</option>
@@ -586,7 +796,9 @@ const AddressShipping = ({ onSubmit, toggleOpenForm, cities }) => {
                     <div className="mb-2 flex w-full items-center justify-between">
                         <span>Ward</span>
                         {addressShippingForm.errors.ward && (
-                            <span className="text-sm text-[#d10202]">{addressShippingForm.errors.ward}</span>
+                            <span className="text-sm text-[#d10202]">
+                                {addressShippingForm.errors.ward}
+                            </span>
                         )}
                     </div>
                     <select
@@ -594,7 +806,9 @@ const AddressShipping = ({ onSubmit, toggleOpenForm, cities }) => {
                         value={addressShippingForm.values.ward?.id}
                         onChange={(e) => {
                             const wardId = e.currentTarget.value;
-                            const ward = wards.find((ward) => ward.id == wardId);
+                            const ward = wards.find(
+                                (ward) => ward.id == wardId,
+                            );
                             addressShippingForm.setFieldValue('ward', ward);
                         }}
                     >
@@ -613,7 +827,9 @@ const AddressShipping = ({ onSubmit, toggleOpenForm, cities }) => {
                 <div className="mb-2 flex w-full items-center justify-between">
                     <span>Address line</span>
                     {addressShippingForm.errors.addressLine && (
-                        <span className="text-sm text-[#d10202]">{addressShippingForm.errors.addressLine}</span>
+                        <span className="text-sm text-[#d10202]">
+                            {addressShippingForm.errors.addressLine}
+                        </span>
                     )}
                 </div>
                 <textarea
@@ -648,7 +864,12 @@ const AddressShipping = ({ onSubmit, toggleOpenForm, cities }) => {
     );
 };
 
-const EditAddressForm = ({ address, isOpenSelectAddress, setSelectedAddress, cities }) => {
+const EditAddressForm = ({
+    address,
+    isOpenSelectAddress,
+    setSelectedAddress,
+    cities,
+}) => {
     const [districts, setDistricts] = useState([]);
     const [wards, setWards] = useState([]);
     const { token, loginUser, currentUser } = useAuthStore();
@@ -675,7 +896,9 @@ const EditAddressForm = ({ address, isOpenSelectAddress, setSelectedAddress, cit
         validationSchema: Yup.object().shape({
             firstName: Yup.string().required('First name is required'),
             lastName: Yup.string().required('Last name is required'),
-            email: Yup.string().email('Invalid email format').required('Email is required'),
+            email: Yup.string()
+                .email('Invalid email format')
+                .required('Email is required'),
             phoneNumber: Yup.string()
                 .matches(/^[0-9]{10}$/, 'Phone number should be 10 digits')
                 .required('Phone number is required'),
@@ -700,7 +923,10 @@ const EditAddressForm = ({ address, isOpenSelectAddress, setSelectedAddress, cit
                             }
                             return selectedAddress;
                         });
-                        loginUser({ ...currentUser, addresses: res?.data?.addresses });
+                        loginUser({
+                            ...currentUser,
+                            addresses: res?.data?.addresses,
+                        });
                         inputToggle.current.click();
                         return res.data?.message;
                     },
@@ -717,7 +943,9 @@ const EditAddressForm = ({ address, isOpenSelectAddress, setSelectedAddress, cit
                 addressForm.setFieldValue('ward', '');
             }
             axios
-                .get(`https://esgoo.net/api-tinhthanh/2/${addressForm.values.city.id}.htm`)
+                .get(
+                    `https://esgoo.net/api-tinhthanh/2/${addressForm.values.city.id}.htm`,
+                )
                 .then((res) => setDistricts(res.data?.data))
                 .catch((err) => console.log(err));
         }
@@ -732,7 +960,9 @@ const EditAddressForm = ({ address, isOpenSelectAddress, setSelectedAddress, cit
                 addressForm.setFieldValue('ward', '');
             }
             axios
-                .get(`https://esgoo.net/api-tinhthanh/3/${addressForm.values.district.id}.htm`)
+                .get(
+                    `https://esgoo.net/api-tinhthanh/3/${addressForm.values.district.id}.htm`,
+                )
                 .then((res) => setWards(res.data?.data))
                 .catch((err) => console.log(err));
         }
@@ -742,10 +972,17 @@ const EditAddressForm = ({ address, isOpenSelectAddress, setSelectedAddress, cit
 
     return (
         <React.Fragment>
-            <input type="checkbox" ref={inputToggle} className="hidden [&:checked+div]:grid-rows-[1fr]" />
+            <input
+                type="checkbox"
+                ref={inputToggle}
+                className="hidden [&:checked+div]:grid-rows-[1fr]"
+            />
             <div className="grid grid-rows-[0fr] transition-all duration-500">
                 <div className="overflow-hidden">
-                    <form onSubmit={addressForm.handleSubmit} className="overflow-hidden px-6 text-sm">
+                    <form
+                        onSubmit={addressForm.handleSubmit}
+                        className="overflow-hidden px-6 text-sm"
+                    >
                         <div className="mt-4 w-full">
                             <div className="flex w-full items-start gap-6">
                                 <div className="flex flex-1 flex-col items-start">
@@ -790,7 +1027,9 @@ const EditAddressForm = ({ address, isOpenSelectAddress, setSelectedAddress, cit
                                     <div className="mb-2 flex w-full items-center justify-between">
                                         <span>Email address</span>
                                         {addressForm.errors.email && (
-                                            <span className="text-sm text-[#d10202]">{addressForm.errors.email}</span>
+                                            <span className="text-sm text-[#d10202]">
+                                                {addressForm.errors.email}
+                                            </span>
                                         )}
                                     </div>
                                     <input
@@ -825,7 +1064,9 @@ const EditAddressForm = ({ address, isOpenSelectAddress, setSelectedAddress, cit
                                 <div className="mb-2 flex w-full items-center justify-between">
                                     <span>Provinces/ City</span>
                                     {addressForm.errors.city && (
-                                        <span className="text-sm text-[#d10202]">{addressForm.errors.city}</span>
+                                        <span className="text-sm text-[#d10202]">
+                                            {addressForm.errors.city}
+                                        </span>
                                     )}
                                 </div>
                                 <select
@@ -833,14 +1074,21 @@ const EditAddressForm = ({ address, isOpenSelectAddress, setSelectedAddress, cit
                                     value={addressForm.values.city?.id}
                                     onChange={(e) => {
                                         const cityId = e.currentTarget.value;
-                                        const city = cities.find((city) => city.id == cityId);
+                                        const city = cities.find(
+                                            (city) => city.id == cityId,
+                                        );
                                         addressForm.setFieldValue('city', city);
                                     }}
                                 >
-                                    <option value="">Please select provinces/city</option>
+                                    <option value="">
+                                        Please select provinces/city
+                                    </option>
                                     {cities.map((city) => {
                                         return (
-                                            <option key={city.id} value={city.id}>
+                                            <option
+                                                key={city.id}
+                                                value={city.id}
+                                            >
                                                 {city.name}
                                             </option>
                                         );
@@ -861,15 +1109,27 @@ const EditAddressForm = ({ address, isOpenSelectAddress, setSelectedAddress, cit
                                         className="w-full rounded-lg border-2 px-2 py-1 text-sm outline-none transition-colors focus:border-black"
                                         value={addressForm.values.district?.id}
                                         onChange={(e) => {
-                                            const districtId = e.currentTarget.value;
-                                            const district = districts.find((district) => district.id == districtId);
-                                            addressForm.setFieldValue('district', district);
+                                            const districtId =
+                                                e.currentTarget.value;
+                                            const district = districts.find(
+                                                (district) =>
+                                                    district.id == districtId,
+                                            );
+                                            addressForm.setFieldValue(
+                                                'district',
+                                                district,
+                                            );
                                         }}
                                     >
-                                        <option value="">Please select district</option>
+                                        <option value="">
+                                            Please select district
+                                        </option>
                                         {districts.map((district) => {
                                             return (
-                                                <option key={district.id} value={district.id}>
+                                                <option
+                                                    key={district.id}
+                                                    value={district.id}
+                                                >
                                                     {district.name}
                                                 </option>
                                             );
@@ -880,22 +1140,35 @@ const EditAddressForm = ({ address, isOpenSelectAddress, setSelectedAddress, cit
                                     <div className="mb-2 flex w-full items-center justify-between">
                                         <span>Ward</span>
                                         {addressForm.errors.ward && (
-                                            <span className="text-sm text-[#d10202]">{addressForm.errors.ward}</span>
+                                            <span className="text-sm text-[#d10202]">
+                                                {addressForm.errors.ward}
+                                            </span>
                                         )}
                                     </div>
                                     <select
                                         className="w-full rounded-lg border-2 px-2 py-1 text-sm outline-none transition-colors focus:border-black"
                                         value={addressForm.values.ward?.id}
                                         onChange={(e) => {
-                                            const wardId = e.currentTarget.value;
-                                            const ward = wards.find((ward) => ward.id == wardId);
-                                            addressForm.setFieldValue('ward', ward);
+                                            const wardId =
+                                                e.currentTarget.value;
+                                            const ward = wards.find(
+                                                (ward) => ward.id == wardId,
+                                            );
+                                            addressForm.setFieldValue(
+                                                'ward',
+                                                ward,
+                                            );
                                         }}
                                     >
-                                        <option value="">Please select ward</option>
+                                        <option value="">
+                                            Please select ward
+                                        </option>
                                         {wards.map((ward) => {
                                             return (
-                                                <option key={ward.id} value={ward.id}>
+                                                <option
+                                                    key={ward.id}
+                                                    value={ward.id}
+                                                >
                                                     {ward.name}
                                                 </option>
                                             );
@@ -907,7 +1180,9 @@ const EditAddressForm = ({ address, isOpenSelectAddress, setSelectedAddress, cit
                                 <div className="mb-2 flex w-full items-center justify-between">
                                     <span>Detail address</span>
                                     {addressForm.errors.addressLine && (
-                                        <span className="text-sm text-[#d10202]">{addressForm.errors.addressLine}</span>
+                                        <span className="text-sm text-[#d10202]">
+                                            {addressForm.errors.addressLine}
+                                        </span>
                                     )}
                                 </div>
                                 <textarea
@@ -952,7 +1227,9 @@ const SelectAddressShipping = ({ onChange, cities }) => {
     const [isAddNewAddress, setIsAddNewAddress] = useState(false);
 
     useEffect(() => {
-        setSelectedAddress(currentUser?.addresses?.find((add) => add?.isDefault) ?? {});
+        setSelectedAddress(
+            currentUser?.addresses?.find((add) => add?.isDefault) ?? {},
+        );
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentUser]);
 
@@ -972,7 +1249,9 @@ const SelectAddressShipping = ({ onChange, cities }) => {
             <input
                 type="checkbox"
                 checked={isOpenSelectAddress}
-                onChange={(e) => setIsOpenSelectAddress(e.currentTarget.checked)}
+                onChange={(e) =>
+                    setIsOpenSelectAddress(e.currentTarget.checked)
+                }
                 id="select-address"
                 className="hidden [&:checked+div]:pointer-events-auto [&:checked+div]:scale-100 [&:checked+div]:opacity-100"
             />
@@ -988,64 +1267,121 @@ const SelectAddressShipping = ({ onChange, cities }) => {
                     >
                         <XMarkIcon className="size-5 text-white" />
                     </label>
-                    <h3 className="h-10 border-b px-4 text-lg font-semibold leading-10">Addresses</h3>
+                    <h3 className="h-10 border-b px-4 text-lg font-semibold leading-10">
+                        Addresses
+                    </h3>
                     <div className="flex-1 overflow-y-scroll [scrollbar-width:thin]">
                         {currentUser?.addresses?.length > 0 && (
                             <div className="p-4">
-                                {currentUser?.addresses?.map((address, index) => {
-                                    return (
-                                        <React.Fragment key={index}>
-                                            <label className="relative flex cursor-pointer items-center justify-between p-4 text-sm hover:bg-gray-100">
-                                                <div className="flex items-center gap-4">
-                                                    <input
-                                                        type="radio"
-                                                        name="addresses"
-                                                        className="accent-black"
-                                                        checked={selectedAddress?._id == address?._id}
-                                                        onChange={(e) => {
-                                                            setIsOpenSelectAddress(!e.currentTarget.checked);
-                                                            setSelectedAddress(address);
-                                                        }}
-                                                    />
-                                                    <div>
-                                                        {address?.isDefault && (
-                                                            <span className="text-[#d10202]">(Default)</span>
-                                                        )}
-                                                        <div className="flex items-center gap-2">
-                                                            <span className="font-bold">
-                                                                {address?.firstName + ' ' + address?.lastName}
-                                                            </span>
-                                                            <span className="text-gray-300">{'|'}</span>
-                                                            <span>{address?.phoneNumber}</span>
-                                                            <span className="text-gray-300">{'|'}</span>
-                                                            <span>{address?.email}</span>
+                                {currentUser?.addresses?.map(
+                                    (address, index) => {
+                                        return (
+                                            <React.Fragment key={index}>
+                                                <label className="relative flex cursor-pointer items-center justify-between p-4 text-sm hover:bg-gray-100">
+                                                    <div className="flex items-center gap-4">
+                                                        <input
+                                                            type="radio"
+                                                            name="addresses"
+                                                            className="accent-black"
+                                                            checked={
+                                                                selectedAddress?._id ==
+                                                                address?._id
+                                                            }
+                                                            onChange={(e) => {
+                                                                setIsOpenSelectAddress(
+                                                                    !e
+                                                                        .currentTarget
+                                                                        .checked,
+                                                                );
+                                                                setSelectedAddress(
+                                                                    address,
+                                                                );
+                                                            }}
+                                                        />
+                                                        <div>
+                                                            {address?.isDefault && (
+                                                                <span className="text-[#d10202]">
+                                                                    (Default)
+                                                                </span>
+                                                            )}
+                                                            <div className="flex items-center gap-2">
+                                                                <span className="font-bold">
+                                                                    {address?.firstName +
+                                                                        ' ' +
+                                                                        address?.lastName}
+                                                                </span>
+                                                                <span className="text-gray-300">
+                                                                    {'|'}
+                                                                </span>
+                                                                <span>
+                                                                    {
+                                                                        address?.phoneNumber
+                                                                    }
+                                                                </span>
+                                                                <span className="text-gray-300">
+                                                                    {'|'}
+                                                                </span>
+                                                                <span>
+                                                                    {
+                                                                        address?.email
+                                                                    }
+                                                                </span>
+                                                            </div>
+                                                            <p>
+                                                                Address:{' '}
+                                                                {
+                                                                    address?.addressLine
+                                                                }
+                                                                ,{' '}
+                                                                {
+                                                                    address
+                                                                        ?.ward
+                                                                        ?.name
+                                                                }
+                                                                ,{' '}
+                                                                {
+                                                                    address
+                                                                        ?.district
+                                                                        ?.name
+                                                                }
+                                                                ,{' '}
+                                                                {
+                                                                    address
+                                                                        ?.city
+                                                                        ?.name
+                                                                }
+                                                            </p>
                                                         </div>
-                                                        <p>
-                                                            Address: {address?.addressLine}, {address?.ward?.name},{' '}
-                                                            {address?.district?.name}, {address?.city?.name}
-                                                        </p>
                                                     </div>
-                                                </div>
-                                                <span
-                                                    className="select-none"
-                                                    onClick={(e) => {
-                                                        e.preventDefault();
-                                                        const ip = e.currentTarget.parentElement.nextElementSibling;
-                                                        ip.checked = !ip.checked;
-                                                    }}
-                                                >
-                                                    Edit
-                                                </span>
-                                            </label>
-                                            <EditAddressForm
-                                                address={address}
-                                                isOpenSelectAddress={isOpenSelectAddress}
-                                                setSelectedAddress={setSelectedAddress}
-                                                cities={cities}
-                                            />
-                                        </React.Fragment>
-                                    );
-                                })}
+                                                    <span
+                                                        className="select-none"
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            const ip =
+                                                                e.currentTarget
+                                                                    .parentElement
+                                                                    .nextElementSibling;
+                                                            ip.checked =
+                                                                !ip.checked;
+                                                        }}
+                                                    >
+                                                        Edit
+                                                    </span>
+                                                </label>
+                                                <EditAddressForm
+                                                    address={address}
+                                                    isOpenSelectAddress={
+                                                        isOpenSelectAddress
+                                                    }
+                                                    setSelectedAddress={
+                                                        setSelectedAddress
+                                                    }
+                                                    cities={cities}
+                                                />
+                                            </React.Fragment>
+                                        );
+                                    },
+                                )}
                             </div>
                         )}
                         <input
@@ -1053,9 +1389,14 @@ const SelectAddressShipping = ({ onChange, cities }) => {
                             id="add-new-address"
                             className="hidden [&:checked+label+div]:grid-rows-[1fr] [&:checked+label>svg]:rotate-45"
                             checked={isAddNewAddress}
-                            onChange={(e) => setIsAddNewAddress(e.currentTarget.checked)}
+                            onChange={(e) =>
+                                setIsAddNewAddress(e.currentTarget.checked)
+                            }
                         />
-                        <label htmlFor="add-new-address" className="flex cursor-pointer items-center gap-2 p-6 text-sm">
+                        <label
+                            htmlFor="add-new-address"
+                            className="flex cursor-pointer items-center gap-2 p-6 text-sm"
+                        >
                             <PlusCircleIcon className="size-8 transition-all duration-500" />
                             <span>Add new address</span>
                         </label>

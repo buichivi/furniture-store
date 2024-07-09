@@ -6,7 +6,9 @@ const getActiveCategories = (categories) => {
     // Lọc ra các category có active và cha cũng active
     return categories.filter((category) => {
         if (category.parentId && category.active) {
-            const parent = categories.find((cate) => cate._id == category.parentId);
+            const parent = categories.find(
+                (cate) => cate._id == category.parentId,
+            );
             if (parent) return parent.active;
         }
         return category.active;
@@ -16,8 +18,14 @@ const getActiveCategories = (categories) => {
 const getActiveProducts = (products, categories, wishlist) => {
     return products
         .filter((prod) => {
-            if (prod?.category?.parentId && prod?.category?.active && prod?.active) {
-                const parentCate = categories.find((cate) => cate._id == prod?.category?.parentId);
+            if (
+                prod?.category?.parentId &&
+                prod?.category?.active &&
+                prod?.active
+            ) {
+                const parentCate = categories.find(
+                    (cate) => cate._id == prod?.category?.parentId,
+                );
                 if (parentCate) return parentCate?.active;
                 return false;
             }
@@ -37,7 +45,15 @@ const getActiveProducts = (products, categories, wishlist) => {
 
 const getCategoryTree = (categories) => {
     const categoryMap = {};
-    categories.forEach((cate) => (categoryMap[cate._id] = { ...cate, child: [], selected: false }));
+    categories.forEach(
+        (cate) =>
+            (categoryMap[cate._id] = {
+                ...cate,
+                child: [],
+                selected: false,
+                level: 0,
+            }),
+    );
 
     const categoryTree = [];
     categories.forEach((cate) => {
@@ -47,6 +63,16 @@ const getCategoryTree = (categories) => {
             categoryMap[cate.parentId]?.child.push(categoryMap[cate._id]);
         }
     });
+
+    const setLevel = (categories, level = 0) => {
+        categories.forEach((category) => {
+            category.level = level;
+            if (category.child.length > 0) {
+                setLevel(category.child, level + 1);
+            }
+        });
+    };
+    setLevel(categoryTree, 0);
     return categoryTree;
 };
 
@@ -58,13 +84,20 @@ const useDataStore = create((set) => ({
     promoCode: initPromoCode,
     categoryTree: [],
     setProducts: (_products) =>
-        set((state) => ({ products: getActiveProducts(_products, state.categories, state.wishlist) })),
+        set((state) => ({
+            products: getActiveProducts(
+                _products,
+                state.categories,
+                state.wishlist,
+            ),
+        })),
     setCategories: (_categories) =>
         set(() => ({
             categories: getActiveCategories(_categories),
             categoryTree: getCategoryTree(getActiveCategories(_categories)),
         })),
-    setCategoryTree: (_categoryTree) => set(() => ({ categoryTree: _categoryTree })),
+    setCategoryTree: (_categoryTree) =>
+        set(() => ({ categoryTree: _categoryTree })),
     setPromoCode: (_promoCode) => {
         set(() => ({ promoCode: _promoCode }));
         localStorage.setItem('promoCode', JSON.stringify(_promoCode));

@@ -1,5 +1,5 @@
-import { useEffect, useRef } from 'react';
-import { CartShortForm, SearchShortForm } from '../../components';
+import React, { useEffect, useRef } from 'react';
+import { CartShortForm, Search } from '../../components';
 import { Link, useNavigation, useParams } from 'react-router-dom';
 import useAuthStore from '../../store/authStore';
 import apiRequest from '../../utils/apiRequest';
@@ -12,10 +12,6 @@ import useDataStore from '../../store/dataStore';
 nProgress.configure({
     showSpinner: false,
 });
-
-const getCategoryTreeForHeader = (categories) => {
-    return categories;
-};
 
 const Header = () => {
     const { blogSlug } = useParams();
@@ -148,8 +144,6 @@ const Header = () => {
         }
     }, [navigation.state]);
 
-    console.dir(header_el.current);
-
     return (
         <>
             <div
@@ -157,102 +151,8 @@ const Header = () => {
                 className="fixed left-0 top-0 z-50 flex h-auto w-full items-center justify-center border-b bg-transparent transition-shadow duration-700"
             >
                 <div className="container px-5">
-                    <div className="relative flex h-header items-center justify-between gap-8 ">
-                        <div className="relative flex items-center gap-4">
-                            {/* <input
-                                type="checkbox"
-                                id="menu"
-                                className="peer/menu hidden [&:checked+.menu-clip-path]:!delay-0 [&:checked+div_.nav-item-image]:top-0 [&:checked+div_.nav-item-image]:!delay-[600ms] [&:checked+div_.nav-item-image]:!duration-700 [&:checked+div_span.nav-item]:top-0 [&:checked+div_span.nav-item]:!delay-[600ms] [&:checked+div_span.nav-item]:!duration-500"
-                                onChange={(e) => {
-                                    const isOpen = e.currentTarget.checked;
-                                    const menuIcon = e.currentTarget.nextElementSibling.nextElementSibling.children[0];
-                                    if (isOpen) {
-                                        logo.current.classList.add('invert');
-                                        menuIcon.setAttribute('aria-checked', 'true');
-                                    } else {
-                                        logo.current.classList.remove('invert');
-                                        menuIcon.setAttribute('aria-checked', 'false');
-                                    }
-                                }}
-                                ref={inputToggleMenu}
-                            />
-                            <div
-                                className={`menu-clip-path fixed left-0 top-0 z-20 size-full overflow-hidden bg-black !delay-500`}
-                            >
-                                <div className="container relative mx-auto mt-content-top flex h-full gap-10 px-5 text-white">
-                                    <div className="flex flex-col gap-6 [&>*]:font-lora [&>*]:text-5xl [&>*]:font-medium [&>*]:uppercase">
-                                        {NAV_ITEMS.map((item, index) => {
-                                            return (
-                                                <div
-                                                    className="relative w-fit overflow-hidden before:absolute before:bottom-0 before:right-0 before:h-[1px] before:w-0 before:bg-white before:transition-all before:duration-500 before:content-[''] hover:before:left-0 hover:before:w-full"
-                                                    key={index}
-                                                >
-                                                    <span
-                                                        to={item.path}
-                                                        className={`nav-item relative top-full cursor-pointer transition-all !delay-300 !duration-300 ease-[cubic-bezier(0.86_0_0.07_1)] `}
-                                                        onClick={(e) => {
-                                                            navigate(item.path);
-                                                            if (navigation.state == 'idle') {
-                                                                const menuIcon =
-                                                                    e.currentTarget.parentElement.parentElement
-                                                                        .parentElement.parentElement.nextElementSibling
-                                                                        .children[0];
-                                                                menuIcon.setAttribute('aria-checked', 'false');
-                                                                logo.current.classList.remove('invert');
-                                                                inputToggleMenu.current.checked =
-                                                                    !inputToggleMenu.current.checked;
-                                                            }
-                                                        }}
-                                                        onMouseEnter={() => {
-                                                            Array.from(imageRef.current.children).forEach((child, idx) => {
-                                                                if (idx == index) {
-                                                                    child.style.opacity = 1;
-                                                                } else child.style.opacity = 0;
-                                                            });
-                                                        }}
-                                                        onMouseLeave={() => {}}
-                                                    >
-                                                        {item.name}
-                                                    </span>
-                                                </div>
-                                            );
-                                        })}
-                                    </div>
-                                    <div className="relative flex-1 overflow-hidden" ref={imageRef}>
-                                        {NAV_ITEMS.map(({ image }, index) => {
-                                            return (
-                                                <img
-                                                    key={index}
-                                                    src={image}
-                                                    alt=""
-                                                    className={`nav-item-image absolute top-full size-full object-cover transition-all !delay-300 !duration-500 ease-[cubic-bezier(0.86_0_0.07_1)]`}
-                                                    style={{ opacity: index == 0 ? 1 : 0 }}
-                                                />
-                                            );
-                                        })}
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="cross menu--1 relative size-10 overflow-hidden">
-                                <label
-                                    className="absolute -left-[30px] top-1/2 z-50 size-20 -translate-y-1/2 cursor-pointer hover:opacity-70"
-                                    htmlFor="menu"
-                                    aria-checked="false"
-                                >
-                                    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                                        <path className="line--1" d="M0 40h62c13 0 6 28-4 18L35 35" />
-                                        <path className="line--2" d="M0 50h70" />
-                                        <path className="line--3" d="M0 60h62c13 0 6-28-4-18L35 65" />
-                                    </svg>
-                                </label>
-                            </div> */}
-                            <label
-                                className="cursor-pointer text-xl hover:opacity-70"
-                                htmlFor="search-short-form"
-                            >
-                                <i className="fa-light fa-magnifying-glass"></i>
-                            </label>
-                        </div>
+                    <div className="relative flex h-header items-center justify-between gap-8">
+                        <Search />
                         <Link
                             to="/"
                             className="absolute left-1/2 z-50 flex h-full w-[130px] -translate-x-1/2 items-center justify-center overflow-hidden"
@@ -369,7 +269,7 @@ const Header = () => {
                             </label>
                         </div>
                     </div>
-                    <div className="h-nav relative flex w-full items-center justify-center">
+                    <div className="relative flex h-nav w-full items-center justify-center">
                         {categoryTree.map((category) => {
                             return (
                                 <div
@@ -378,43 +278,86 @@ const Header = () => {
                                 >
                                     <Link
                                         to={`/shop/${category?.slug}`}
-                                        className="h-nav relative inline-block cursor-pointer border-b border-b-transparent px-4 py-2 font-inter text-sm font-bold uppercase tracking-wider transition-colors"
+                                        className="relative inline-block h-nav cursor-pointer border-b border-b-transparent px-4 py-2 font-inter text-sm font-bold uppercase tracking-wider transition-colors"
                                     >
                                         {category?.name}
                                     </Link>
                                     <div className="pointer-events-none absolute left-1/2 top-full flex h-auto w-[95%] -translate-x-1/2 translate-y-10 items-start gap-10 border bg-white opacity-0 shadow-md transition-all ">
-                                        <div className="grid flex-1 grid-cols-2 gap-x-5 gap-y-10 pl-[5%] pt-[3%]">
-                                            {category.child.map((child_lv2) => {
-                                                return (
-                                                    <div key={child_lv2?._id}>
-                                                        <span className="text-sm font-bold uppercase">
-                                                            {child_lv2?.name}
-                                                        </span>
-                                                        <ul className="mt-4">
-                                                            {child_lv2.child.map(
-                                                                (child_lv3) => {
-                                                                    return (
-                                                                        <li
-                                                                            key={
-                                                                                child_lv3._id
+                                        <div className="grid flex-1 grid-cols-2 gap-x-5 gap-y-10 pl-[5%] pt-[3%] tracking-wider">
+                                            {!category.child.every(
+                                                (child) =>
+                                                    child.child.length === 0,
+                                            ) ? (
+                                                <React.Fragment>
+                                                    {category.child.map(
+                                                        (child_lv2) => {
+                                                            return (
+                                                                <div
+                                                                    key={
+                                                                        child_lv2?._id
+                                                                    }
+                                                                >
+                                                                    <span className="text-sm font-bold uppercase">
+                                                                        {
+                                                                            child_lv2?.name
+                                                                        }
+                                                                    </span>
+                                                                    <div className="mt-3 *:block">
+                                                                        {child_lv2.child.map(
+                                                                            (
+                                                                                child_lv3,
+                                                                            ) => {
+                                                                                return (
+                                                                                    <Link
+                                                                                        key={
+                                                                                            child_lv3._id
+                                                                                        }
+                                                                                        to={`/shop/${child_lv3.slug}`}
+                                                                                        className="w-fit"
+                                                                                    >
+                                                                                        <span className="py-1 font-light opacity-70 transition-all hover:opacity-100">
+                                                                                            {
+                                                                                                child_lv3.name
+                                                                                            }
+                                                                                        </span>
+                                                                                    </Link>
+                                                                                );
+                                                                            },
+                                                                        )}
+                                                                    </div>
+                                                                </div>
+                                                            );
+                                                        },
+                                                    )}
+                                                </React.Fragment>
+                                            ) : (
+                                                <div>
+                                                    <span className="text-sm font-bold uppercase">
+                                                        {category?.name}
+                                                    </span>
+                                                    <div className="mt-3 *:block">
+                                                        {category.child.map(
+                                                            (child) => {
+                                                                return (
+                                                                    <Link
+                                                                        key={
+                                                                            child._id
+                                                                        }
+                                                                        to={`/shop/${child.slug}`}
+                                                                        className="w-fit"
+                                                                    >
+                                                                        <span className="py-1 font-light opacity-70 transition-all hover:opacity-100">
+                                                                            {
+                                                                                child.name
                                                                             }
-                                                                            className="py-1 font-light opacity-80 transition-all hover:opacity-100"
-                                                                        >
-                                                                            <Link
-                                                                                to={`/shop/${child_lv3.slug}`}
-                                                                            >
-                                                                                {
-                                                                                    child_lv3.name
-                                                                                }
-                                                                            </Link>
-                                                                        </li>
-                                                                    );
-                                                                },
-                                                            )}
-                                                        </ul>
+                                                                        </span>
+                                                                    </Link>
+                                                                );
+                                                            },
+                                                        )}
                                                     </div>
-                                                );
-                                            })}
+                                                </div>
+                                            )}
                                         </div>
                                         <div className="flex-1">
                                             <img
@@ -427,12 +370,20 @@ const Header = () => {
                                 </div>
                             );
                         })}
+                        <div className="[&:hover>a]:border-b-black [&:hover>div]:pointer-events-auto [&:hover>div]:translate-y-0 [&:hover>div]:opacity-100">
+                            <Link
+                                to={`/blog`}
+                                className="relative inline-block h-nav cursor-pointer border-b border-b-transparent px-4 py-2 font-inter text-sm font-bold uppercase tracking-wider transition-colors"
+                            >
+                                Blogs
+                            </Link>
+                        </div>
                     </div>
                 </div>
             </div>
 
             {/* Search */}
-            <SearchShortForm />
+            {/* <SearchShortForm /> */}
             <CartShortForm />
         </>
     );

@@ -23,8 +23,13 @@ const SliderBlog = () => {
     return (
         <div>
             <div className="flex items-center justify-between">
-                <h3 className="mb-[30px] text-2xl font-bold capitalize ">Our blog</h3>
-                <Link to="/blog" className="transition-colors hover:text-[#d01202]">
+                <h3 className="mb-[30px] text-2xl font-bold capitalize ">
+                    Our blog
+                </h3>
+                <Link
+                    to="/blog"
+                    className="transition-colors hover:text-[#d01202]"
+                >
                     See all {'>>'}
                 </Link>
             </div>
@@ -53,7 +58,10 @@ const SliderBlog = () => {
                                     <span className="absolute left-0 top-0 z-10 m-8 bg-white px-3 py-1 text-sm uppercase">
                                         {moment(item?.createdAt).format('ll')}
                                     </span>
-                                    <Link to={`/blog/${item?.slug}`} className="inline-block">
+                                    <Link
+                                        to={`/blog/${item?.slug}`}
+                                        className="inline-block"
+                                    >
                                         <img
                                             src={item?.thumb}
                                             alt=""
@@ -63,24 +71,32 @@ const SliderBlog = () => {
                                     <div className="absolute bottom-0 left-0 m-8 flex size-16 rounded-full transition-all duration-500 hover:scale-110">
                                         <div className="absolute left-1/2 top-1/2 z-0 inline-flex size-16 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#cbc3ba]"></div>
                                         <img
-                                            src={item?.author?.avatar || '/images/account-placeholder.jpg'}
+                                            src={
+                                                item?.author?.avatar ||
+                                                '/images/account-placeholder.jpg'
+                                            }
                                             alt=""
                                             className="absolute left-1/2 top-1/2 size-12 -translate-x-1/2 -translate-y-1/2 rounded-full object-cover"
                                         />
                                     </div>
                                 </div>
                                 <div className="flex-1 shrink-0">
-                                    <div className="mb-5 flex gap-1">
+                                    <div className="mb-5">
                                         {item?.tags?.map((tag, index) => {
                                             return (
-                                                <div key={index}>
+                                                <div
+                                                    key={index}
+                                                    className="mr-1 inline-block"
+                                                >
                                                     <Link
                                                         to={`/tag/${tag?.name}`}
                                                         className="text-sm uppercase text-[#848484] transition-colors hover:text-[#D10202]"
                                                     >
                                                         {tag?.name}
                                                     </Link>
-                                                    {index <= item?.tags?.length - 2 && ', '}
+                                                    {index <=
+                                                        item?.tags?.length -
+                                                            2 && ', '}
                                                 </div>
                                             );
                                         })}
@@ -94,7 +110,10 @@ const SliderBlog = () => {
                                     <p className="mb-3 text-base leading-[1.5] tracking-wide text-[#848484]">
                                         {item?.description}
                                     </p>
-                                    <Link to={`/blog/${item?.slug}`} className="hover-text-effect font-bold uppercase">
+                                    <Link
+                                        to={`/blog/${item?.slug}`}
+                                        className="hover-text-effect font-bold uppercase"
+                                    >
                                         Read more
                                     </Link>
                                 </div>

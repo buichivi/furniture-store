@@ -20,17 +20,12 @@ const Blog = () => {
         return blogs.slice(firstPageIndex, lastPageIndex);
     }, [currentPage, blogs]);
     return (
-        <div className="py-header border-t">
+        <div className="border-t py-content-top">
             <div className="container mx-auto px-5">
-                <div className="relative">
-                    <img
-                        src="https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?q=80&w=1467&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                        alt=""
-                        className="absolute left-0 top-0 -z-10 size-full object-cover"
-                    />
-                    <Navigation paths="/blog" />
-                </div>
-
+                <Navigation
+                    paths="/blog"
+                    image="https://images.pexels.com/photos/189333/pexels-photo-189333.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+                />
                 <div className="mt-20 grid grid-cols-2 gap-10">
                     {currentData.map((blog, index) => {
                         return (
@@ -39,7 +34,10 @@ const Blog = () => {
                                     <span className="absolute left-0 top-0 z-10 m-8 bg-white px-3 py-1 text-sm uppercase">
                                         {moment(blog?.createdAt).format('ll')}
                                     </span>
-                                    <Link to={`/blog/${blog?.slug}`} className="block">
+                                    <Link
+                                        to={`/blog/${blog?.slug}`}
+                                        className="block"
+                                    >
                                         <img
                                             src={blog.thumb}
                                             className="size-full object-cover transition-all duration-500"
@@ -49,7 +47,10 @@ const Blog = () => {
                                     <div className="absolute bottom-0 left-0 m-8 flex size-16 rounded-full transition-all duration-500 hover:scale-110">
                                         <div className="absolute left-1/2 top-1/2 z-0 inline-flex size-16 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#cbc3ba]"></div>
                                         <img
-                                            src={blog?.author?.avatar || '/images/account-placeholder.jpg'}
+                                            src={
+                                                blog?.author?.avatar ||
+                                                '/images/account-placeholder.jpg'
+                                            }
                                             alt=""
                                             className="absolute left-1/2 top-1/2 size-12 -translate-x-1/2 -translate-y-1/2 rounded-full object-cover"
                                         />
@@ -58,14 +59,19 @@ const Blog = () => {
                                 <div className="mt-5 flex gap-1">
                                     {blog?.tags?.map((tag, index) => {
                                         return (
-                                            <div key={index} className="text-[#848484]">
+                                            <div
+                                                key={index}
+                                                className="text-[#848484]"
+                                            >
                                                 <Link
                                                     to={`/tag/${tag?.name}`}
                                                     className="text-sm uppercase transition-colors hover:text-[#D10202]"
                                                 >
                                                     {tag?.name}
                                                 </Link>
-                                                {index <= blog?.tags?.length - 2 && ', '}
+                                                {index <=
+                                                    blog?.tags?.length - 2 &&
+                                                    ', '}
                                             </div>
                                         );
                                     })}
@@ -79,7 +85,10 @@ const Blog = () => {
                                 <p className="mt-3 text-base leading-[1.5] tracking-wide text-[#848484]">
                                     {blog?.description}
                                 </p>
-                                <Link to={`/blog/${blog?.slug}`} className="hover-text-effect mt-4 font-bold uppercase">
+                                <Link
+                                    to={`/blog/${blog?.slug}`}
+                                    className="hover-text-effect mt-4 text-sm font-bold uppercase"
+                                >
                                     Read more
                                 </Link>
                             </div>

@@ -47,14 +47,19 @@ const Cart = () => {
     };
     const handleEmptyCart = () => {
         if (confirm('Are you sure you want to clear your cart?')) {
-            toast.promise(apiRequest.delete('/cart/clear', { headers: { Authorization: `Bearer ${token}` } }), {
-                loading: 'Clearing...',
-                success: (res) => {
-                    setCart({ ...cart, items: [] });
-                    return res.data.message;
+            toast.promise(
+                apiRequest.delete('/cart/clear', {
+                    headers: { Authorization: `Bearer ${token}` },
+                }),
+                {
+                    loading: 'Clearing...',
+                    success: (res) => {
+                        setCart({ ...cart, items: [] });
+                        return res.data.message;
+                    },
+                    error: (err) => err.response.data.error,
                 },
-                error: (err) => err.response.data.error,
-            });
+            );
         }
     };
 
@@ -68,13 +73,15 @@ const Cart = () => {
     }, [promoCode, cart]);
 
     const total = useMemo(() => {
-        return (cart?.subTotal >= discount ? cart?.subTotal - discount : 0) + 10;
+        return (
+            (cart?.subTotal >= discount ? cart?.subTotal - discount : 0) + 10
+        );
     }, [discount, cart]);
 
     return (
-        <div className="my-header border-t">
+        <div className="my-content-top border-t">
             <div className="container mx-auto px-5">
-                <Navigation isShowPageName={true} paths="/cart" />
+                <Navigation isShowPageName={false} paths="/cart" />
                 <StepProgress />
                 {cart?.items?.length > 0 ? (
                     <div className="flex items-start gap-10">
@@ -82,16 +89,28 @@ const Cart = () => {
                             <table className="w-full">
                                 <thead>
                                     <tr>
-                                        <th align="left" className="mr-8 w-2/5 border-b pb-5">
+                                        <th
+                                            align="left"
+                                            className="mr-8 w-2/5 border-b pb-5"
+                                        >
                                             Product
                                         </th>
-                                        <th align="left" className="mr-8 border-b pb-5">
+                                        <th
+                                            align="left"
+                                            className="mr-8 border-b pb-5"
+                                        >
                                             Price
                                         </th>
-                                        <th align="left" className="mr-8 border-b pb-5">
+                                        <th
+                                            align="left"
+                                            className="mr-8 border-b pb-5"
+                                        >
                                             Quantity
                                         </th>
-                                        <th align="left" className="mr-8 border-b pb-5">
+                                        <th
+                                            align="left"
+                                            className="mr-8 border-b pb-5"
+                                        >
                                             Subtotal
                                         </th>
                                     </tr>
@@ -107,7 +126,9 @@ const Cart = () => {
                                                             className="w-28 shrink-0"
                                                         >
                                                             <img
-                                                                src={item?.productImage}
+                                                                src={
+                                                                    item?.productImage
+                                                                }
                                                                 className="h-auto w-full object-contain"
                                                             />
                                                         </Link>
@@ -115,30 +136,50 @@ const Cart = () => {
                                                             to={`/product/${item?.product?.slug}`}
                                                             className="flex-1 text-wrap text-base transition-colors hover:text-[#D10202]"
                                                         >
-                                                            {item?.product?.name}
+                                                            {
+                                                                item?.product
+                                                                    ?.name
+                                                            }
                                                         </Link>
                                                     </div>
                                                 </td>
                                                 <td className="border-b">
                                                     <span className="text-base font-bold tracking-wide">
-                                                        ${numberWithCommas(item?.product?.salePrice)}
+                                                        $
+                                                        {numberWithCommas(
+                                                            item?.product
+                                                                ?.salePrice,
+                                                        )}
                                                     </span>
                                                 </td>
                                                 <td className="border-b">
                                                     <CartItemQuantity
-                                                        productId={item?.product?._id}
-                                                        colorId={item?.color?._id}
-                                                        quantity={item?.quantity}
+                                                        productId={
+                                                            item?.product?._id
+                                                        }
+                                                        colorId={
+                                                            item?.color?._id
+                                                        }
+                                                        quantity={
+                                                            item?.quantity
+                                                        }
                                                     />
                                                 </td>
                                                 <td className="border-b">
                                                     <div className="flex items-center justify-between">
                                                         <span className="text-base font-bold tracking-wide">
-                                                            ${numberWithCommas(item?.itemPrice)}
+                                                            $
+                                                            {numberWithCommas(
+                                                                item?.itemPrice,
+                                                            )}
                                                         </span>
                                                         <TrashIcon
                                                             className="size-5 cursor-pointer transition-colors hover:text-[#D10202]"
-                                                            onClick={() => handleDeleteCartItem(item?._id)}
+                                                            onClick={() =>
+                                                                handleDeleteCartItem(
+                                                                    item?._id,
+                                                                )
+                                                            }
                                                         />
                                                     </div>
                                                 </td>
@@ -148,7 +189,10 @@ const Cart = () => {
                                 </tbody>
                             </table>
                             <div className="mt-4 flex items-center justify-between">
-                                <Link to="/" className="flex items-center gap-2">
+                                <Link
+                                    to="/"
+                                    className="flex items-center gap-2"
+                                >
                                     <ArrowLeftIcon className="size-4" />
                                     <span>Back to shop</span>
                                 </Link>
@@ -162,14 +206,18 @@ const Cart = () => {
                         </div>
                         <div className="basis-1/3 bg-gray-100 p-6">
                             <div>
-                                <h4 className="mb-2 text-sm uppercase tracking-wider">Enter promo code</h4>
+                                <h4 className="mb-2 text-sm uppercase tracking-wider">
+                                    Enter promo code
+                                </h4>
                                 <div className="flex h-14 w-full items-center py-2">
                                     <input
                                         type="text"
                                         className="h-full flex-1 border pl-3 uppercase outline-none"
                                         placeholder="Promo code"
                                         value={code}
-                                        onChange={(e) => setCode(e.currentTarget.value)}
+                                        onChange={(e) =>
+                                            setCode(e.currentTarget.value)
+                                        }
                                     />
                                     <button
                                         className="h-full basis-1/3 border border-black bg-black text-white"
@@ -188,7 +236,9 @@ const Cart = () => {
                                         <span>
                                             - ${discount}
                                             {promoCode?.type == 'coupon' && (
-                                                <span className="text-green-400">({promoCode?.discount}%)</span>
+                                                <span className="text-green-400">
+                                                    ({promoCode?.discount}%)
+                                                </span>
                                             )}
                                         </span>
                                     </div>
@@ -221,13 +271,17 @@ const Cart = () => {
                     </div>
                 ) : (
                     <div>
-                        <h3 className="mb-6 text-center">Your cart is currently empty</h3>
+                        <h3 className="mb-6 text-center">
+                            Your cart is currently empty
+                        </h3>
                         <Link
                             to="/"
                             className="mx-auto flex w-fit items-center justify-center gap-2 border border-black  bg-white px-3 py-2 text-black transition-colors hover:bg-black hover:text-white"
                         >
                             <ArrowLeftIcon className="size-5" />
-                            <span className="text-sm font-bold uppercase">Return to shop</span>
+                            <span className="text-sm font-bold uppercase">
+                                Return to shop
+                            </span>
                         </Link>
                     </div>
                 )}
@@ -252,7 +306,10 @@ const CartItemQuantity = ({ productId, colorId, quantity }) => {
                         color: colorId,
                         quantity: _qty,
                     },
-                    { headers: { Authorization: `Bearer ${token}` }, withCredentials: true },
+                    {
+                        headers: { Authorization: `Bearer ${token}` },
+                        withCredentials: true,
+                    },
                 ),
                 {
                     loading: 'Update quantity...',

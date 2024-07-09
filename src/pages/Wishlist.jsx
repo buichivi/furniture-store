@@ -54,14 +54,7 @@ const Wishlist = () => {
 
     return (
         <div className="mt-content-top border-t">
-            <div className="relative">
-                <img
-                    src="https://images.unsplash.com/photo-1533090161767-e6ffed986c88?q=80&w=1469&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                    alt=""
-                    className="absolute left-0 top-0 -z-10 size-full object-cover"
-                />
-                <Navigation paths={`/wishlist`} />
-            </div>
+            <Navigation paths={`/wishlist`} />
             <div className="container mx-auto mt-10 px-5 py-5">
                 {wishlist?.length == 0 ? (
                     <p className="block h-20 py-4 text-center">

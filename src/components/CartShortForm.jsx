@@ -1,16 +1,25 @@
 import { useNavigate } from 'react-router-dom';
 import CartItemMini from './CartItemMini';
 import useCartStore from '../store/cartStore';
+import { useEffect, useState } from 'react';
 
 const CartShortForm = () => {
     const { cart } = useCartStore();
     const navigate = useNavigate();
+    const [isOpen, setIsOpen] = useState(false);
+
+    useEffect(() => {
+        setIsOpen(false);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [location.pathname]);
 
     return (
         <>
             {/* Cart */}
             <input
                 type="checkbox"
+                checked={isOpen}
+                onChange={(e) => setIsOpen(e.currentTarget.checked)}
                 className="peer/cart-short-form hidden [&:checked+div>div]:translate-x-0 [&:checked+div>label]:opacity-100"
                 id="cart-short-form"
             />
@@ -21,10 +30,15 @@ const CartShortForm = () => {
                 ></label>
                 <div className="absolute right-0 top-0 flex h-full w-[30%] translate-x-full flex-col overflow-y-hidden bg-white p-[30px] transition-all duration-500 2xl:w-1/5">
                     <div className="mb-8 flex shrink-0 items-center justify-between">
-                        <h4 className={`tracking-wider ${cart?.items?.length == 0 && 'invisible'}`}>
+                        <h4
+                            className={`tracking-wider ${cart?.items?.length == 0 && 'invisible'}`}
+                        >
                             Cart ({cart?.items?.length})
                         </h4>
-                        <label htmlFor="cart-short-form" className="cursor-pointer text-2xl">
+                        <label
+                            htmlFor="cart-short-form"
+                            className="cursor-pointer text-2xl"
+                        >
                             <i className="fa-light fa-xmark"></i>
                         </label>
                     </div>
@@ -37,7 +51,10 @@ const CartShortForm = () => {
                                 fill="none"
                                 xmlns="http://www.w3.org/2000/svg"
                             >
-                                <path d="M150 0H0V150H150V0Z" fill="white"></path>
+                                <path
+                                    d="M150 0H0V150H150V0Z"
+                                    fill="white"
+                                ></path>
                                 <path
                                     d="M34.5824 74.3272L33.4081 68.3582C32.1926 62.179 36.9225 56.428 43.2201 56.428H131.802C138.025 56.428 142.737 62.0523 141.647 68.1798L130.534 130.633C129.685 135.406 125.536 138.882 120.689 138.882H56.6221C51.9655 138.882 47.9253 135.668 46.8782 131.13L45.1458 123.623"
                                     stroke="#808080"
@@ -79,13 +96,17 @@ const CartShortForm = () => {
                                     fill="#808080"
                                 ></path>
                             </svg>
-                            <p className="mt-4 font-inter text-base tracking-wide">Your cart is currently empty</p>
+                            <p className="mt-4 font-inter text-base tracking-wide">
+                                Your cart is currently empty
+                            </p>
                         </div>
                     ) : (
                         <div className="flex h-full flex-1 flex-col">
                             <div className="flex h-[55%] flex-col gap-8 overflow-y-auto pr-1 [scrollbar-width:thin]">
                                 {cart?.items?.map((item, index) => {
-                                    return <CartItemMini key={index} item={item} />;
+                                    return (
+                                        <CartItemMini key={index} item={item} />
+                                    );
                                 })}
                             </div>
                             {cart?.items?.length > 0 && (

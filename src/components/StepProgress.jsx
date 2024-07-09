@@ -1,19 +1,26 @@
 import { CheckIcon } from '@heroicons/react/24/outline';
 import React, { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
 const StepProgress = () => {
     const [steps, setSteps] = useState([true, false, false]);
     const [currentStep, setCurrentStep] = useState(0);
     const location = useLocation();
-    const navigate = useNavigate();
 
     useEffect(() => {
         if (location.pathname == '/cart') {
             setCurrentStep(0);
         } else if (location.pathname == '/checkout' && location.hash == '') {
             setCurrentStep(1);
-        } else if (location.pathname == '/checkout' && location.hash == '#success') {
+        } else if (
+            location.pathname == '/checkout' &&
+            location.hash == '#success'
+        ) {
+            setCurrentStep(3);
+        } else if (
+            location.pathname == '/checkout' &&
+            location.hash == '#fail'
+        ) {
             setCurrentStep(3);
         }
     }, [location]);

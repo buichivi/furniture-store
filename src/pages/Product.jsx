@@ -7,7 +7,7 @@ import {
     UserReview,
 } from '../components';
 import { numberWithCommas } from '../utils/format';
-import { Link, useNavigate, useNavigation, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import apiRequest from '../utils/apiRequest';
 import toast from 'react-hot-toast';
 import useCartStore from '../store/cartStore';
@@ -38,8 +38,6 @@ const Product = () => {
     const navigate = useNavigate();
     const { toggleOpen, setCompares, compareProducts } =
         useCompareProductsStore();
-
-    const navigation = useNavigation();
 
     useEffect(() => {
         // nProgress.done();
@@ -169,9 +167,6 @@ const Product = () => {
                                 <span>({product?.reviews?.length})</span>
                             </div>
                             <div className="flex items-center gap-1">
-                                {navigation.state == 'loading' && (
-                                    <h1>Loaded</h1>
-                                )}
                                 <span>Stock: </span>
                                 {product?.isValid ? (
                                     <span className="text-green-500">

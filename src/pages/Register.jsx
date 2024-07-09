@@ -32,7 +32,9 @@ const Register = () => {
             avatar: '',
         },
         validationSchema: Yup.object({
-            email: Yup.string().email('Invalid email').required('This field is required'),
+            email: Yup.string()
+                .email('Invalid email')
+                .required('This field is required'),
             password: Yup.string()
                 .min(6, 'Requires at least 6 characters')
                 .max(12, 'Does not exceed 12 characters')
@@ -163,13 +165,22 @@ const Register = () => {
                                 id="avatar"
                                 accept="image/*"
                                 onChange={(e) => {
-                                    previewAvatar.current.src = URL.createObjectURL(e.currentTarget.files[0]);
+                                    previewAvatar.current.src =
+                                        URL.createObjectURL(
+                                            e.currentTarget.files[0],
+                                        );
                                     // setFile(e.currentTarget.files[0]);
-                                    formik.setFieldValue('avatar', e.currentTarget.files[0]);
+                                    formik.setFieldValue(
+                                        'avatar',
+                                        e.currentTarget.files[0],
+                                    );
                                 }}
                                 className="hidden w-full border-b py-2 pl-2 outline-none transition-colors duration-500 placeholder:font-light focus:border-b-black"
                             />
-                            <label htmlFor="avatar" className="flex cursor-pointer items-center gap-4">
+                            <label
+                                htmlFor="avatar"
+                                className="flex cursor-pointer items-center gap-4"
+                            >
                                 <span className="size-32 overflow-hidden rounded-full border">
                                     <img
                                         ref={previewAvatar}
@@ -180,7 +191,9 @@ const Register = () => {
                                 </span>
                                 <div className="flex flex-col items-center">
                                     <i className="fa-light fa-cloud-arrow-up text-xl"></i>
-                                    <span className="text-sm">Select your avatar</span>
+                                    <span className="text-sm">
+                                        Select your avatar
+                                    </span>
                                 </div>
                             </label>
                             {formik.errors.avatar && (
@@ -233,7 +246,11 @@ const Register = () => {
                 </form>
                 <p className="mt-6 text-center text-sm">
                     Already have an account?{' '}
-                    <Link ref={loginLink} to="/login" className="hover-text-effect ml-1">
+                    <Link
+                        ref={loginLink}
+                        to={`/login` + location.search}
+                        className="hover-text-effect ml-1"
+                    >
                         Log in
                     </Link>
                 </p>

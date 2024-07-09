@@ -26,7 +26,9 @@ const UserReview = ({ product = {}, averageRating = 5, setProduct }) => {
         }),
         onSubmit: (values, { resetForm }) => {
             toast.promise(
-                apiRequest.post('/reviews/' + product?._id, values, { headers: { Authorization: 'Bearer ' + token } }),
+                apiRequest.post('/reviews/' + product?._id, values, {
+                    headers: { Authorization: 'Bearer ' + token },
+                }),
                 {
                     loading: 'Posting...',
                     success: (res) => {
@@ -34,7 +36,10 @@ const UserReview = ({ product = {}, averageRating = 5, setProduct }) => {
                         // setReviews((reviews) => [...reviews, { user: currentUser, ...res.data?.review }]);
                         setProduct((product) => ({
                             ...product,
-                            reviews: [...product.reviews, { user: currentUser, ...res.data?.review }],
+                            reviews: [
+                                ...product.reviews,
+                                { user: currentUser, ...res.data?.review },
+                            ],
                         }));
                         return res.data?.message;
                     },
@@ -47,7 +52,9 @@ const UserReview = ({ product = {}, averageRating = 5, setProduct }) => {
     return (
         <div>
             <div className="mb-10 text-center">
-                <h3 className="mb-5 text-2xl font-bold capitalize tracking-widest">Customers Reviews</h3>
+                <h3 className="mb-5 text-2xl font-bold capitalize tracking-widest">
+                    Customers Reviews
+                </h3>
                 {product?.reviews?.length > 0 ? (
                     <div className="flex items-center justify-center gap-2">
                         <ReviewStars size="16px" stars={averageRating} />
@@ -65,7 +72,7 @@ const UserReview = ({ product = {}, averageRating = 5, setProduct }) => {
             {!currentUser?._id ? (
                 <div className="py-4 text-center">
                     <Link
-                        to="/login"
+                        to={`/login?redirectPath=product/${product?.slug}`}
                         className="inline-block w-fit border border-black bg-black px-4 py-3 text-white transition-colors hover:bg-white hover:text-black"
                     >
                         Please login to review!
@@ -75,7 +82,9 @@ const UserReview = ({ product = {}, averageRating = 5, setProduct }) => {
                 <form onSubmit={reviewForm.handleSubmit} className="mt-14">
                     <div className="mb-12">
                         {product?.reviews?.length > 0 ? (
-                            <h3 className="mb-5 text-center text-2xl font-bold tracking-wider">Add a review</h3>
+                            <h3 className="mb-5 text-center text-2xl font-bold tracking-wider">
+                                Add a review
+                            </h3>
                         ) : (
                             <h3 className="mb-5 text-center text-2xl font-bold">
                                 Be the first to review “{product?.name}”
@@ -91,7 +100,10 @@ const UserReview = ({ product = {}, averageRating = 5, setProduct }) => {
                                             key={index}
                                             className={`cursor-pointer [&:hover~span_i:first-child]:inline-block [&:hover~span_i:last-child]:hidden ${index + 1 <= reviewForm.values.rating && '[&_i:first-child]:hidden [&_i:last-child]:inline-block'}`}
                                             onClick={() => {
-                                                reviewForm.setFieldValue('rating', index + 1);
+                                                reviewForm.setFieldValue(
+                                                    'rating',
+                                                    index + 1,
+                                                );
                                             }}
                                         >
                                             <i className="fa-sharp fa-light fa-star"></i>
@@ -101,12 +113,16 @@ const UserReview = ({ product = {}, averageRating = 5, setProduct }) => {
                             </div>
                         </div>
                         {reviewForm.errors.rating && (
-                            <span className="block text-center text-sm text-red-500">{reviewForm.errors.rating}</span>
+                            <span className="block text-center text-sm text-red-500">
+                                {reviewForm.errors.rating}
+                            </span>
                         )}
                     </div>
                     <div>
                         {reviewForm.errors.comment && (
-                            <span className="text-sm text-red-500">{reviewForm.errors.comment}</span>
+                            <span className="text-sm text-red-500">
+                                {reviewForm.errors.comment}
+                            </span>
                         )}
                         <textarea
                             name="comment"
