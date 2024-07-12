@@ -315,7 +315,7 @@ const Header = () => {
                                                                                         to={`/shop/${child_lv3.slug}`}
                                                                                         className="w-fit"
                                                                                     >
-                                                                                        <span className="py-1 font-light opacity-70 transition-all hover:opacity-100">
+                                                                                        <span className="py-2 font-light opacity-70 transition-all hover:opacity-100">
                                                                                             {
                                                                                                 child_lv3.name
                                                                                             }
@@ -346,7 +346,7 @@ const Header = () => {
                                                                         to={`/shop/${child.slug}`}
                                                                         className="w-fit"
                                                                     >
-                                                                        <span className="py-1 font-light opacity-70 transition-all hover:opacity-100">
+                                                                        <span className="py-2 font-light opacity-70 transition-all hover:opacity-100">
                                                                             {
                                                                                 child.name
                                                                             }

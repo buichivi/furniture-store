@@ -1402,6 +1402,7 @@ const EditAddressForm = ({ address, setAddresses }) => {
 
 const InfomationForm = () => {
     const { currentUser, token, loginUser } = useAuthStore();
+    const [password, setPassword] = useState('');
 
     const infomationForm = useFormik({
         initialValues: {
@@ -1427,7 +1428,6 @@ const InfomationForm = () => {
             for (const key in values) {
                 formData.append(key, values[key]);
             }
-            const password = prompt('Enter your password to continue');
             if (!password) return;
             formData.append('password', password);
             toast.promise(
@@ -1437,6 +1437,7 @@ const InfomationForm = () => {
                 {
                     loading: 'Updating...',
                     success: (res) => {
+                        setPassword('');
                         loginUser({
                             ...currentUser,
                             ...res.data?.updateFields,
@@ -1456,12 +1457,20 @@ const InfomationForm = () => {
         },
         enableReinitialize: true,
         validationSchema: Yup.object().shape({
-            currentPassword: Yup.string().required(
-                'Current password is required',
-            ),
-            newPassword: Yup.string().required('New password is required'),
+            currentPassword: Yup.string()
+                .min(6, 'Requires at least 6 characters')
+                .max(12, 'Does not exceed 12 characters')
+                .required('Current password is required'),
+            newPassword: Yup.string()
+                .min(6, 'Requires at least 6 characters')
+                .max(12, 'Does not exceed 12 characters')
+                .notOneOf(
+                    [Yup.ref('currentPassword'), null],
+                    'New password must be different from current password',
+                )
+                .required('New password is required'),
         }),
-        onSubmit: (values) => {
+        onSubmit: (values, { resetForm }) => {
             toast.promise(
                 apiRequest.patch('/users', values, {
                     headers: { Authorization: 'Bearer ' + token },
@@ -1469,6 +1478,7 @@ const InfomationForm = () => {
                 {
                     loading: 'Updating...',
                     success: (res) => {
+                        resetForm();
                         return res.data?.message;
                     },
                     error: (error) => error?.response?.data?.error,
@@ -1487,10 +1497,67 @@ const InfomationForm = () => {
                     <button
                         type="submit"
                         className="border border-black bg-black px-4 py-2 text-white transition-all hover:bg-white hover:text-black"
-                        onClick={infomationForm.handleSubmit}
+                        onClick={(e) => {
+                            const ip = e.currentTarget.nextElementSibling;
+                            ip.checked = !ip.checked;
+                        }}
                     >
                         Save changes
                     </button>
+                    <input
+                        type="checkbox"
+                        className="hidden [&:checked+div]:pointer-events-auto [&:checked+div]:scale-100 [&:checked+div]:opacity-100"
+                    />
+                    <div className="pointer-events-none fixed left-0 top-0 z-50 flex size-full scale-110 items-center justify-center opacity-0 transition-all">
+                        <span
+                            onClick={(e) => {
+                                const ip =
+                                    e.currentTarget.parentElement
+                                        .previousElementSibling;
+                                ip.checked = !ip.checked;
+                            }}
+                            className="absolute left-0 top-0 -z-10 size-full bg-[#000000c5]"
+                        ></span>
+                        <div className="size-1/3 h-auto bg-white p-4">
+                            <h3 className="font-lora font-bold">
+                                Enter password to continue
+                            </h3>
+                            <input
+                                type="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                placeholder="Enter your password"
+                                className="mt-4 w-full rounded-md border-2 px-2 py-1 text-sm outline-none transition-colors focus:border-black"
+                            />
+                            <div className="mt-4 flex items-center justify-end gap-4 text-sm">
+                                <button
+                                    onClick={(e) => {
+                                        const ip =
+                                            e.currentTarget.parentElement
+                                                .parentElement.parentElement
+                                                .previousElementSibling;
+                                        ip.checked = !ip.checked;
+                                    }}
+                                    className="min-w-16 border border-[#d10202] p-2 text-[#d10202] transition-colors hover:bg-[#d10202] hover:text-white"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={(e) => {
+                                        infomationForm.handleSubmit();
+                                        const ip =
+                                            e.currentTarget.parentElement
+                                                .parentElement.parentElement
+                                                .previousElementSibling;
+                                        ip.checked = !ip.checked;
+                                    }}
+                                    className="min-w-16 border border-black bg-black p-2 text-white transition-colors hover:bg-white hover:text-black"
+                                >
+                                    Save
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <form
                     onSubmit={infomationForm.handleSubmit}

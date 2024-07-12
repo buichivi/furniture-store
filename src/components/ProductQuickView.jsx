@@ -45,7 +45,10 @@ const ProductQuickView = forwardRef(function ProductQuickView() {
     }, [product]);
 
     const averageRating = useMemo(() => {
-        const totalRating = product?.reviews?.reduce((acc, cur) => acc + cur?.rating, 0);
+        const totalRating = product?.reviews?.reduce(
+            (acc, cur) => acc + cur?.rating,
+            0,
+        );
         const totalReview = product?.reviews?.length;
         return totalReview ? totalRating / totalReview : 0;
     }, [product]);
@@ -59,7 +62,10 @@ const ProductQuickView = forwardRef(function ProductQuickView() {
                     color: colorId,
                     quantity,
                 },
-                { headers: { Authorization: 'Bearer ' + token }, withCredentials: true },
+                {
+                    headers: { Authorization: 'Bearer ' + token },
+                    withCredentials: true,
+                },
             ),
             {
                 loading: 'Adding to cart...',
@@ -80,7 +86,7 @@ const ProductQuickView = forwardRef(function ProductQuickView() {
         <>
             {/* Quick view */}
             <div
-                className={`fixed left-0 top-0 z-[60] h-screen w-screen ${isOpen ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'} transition-all`}
+                className={`fixed left-0 top-0 z-[60] h-screen w-screen ${isOpen ? 'pointer-events-auto scale-100 opacity-100' : 'pointer-events-none scale-110 opacity-0'} transition-all`}
             >
                 <span
                     className="absolute left-0 top-0 block h-full w-full bg-[#000000ce]"
@@ -99,45 +105,67 @@ const ProductQuickView = forwardRef(function ProductQuickView() {
                         <SliderProductImages
                             isValid={product?.isValid}
                             discount={product?.discount}
-                            imageGallery={selectedColor?.images || product?.colors[0]?.images}
+                            imageGallery={
+                                selectedColor?.images ||
+                                product?.colors[0]?.images
+                            }
                             viewFullScreen={false}
                         />
                     </div>
                     <div className="absolute bottom-[5%] right-0 top-[10%] max-h-full w-[42%] overflow-y-auto pr-8 [scrollbar-width:thin]">
-                        <h3 className="mb-8 text-3xl tracking-wider">{product?.name}</h3>
+                        <h3 className="mb-8 text-3xl tracking-wider">
+                            {product?.name}
+                        </h3>
                         <div className="mb-7 flex items-center gap-12">
                             <div className="flex items-center gap-2">
-                                <ReviewStars stars={averageRating} size="15px" />
+                                <ReviewStars
+                                    stars={averageRating}
+                                    size="15px"
+                                />
                                 <span>({product?.reviews?.length})</span>
                             </div>
                             <div className="text-base">
                                 <span>Stock: </span>
                                 {product?.isValid ? (
-                                    <span className="text-green-400">{selectedColor?.stock} In Stock</span>
+                                    <span className="text-green-400">
+                                        {selectedColor?.stock} In Stock
+                                    </span>
                                 ) : (
-                                    <span className="text-red-400">Out Of Stock</span>
+                                    <span className="text-red-400">
+                                        Out Of Stock
+                                    </span>
                                 )}
                             </div>
                         </div>
                         <div className="mb-7 flex items-center gap-4">
-                            <span className="text-2xl tracking-wide">${numberWithCommas(product?.salePrice)}</span>
+                            <span className="text-2xl tracking-wide">
+                                ${numberWithCommas(product?.salePrice)}
+                            </span>
                             <span className="text-lg font-light tracking-wide text-[#959595] line-through">
                                 ${numberWithCommas(product?.price)}
                             </span>
                             {product?.discount > 0 && (
-                                <span className="text-lg text-green-500">(-{product?.discount}%)</span>
+                                <span className="text-lg text-green-500">
+                                    (-{product?.discount}%)
+                                </span>
                             )}
                         </div>
                         <p
                             className="mb-7 line-clamp-3 text-base text-[#959595]"
-                            dangerouslySetInnerHTML={{ __html: product?.description }}
+                            dangerouslySetInnerHTML={{
+                                __html: product?.description,
+                            }}
                         ></p>
                         {product?.colors?.length > 1 && (
                             <div className={`mb-10 ${selectedColor && 'mb-8'}`}>
                                 <div className="mb-5 flex items-center gap-2">
-                                    <h3 className="text-lg font-semibold">COLOR:</h3>
+                                    <h3 className="text-lg font-semibold">
+                                        COLOR:
+                                    </h3>
                                     {selectedColor && (
-                                        <span className="font-light capitalize">{selectedColor?.name}</span>
+                                        <span className="font-light capitalize">
+                                            {selectedColor?.name}
+                                        </span>
                                     )}
                                 </div>
                                 <div className="flex items-center gap-2">
@@ -172,9 +200,15 @@ const ProductQuickView = forwardRef(function ProductQuickView() {
                                         type="number"
                                         min={1}
                                         value={quantity}
-                                        onChange={(e) => setQuantity(Number(e.target.value))}
+                                        onChange={(e) =>
+                                            setQuantity(Number(e.target.value))
+                                        }
                                         onBlur={(e) =>
-                                            setQuantity(Number(e.target.value) >= 1 ? Number(e.target.value) : 1)
+                                            setQuantity(
+                                                Number(e.target.value) >= 1
+                                                    ? Number(e.target.value)
+                                                    : 1,
+                                            )
                                         }
                                         className="w-5 flex-1 shrink-0 border-none bg-transparent px-4 text-center text-sm outline-none"
                                     />
@@ -188,7 +222,13 @@ const ProductQuickView = forwardRef(function ProductQuickView() {
                                 <div className="h-full flex-1 shrink-0">
                                     <button
                                         className={`h-full w-full bg-black text-sm font-semibold uppercase text-white transition-colors hover:bg-[#d10202] ${!selectedColor && 'pointer-events-none cursor-not-allowed opacity-50'} select-none`}
-                                        onClick={() => handleAddToCart(product?._id, selectedColor?._id, quantity)}
+                                        onClick={() =>
+                                            handleAddToCart(
+                                                product?._id,
+                                                selectedColor?._id,
+                                                quantity,
+                                            )
+                                        }
                                     >
                                         Add to cart
                                     </button>
@@ -200,7 +240,12 @@ const ProductQuickView = forwardRef(function ProductQuickView() {
                             <button
                                 className={`mt-4 h-[50px] w-full border border-black bg-transparent text-sm font-semibold uppercase text-black transition-all hover:border-[#d10202] hover:text-[#d10202] ${!selectedColor && 'cursor-not-allowed opacity-40'}`}
                                 onClick={() => {
-                                    handleAddToCart(product?._id, selectedColor?._id, quantity, true);
+                                    handleAddToCart(
+                                        product?._id,
+                                        selectedColor?._id,
+                                        quantity,
+                                        true,
+                                    );
                                 }}
                             >
                                 Buy now
@@ -208,7 +253,10 @@ const ProductQuickView = forwardRef(function ProductQuickView() {
                         )}
                         <div className="mt-9 flex flex-col gap-[10px] text-sm tracking-wide">
                             <p>
-                                SKU: <span className="text-[#848484]">{product?.SKU}</span>
+                                SKU:{' '}
+                                <span className="text-[#848484]">
+                                    {product?.SKU}
+                                </span>
                             </p>
                             <p>
                                 BRAND:
@@ -227,12 +275,17 @@ const ProductQuickView = forwardRef(function ProductQuickView() {
                                         <div key={index}>
                                             <Link
                                                 to={`/tag/${tag?.name}`}
-                                                onClick={() => toggleOpen(false)}
+                                                onClick={() =>
+                                                    toggleOpen(false)
+                                                }
                                                 className="capitalize text-[#848484] transition-colors hover:text-[#d10202]"
                                             >
                                                 {tag?.name}
                                             </Link>
-                                            {index <= product?.tags?.length - 2 && <span>,</span>}
+                                            {index <=
+                                                product?.tags?.length - 2 && (
+                                                <span>,</span>
+                                            )}
                                         </div>
                                     ))}
                                 </div>

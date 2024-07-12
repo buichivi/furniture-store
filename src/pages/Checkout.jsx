@@ -527,7 +527,10 @@ const Checkout = () => {
                             <span>Order date: {order?.createdAt}</span>
                         </div>
                         <div className="mt-4 flex items-center justify-center gap-10">
-                            <Link className="rounded-none border border-black bg-black px-4 py-2 text-white transition-colors hover:bg-white hover:text-black">
+                            <Link
+                                to="/account/orders"
+                                className="rounded-none border border-black bg-black px-4 py-2 text-white transition-colors hover:bg-white hover:text-black"
+                            >
                                 View detail
                             </Link>
                             <Link
