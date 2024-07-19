@@ -81,8 +81,6 @@ const Filter = ({
     const { categorySlug } = useParams();
     const [priceRange, setPriceRange] = useState([0, 2000]);
 
-    console.log('Filtering');
-
     const getListColors = () => {
         const colorsMap = new Map();
 
@@ -404,7 +402,6 @@ const Filter = ({
 const TypeItem = ({ category, isChild = false }) => {
     const { categorySlug } = useParams();
     const { categoryTree, setCategoryTree } = useDataStore();
-
     const isChildren = useMemo(() => {
         return isDescendant(category, categorySlug);
     }, [categorySlug, category]);
@@ -413,7 +410,7 @@ const TypeItem = ({ category, isChild = false }) => {
         <div className={`${isChild && 'ml-8 mt-2'}`}>
             <input
                 type="checkbox"
-                checked={categorySlug == category?.slug || isChildren}
+                defaultChecked={categorySlug == category?.slug || isChildren}
                 className="hidden [&:checked+div+div]:grid-rows-[1fr] [&:checked+div>div.expand-icon>svg]:rotate-180"
             />
             <div className="flex items-center justify-between">

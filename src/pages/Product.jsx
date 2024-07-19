@@ -14,6 +14,7 @@ import useCartStore from '../store/cartStore';
 import useDataStore from '../store/dataStore';
 import useAuthStore from '../store/authStore';
 import { useCompareProductsStore } from '../store/compareProductsStore';
+import Tippy from '@tippyjs/react';
 
 export const loader = async ({ params }) => {
     const { productSlug } = params;
@@ -142,7 +143,7 @@ const Product = () => {
             />
             <div className="container mx-auto px-5">
                 <div className="mb-32 flex gap-12">
-                    <div className="basis-[55%]">
+                    <div className="aspect-square basis-[55%]">
                         <SliderProductImages
                             isValid={product?.isValid}
                             discount={product?.discount}
@@ -152,10 +153,11 @@ const Product = () => {
                                 (product?.colors?.length &&
                                     product?.colors[0]?.images)
                             }
+                            model3D={selectedColor?.model3D}
                         />
                     </div>
                     <div className="flex-1">
-                        <h1 className="mb-6 text-3xl font-normal">
+                        <h1 className="mb-6 font-lora text-4xl font-medium tracking-wider">
                             {product?.name}
                         </h1>
                         <div className="mb-10 flex items-center gap-10">
@@ -180,13 +182,13 @@ const Product = () => {
                             </div>
                         </div>
                         <div className="mb-4 flex items-center gap-4">
-                            <div className="flex gap-0 text-3xl">
+                            <div className="flex gap-0 font-lora text-3xl font-semibold">
                                 <span>$</span>
                                 <span>
                                     {numberWithCommas(product?.salePrice)}
                                 </span>
                             </div>
-                            <div className="flex gap-0 text-xl text-[#959595] line-through">
+                            <div className="flex gap-0 font-lora text-xl text-[#959595] line-through">
                                 <span>$</span>
                                 <span>{numberWithCommas(product?.price)}</span>
                             </div>
@@ -217,19 +219,28 @@ const Product = () => {
                                 <div className="flex items-center gap-2">
                                     {product?.colors?.map((color, index) => {
                                         return (
-                                            <div
+                                            <Tippy
                                                 key={index}
-                                                className={`relative size-10 cursor-pointer border hover:border-black ${color?.name == selectedColor?.name && 'border-black'}`}
-                                                onClick={() =>
-                                                    setSelectedColor(color)
+                                                content={
+                                                    <span className="capitalize">
+                                                        {color?.name}
+                                                    </span>
                                                 }
+                                                animation="shift-toward"
                                             >
-                                                <img
-                                                    className="absolute left-1/2 top-1/2 size-8 -translate-x-1/2 -translate-y-1/2"
-                                                    src={color?.thumb}
-                                                    alt={color?.name}
-                                                ></img>
-                                            </div>
+                                                <div
+                                                    className={`relative size-10 cursor-pointer border hover:border-black ${color?.name == selectedColor?.name && 'border-black'}`}
+                                                    onClick={() =>
+                                                        setSelectedColor(color)
+                                                    }
+                                                >
+                                                    <img
+                                                        className="absolute left-1/2 top-1/2 size-8 -translate-x-1/2 -translate-y-1/2"
+                                                        src={color?.thumb}
+                                                        alt={color?.name}
+                                                    ></img>
+                                                </div>
+                                            </Tippy>
                                         );
                                     })}
                                 </div>

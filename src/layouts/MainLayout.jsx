@@ -31,7 +31,7 @@ const MainLayout = ({ children }) => {
             <Footer />
             <div
                 ref={scroll_to_top}
-                className="fixed bottom-0 right-0 flex size-14 translate-x-full cursor-pointer items-center justify-center bg-black text-white transition-all duration-500"
+                className="fixed bottom-0 right-0 flex size-12 translate-x-full cursor-pointer items-center justify-center bg-black text-white transition-all duration-500"
                 onClick={() => {
                     window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
                 }}

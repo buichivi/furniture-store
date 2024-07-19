@@ -43,7 +43,8 @@ const Header = () => {
                 if (!blogSlug) header_el.current.classList.add('shadow-lg');
             } else {
                 if (top == 0) {
-                    header_el.current.classList.remove('shadow-lg');
+                    if (!blogSlug)
+                        header_el.current.classList.remove('shadow-lg');
                     header_el.current.style.background = 'transparent';
                 } else header_el.current.style.background = '#ffffffeb';
             }
@@ -52,7 +53,7 @@ const Header = () => {
         return () => {
             window.removeEventListener('scroll', styleHeader);
         };
-    }, []);
+    }, [blogSlug]);
 
     useEffect(() => {
         Promise.allSettled([

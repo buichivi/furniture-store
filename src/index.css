@@ -154,7 +154,12 @@ input[type='number']::-webkit-inner-spin-button {
     top: 0%;
     /* clip-path: circle(100%); */
 }
-#menu:checked + .menu-clip-path + .menu--1 > label[aria-checked='true'] svg path {
+#menu:checked
+    + .menu-clip-path
+    + .menu--1
+    > label[aria-checked='true']
+    svg
+    path {
     stroke: #fff;
 }
 

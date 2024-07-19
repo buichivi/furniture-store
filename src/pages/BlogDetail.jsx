@@ -57,10 +57,10 @@ const BlogDetail = () => {
         <div className="border-t py-content-top">
             <div className="container mx-auto px-5">
                 <Navigation
-                    paths={`/blog/${blogSlug}`}
+                    paths={`/blogs/${blogSlug}`}
                     isShowPageName={false}
                 />
-                <div className="mt-10 flex items-start gap-10">
+                <div className="flex items-start gap-10">
                     <div className="flex-1">
                         <div className="w-full">
                             <img

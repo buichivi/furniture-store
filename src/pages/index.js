@@ -10,5 +10,5 @@ export { default as Wishlist } from './Wishlist';
 export { default as ProductTag } from './ProductTag';
 export { default as Brand } from './Brand';
 export { default as MyAccount } from './MyAccount';
-export { default as Blog } from './Blog';
+export { default as Blogs } from './Blogs';
 export { default as BlogDetail } from './BlogDetail';

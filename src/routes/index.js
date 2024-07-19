@@ -1,4 +1,14 @@
-import { Shop, Product, productLoader, Cart, Checkout, Wishlist, MyAccount, Blog, BlogDetail } from '../pages';
+import {
+    Shop,
+    Product,
+    productLoader,
+    Cart,
+    Checkout,
+    Wishlist,
+    MyAccount,
+    Blogs,
+    BlogDetail,
+} from '../pages';
 const fakeLoader = async () => {
     return await new Promise((resolve) => setTimeout(() => resolve(null), 500));
 };
@@ -47,13 +57,13 @@ const public_routes = [
         loader: fakeLoader,
     },
     {
-        path: '/blog/:blogSlug',
+        path: '/blogs/:blogSlug',
         element: BlogDetail,
         loader: fakeLoader,
     },
     {
-        path: '/blog',
-        element: Blog,
+        path: '/blogs',
+        element: Blogs,
         loader: fakeLoader,
     },
 ];

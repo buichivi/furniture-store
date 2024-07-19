@@ -1,11 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import {
-    Filter,
-    Navigation,
-    Pagination,
-    ProductCard,
-    SliderCategory,
-} from '../components';
+import { Filter, Navigation, Pagination, ProductCard } from '../components';
 import { Link, useParams } from 'react-router-dom';
 import useDataStore from '../store/dataStore';
 import {
@@ -121,6 +115,8 @@ const Shop = () => {
     const [openState, setOpenState] = useState(FILTER_OPEN_STATE);
     const [sort, setSort] = useState(SORT_OPTIONS[0]);
     const [currentPage, setCurrentPage] = useState(1);
+    const [limit, setLimit] = useState(PAGE_SIZE);
+    const [isLoadmore, setIsLoadmore] = useState(false);
 
     const [isCloseFilter, setIsCloseFilter] = useState(true);
     const contentRef = useRef();
@@ -131,7 +127,11 @@ const Shop = () => {
         if (query) {
             apiRequest
                 .get('/products/search/' + query)
-                .then((res) => setSearchedProducts(res.data?.products))
+                .then((res) =>
+                    setSearchedProducts(
+                        res.data?.products?.filter((prod) => prod.active),
+                    ),
+                )
                 .catch((err) => console.log(err));
         }
     }, [query]);
@@ -142,28 +142,36 @@ const Shop = () => {
         if (tag) {
             apiRequest
                 .get('/products/tag/' + tag)
-                .then((res) => setProductTags(res.data?.products))
+                .then((res) =>
+                    setProductTags(
+                        res.data?.products?.filter((prod) => prod.active),
+                    ),
+                )
                 .catch((err) => console.log(err));
         }
     }, [tag]);
 
-    // Brang page
+    // Brand page
     const [productBrands, setProductBrand] = useState([]);
     useEffect(() => {
         if (brand) {
             apiRequest
                 .get('/products/brand/' + brand)
-                .then((res) => setProductBrand(res.data?.products))
+                .then((res) =>
+                    setProductBrand(
+                        res.data?.products?.filter((prod) => prod.active),
+                    ),
+                )
                 .catch((err) => console.log(err));
         }
     }, [brand]);
 
-    useEffect(() => {
-        window.scrollTo({
-            top: 0,
-            behavior: 'smooth',
-        });
-    }, [currentPage]);
+    // useEffect(() => {
+    //     window.scrollTo({
+    //         top: 0,
+    //         behavior: 'smooth',
+    //     });
+    // }, [currentPage]);
 
     useEffect(() => {
         setCurrentPage(1);
@@ -262,6 +270,8 @@ const Shop = () => {
         return categoryTree.find((cate) => cate.slug == categorySlug);
     }, [categorySlug, categoryTree]);
 
+    console.log(filteredProducts);
+
     return (
         <div className="mt-content-top border-t">
             <div className="relative">
@@ -276,7 +286,7 @@ const Shop = () => {
                     />
                 )}
             </div>
-            <div className="container mx-auto border-t px-5 py-16">
+            <div className="container mx-auto h-fit border-t px-5 py-16">
                 {!currentCategory?._id ? (
                     <React.Fragment>
                         <div className="flex">
@@ -419,7 +429,10 @@ const Shop = () => {
                                 </div>
                             </div>
                         </div>
-                        <div className="flex overflow-hidden" ref={contentRef}>
+                        <div
+                            className="flex h-fit overflow-hidden"
+                            ref={contentRef}
+                        >
                             <input
                                 type="checkbox"
                                 id="toggle-filter"
@@ -578,7 +591,17 @@ const Shop = () => {
                                 <div
                                     className={`shop-content flex-1 transition-[grid-template-columns] duration-500 ${isDisplayGrid ? 'grid grid-cols-3 gap-8' : 'flex flex-col items-start gap-10'}`}
                                 >
-                                    {currentData.map((product, index) => {
+                                    {/* {currentData.map((product, index) => {
+                                        return (
+                                            <ProductCard
+                                                key={index}
+                                                product={product}
+                                                isDisplayGrid={isDisplayGrid}
+                                            />
+                                        );
+                                    })} */}
+                                    {filteredProducts.map((product, index) => {
+                                        if (index + 1 > limit) return null;
                                         return (
                                             <ProductCard
                                                 key={index}
@@ -588,7 +611,34 @@ const Shop = () => {
                                         );
                                     })}
                                 </div>
-                                <Pagination
+                                {limit < filteredProducts.length && (
+                                    <div className="mt-20 text-center">
+                                        <button
+                                            className="w-[200px] border border-black bg-black px-4 py-3 text-sm tracking-wider text-white transition-all hover:bg-white hover:text-black"
+                                            onClick={() => {
+                                                setIsLoadmore(true); // Bắt đầu quá trình tải
+                                                setTimeout(() => {
+                                                    setIsLoadmore(false);
+                                                    setLimit(limit + PAGE_SIZE);
+                                                }, 1000);
+                                            }}
+                                        >
+                                            {isLoadmore ? (
+                                                <span>
+                                                    <i className="fa-light fa-loader animate-spin text-lg"></i>
+                                                </span>
+                                            ) : (
+                                                <span>Show more</span>
+                                            )}
+                                        </button>
+
+                                        <p className="mt-2 text-sm tracking-wider text-gray-600">
+                                            Showing {limit} of{' '}
+                                            {filteredProducts.length} products
+                                        </p>
+                                    </div>
+                                )}
+                                {/* <Pagination
                                     className="pt-10"
                                     currentPage={currentPage}
                                     totalCount={filteredProducts.length}
@@ -596,7 +646,7 @@ const Shop = () => {
                                     onPageChange={(page) =>
                                         setCurrentPage(page)
                                     }
-                                />
+                                /> */}
                             </div>
                         </div>
                     </React.Fragment>

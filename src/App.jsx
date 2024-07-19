@@ -25,6 +25,9 @@ import 'tippy.js/animations/shift-away.css';
 import 'tippy.js/animations/perspective.css';
 import 'tippy.js/animations/scale.css';
 
+// Sekeleton
+import 'react-loading-skeleton/dist/skeleton.css';
+
 import MainLayout from './layouts/MainLayout';
 import { ScrollToTop } from './components';
 import { private_routes, public_routes } from './routes';
