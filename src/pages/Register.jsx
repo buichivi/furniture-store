@@ -18,6 +18,7 @@ const Register = () => {
         if (currentUser?._id) {
             navigate('/');
         }
+        document.title = 'Register';
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentUser]);
 

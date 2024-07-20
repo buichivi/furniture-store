@@ -42,7 +42,7 @@ const SliderBlog = () => {
                     Our blog
                 </h3>
                 <Link
-                    to="/blog"
+                    to="/blogs"
                     className="transition-colors hover:text-[#d01202]"
                 >
                     See all {'>>'}
@@ -79,7 +79,7 @@ const SliderBlog = () => {
                                             )}
                                         </span>
                                         <Link
-                                            to={`/blog/${item?.slug}`}
+                                            to={`/blogs/${item?.slug}`}
                                             className="inline-block"
                                         >
                                             <img

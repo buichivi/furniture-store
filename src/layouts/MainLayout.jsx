@@ -2,10 +2,21 @@ import { useEffect, useRef } from 'react';
 import { Header, Footer } from './components';
 import PropTypes from 'prop-types';
 import { CompareProduct, ProductQuickView } from '../components';
+import { useLocation } from 'react-router-dom';
 // import { useLocation } from 'react-router-dom';
+
+const getPageTitle = (name) => {
+    let title = '';
+    if (name.length == 1 && name[0] == '') return 'Fixtures';
+    for (let i of name) {
+        title += i.charAt(0).toUpperCase() + i.slice(1) + ' ';
+    }
+    return title;
+};
 
 const MainLayout = ({ children }) => {
     const scroll_to_top = useRef();
+    const location = useLocation();
     // const location = useLocation();
 
     useEffect(() => {
@@ -19,10 +30,18 @@ const MainLayout = ({ children }) => {
             }
         };
         window.addEventListener('scroll', scrollToTop);
+
         return () => {
             window.removeEventListener('scroll', scrollToTop);
         };
     }, []);
+
+    useEffect(() => {
+        console.log(location.pathname.split('/').at(-1).split('-'));
+        document.title = getPageTitle(
+            location.pathname.split('/').at(-1).split('-'),
+        );
+    }, [location.pathname]);
 
     return (
         <div className="relative">

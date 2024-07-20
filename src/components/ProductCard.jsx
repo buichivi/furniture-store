@@ -146,9 +146,11 @@ const ProductCard = ({ product = {}, isDisplayGrid = true }) => {
                             className="absolute left-0 top-0 -z-10 h-[350px] w-full object-contain"
                         />
                         <div className="absolute left-0 top-0 z-10 h-full w-full p-4">
-                            <span className="mr-1 bg-[#D10202] px-3 py-[2px] text-xs uppercase text-white">
-                                Hot
-                            </span>
+                            {product?.isNew && (
+                                <span className="mr-1 bg-[#D10202] px-3 py-[2px] text-xs uppercase text-white">
+                                    New
+                                </span>
+                            )}
                             {product?.discount > 0 && (
                                 <span className="mr-1 bg-[#000] px-3 py-[2px] text-xs uppercase text-white">
                                     Sale

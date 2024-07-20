@@ -7,7 +7,7 @@ export { default as SliderBlog } from './SliderBlog';
 export { default as SearchItem } from './SearchItem';
 export { default as Filter } from './Filter';
 export { default as ScrollToTop } from './ScrollToTop';
-export { default as RelatedProducts } from './RelatedProducts';
+export { default as SliderProducts } from './SliderProducts';
 export { default as CartShortForm } from './CartShortForm';
 export { default as ProductCard } from './ProductCard';
 export { default as Navigation } from './Navigation';

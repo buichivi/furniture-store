@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import {
     Navigation,
-    RelatedProducts,
+    SliderProducts,
     ReviewStars,
     SliderProductImages,
     UserReview,
@@ -24,6 +24,21 @@ export const loader = async ({ params }) => {
         return {};
     }
 };
+
+function getRandomProducts(products, product, count) {
+    // Lọc ra các sản phẩm ngoại trừ sản phẩm có id là product
+    const filteredProducts = products.filter(
+        (prod) =>
+            prod._id !== product?._id &&
+            prod?.category?._id == product?.category?._id,
+    );
+
+    // Sử dụng hàm ngẫu nhiên để xáo trộn danh sách
+    const shuffledProducts = filteredProducts.sort(() => 0.5 - Math.random());
+
+    // Lấy ra count sản phẩm ngẫu nhiên từ danh sách đã xáo trộn
+    return shuffledProducts.slice(0, count);
+}
 
 const Product = () => {
     const { productSlug } = useParams();
@@ -145,6 +160,7 @@ const Product = () => {
                 <div className="mb-32 flex gap-12">
                     <div className="aspect-square basis-[55%]">
                         <SliderProductImages
+                            isNew={product?.isNew}
                             isValid={product?.isValid}
                             discount={product?.discount}
                             thumbWidth="12%"
@@ -160,7 +176,7 @@ const Product = () => {
                         <h1 className="mb-6 font-lora text-4xl font-medium tracking-wider">
                             {product?.name}
                         </h1>
-                        <div className="mb-10 flex items-center gap-10">
+                        <div className="mb-6 flex items-center gap-10">
                             <div className="flex items-center gap-2">
                                 <ReviewStars
                                     stars={averageRating}
@@ -473,7 +489,10 @@ const Product = () => {
                     </div>
                 </div>
                 <div className="mb-20">
-                    <RelatedProducts product={product} />
+                    <SliderProducts
+                        title="Related Products"
+                        products={getRandomProducts(products, product, 5)}
+                    />
                 </div>
             </div>
         </div>

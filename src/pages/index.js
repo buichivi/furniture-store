@@ -12,3 +12,4 @@ export { default as Brand } from './Brand';
 export { default as MyAccount } from './MyAccount';
 export { default as Blogs } from './Blogs';
 export { default as BlogDetail } from './BlogDetail';
+export { default as NotFound404 } from './404';

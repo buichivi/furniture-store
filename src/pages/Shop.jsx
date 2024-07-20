@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Filter, Navigation, Pagination, ProductCard } from '../components';
+import { Filter, Navigation, ProductCard, SliderProducts } from '../components';
 import { Link, useParams } from 'react-router-dom';
 import useDataStore from '../store/dataStore';
 import {
@@ -165,13 +165,6 @@ const Shop = () => {
                 .catch((err) => console.log(err));
         }
     }, [brand]);
-
-    // useEffect(() => {
-    //     window.scrollTo({
-    //         top: 0,
-    //         behavior: 'smooth',
-    //     });
-    // }, [currentPage]);
 
     useEffect(() => {
         setCurrentPage(1);
@@ -651,29 +644,40 @@ const Shop = () => {
                         </div>
                     </React.Fragment>
                 ) : (
-                    <div className="flex w-full flex-wrap justify-center gap-y-10">
-                        {currentCategory?.child?.map((cate) => {
-                            return (
-                                <React.Fragment key={cate._id}>
-                                    {!currentCategory?.child?.every(
-                                        (child) => child?.child?.length == 0,
-                                    ) ? (
-                                        <React.Fragment>
-                                            {cate.child.map((cat) => {
-                                                return (
-                                                    <CategoryItem
-                                                        key={cat._id}
-                                                        category={cat}
-                                                    />
-                                                );
-                                            })}
-                                        </React.Fragment>
-                                    ) : (
-                                        <CategoryItem category={cate} />
-                                    )}
-                                </React.Fragment>
-                            );
-                        })}
+                    <div>
+                        <div className="flex w-full flex-wrap justify-center gap-y-10">
+                            {currentCategory?.child?.map((cate) => {
+                                return (
+                                    <React.Fragment key={cate._id}>
+                                        {!currentCategory?.child?.every(
+                                            (child) =>
+                                                child?.child?.length == 0,
+                                        ) ? (
+                                            <React.Fragment>
+                                                {cate.child.map((cat) => {
+                                                    return (
+                                                        <CategoryItem
+                                                            key={cat._id}
+                                                            category={cat}
+                                                        />
+                                                    );
+                                                })}
+                                            </React.Fragment>
+                                        ) : (
+                                            <CategoryItem category={cate} />
+                                        )}
+                                    </React.Fragment>
+                                );
+                            })}
+                        </div>
+                        <div className="mt-20">
+                            <SliderProducts
+                                title="New arrival"
+                                products={products
+                                    .filter((prod) => prod?.isNew)
+                                    .slice(0, 6)}
+                            />
+                        </div>
                     </div>
                 )}
             </div>

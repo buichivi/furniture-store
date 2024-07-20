@@ -24,11 +24,11 @@ const Blogs = () => {
     console.log(limit);
     return (
         <div className="border-t py-content-top">
+            <Navigation
+                paths="/blogs"
+                image="https://images.pexels.com/photos/189333/pexels-photo-189333.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+            />
             <div className="container mx-auto px-5">
-                <Navigation
-                    paths="/blogs"
-                    image="https://images.pexels.com/photos/189333/pexels-photo-189333.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-                />
                 <div className="mt-20 grid grid-cols-2 gap-10">
                     {[...blogs, ...blogs, ...blogs].map((blog, index) => {
                         if (index + 1 > limit) return null;

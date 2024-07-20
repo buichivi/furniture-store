@@ -23,6 +23,7 @@ const Login = () => {
         if (currentUser?._id) {
             navigate('/');
         }
+        document.title = 'Login';
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentUser]);
 
@@ -32,8 +33,6 @@ const Login = () => {
             navigate('/' + redirectPath);
         }
     }, [currentUser, location.search]);
-
-    console.log('LOGIN PAGE');
 
     const formik = useFormik({
         initialValues: {

@@ -5,6 +5,7 @@ import Tippy from '@tippyjs/react';
 import '@google/model-viewer';
 
 const SliderProductImages = ({
+    isNew = false,
     isValid = true,
     discount = 0,
     thumbWidth = '15%',
@@ -95,8 +96,8 @@ const SliderProductImages = ({
                 </div>
                 <div className="relative h-full flex-1">
                     <div className="absolute left-[3%] top-[3%] z-10 [&_span]:px-3 [&_span]:py-1 [&_span]:text-xs [&_span]:uppercase [&_span]:text-white">
-                        {isValid && (
-                            <span className="mr-1 bg-[#d10202]">Hot</span>
+                        {isNew && (
+                            <span className="mr-1 bg-[#d10202]">New</span>
                         )}
                         {discount && isValid && (
                             <span className="mr-1 bg-black">Sale</span>
@@ -158,11 +159,11 @@ const SliderProductImages = ({
                                             data-pswp-height="600"
                                             target="_blank"
                                             rel="noreferrer"
-                                            className="relative top-0 inline-block h-full w-full flex-auto shrink-0  px-1"
+                                            className="relative top-0 inline-block h-full w-full flex-auto shrink-0 px-2"
                                         >
                                             <img
                                                 src={img_url}
-                                                className="size-full cursor-zoom-in object-contain object-center transition-transform duration-500"
+                                                className="size-full cursor-zoom-in object-scale-down object-center transition-transform duration-500"
                                                 onMouseMove={(e) => {
                                                     const rect =
                                                         e.target.getBoundingClientRect();
@@ -389,6 +390,7 @@ const LoadingIcon = () => {
 };
 
 SliderProductImages.propTypes = {
+    isNew: PropTypes.bool,
     imageGallery: PropTypes.array,
     thumbWidth: PropTypes.string,
     viewFullScreen: PropTypes.bool,
