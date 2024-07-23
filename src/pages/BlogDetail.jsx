@@ -17,10 +17,7 @@ function shuffle(array) {
         currentIndex--;
 
         // And swap it with the current element.
-        [array[currentIndex], array[randomIndex]] = [
-            array[randomIndex],
-            array[currentIndex],
-        ];
+        [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
     }
 }
 
@@ -56,35 +53,24 @@ const BlogDetail = () => {
     return (
         <div className="border-t py-content-top">
             <div className="container mx-auto px-5">
-                <Navigation
-                    paths={`/blogs/${blogSlug}`}
-                    isShowPageName={false}
-                />
+                <Navigation paths={`/blogs/${blogSlug}`} isShowPageName={false} />
                 <div className="flex items-start gap-10">
                     <div className="flex-1">
                         <div className="w-full">
-                            <img
-                                src={blog?.thumb}
-                                alt=""
-                                className="aspect-auto size-full object-cover"
-                            />
+                            <img src={blog?.thumb} alt="" className="aspect-auto size-full object-cover" />
                         </div>
                         <div className="flex items-center gap-1">
                             <div className="flex gap-1">
                                 {blog?.tags?.map((tag, index) => {
                                     return (
-                                        <div
-                                            key={index}
-                                            className="text-[#848484]"
-                                        >
+                                        <div key={index} className="text-[#848484]">
                                             <Link
                                                 to={`/tag/${tag?.name}`}
                                                 className="text-sm uppercase transition-colors hover:text-[#D10202]"
                                             >
                                                 {tag?.name}
                                             </Link>
-                                            {index <= blog?.tags?.length - 2 &&
-                                                ', '}
+                                            {index <= blog?.tags?.length - 2 && ', '}
                                         </div>
                                     );
                                 })}
@@ -92,50 +78,35 @@ const BlogDetail = () => {
                             <span className="m-8 bg-white px-3 py-1 text-sm uppercase">
                                 {moment(blog?.createdAt).format('ll')}
                             </span>
-                            <span className="text-sm text-[#848484]">
-                                BY ADMIN
-                            </span>
+                            <span className="text-sm text-[#848484]">BY ADMIN</span>
                         </div>
                         <div className="ck-content pb-8">
-                            <div
-                                dangerouslySetInnerHTML={{ __html: blog?.post }}
-                            ></div>
+                            <div dangerouslySetInnerHTML={{ __html: blog?.post }}></div>
                         </div>
                     </div>
                     <div className="sticky top-[120px] shrink-0 basis-1/4">
                         {getRelateBlog(blog?._id, blogs).length > 0 && (
                             <div>
-                                <h4 className="text-2xl font-bold">
-                                    Relate Blog
-                                </h4>
+                                <h4 className="text-2xl font-bold">Relate Blog</h4>
                                 <div className="mt-4">
-                                    {getRelateBlog(blog?._id, blogs).map(
-                                        (blog, index) => {
-                                            return (
-                                                <div
-                                                    key={index}
-                                                    className="flex items-start gap-2"
+                                    {getRelateBlog(blog?._id, blogs).map((blog, index) => {
+                                        return (
+                                            <div key={index} className="flex items-start gap-2">
+                                                <Link
+                                                    to={`/blogs/${blog?.slug}`}
+                                                    className="inline-block size-32 shrink-0"
                                                 >
-                                                    <Link
-                                                        to={`/blog/${blog?.slug}`}
-                                                        className="inline-block size-32 shrink-0"
-                                                    >
-                                                        <img
-                                                            src={blog?.thumb}
-                                                            alt=""
-                                                            className="object-cover"
-                                                        />
-                                                    </Link>
-                                                    <Link
-                                                        to={`/blog/${blog?.slug}`}
-                                                        className="transition-colors hover:text-[#d10202]"
-                                                    >
-                                                        {blog?.title}
-                                                    </Link>
-                                                </div>
-                                            );
-                                        },
-                                    )}
+                                                    <img src={blog?.thumb} alt="" className="object-cover" />
+                                                </Link>
+                                                <Link
+                                                    to={`/blogs/${blog?.slug}`}
+                                                    className="transition-colors hover:text-[#d10202]"
+                                                >
+                                                    {blog?.title}
+                                                </Link>
+                                            </div>
+                                        );
+                                    })}
                                 </div>
                             </div>
                         )}

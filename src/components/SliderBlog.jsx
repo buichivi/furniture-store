@@ -38,13 +38,8 @@ const SliderBlog = () => {
     return (
         <div ref={sliderBlogRef}>
             <div className="flex items-center justify-between">
-                <h3 className="mb-[30px] text-2xl font-bold capitalize ">
-                    Our blog
-                </h3>
-                <Link
-                    to="/blogs"
-                    className="transition-colors hover:text-[#d01202]"
-                >
+                <h3 className="mb-[30px] text-2xl font-bold capitalize ">Our blog</h3>
+                <Link to="/blogs" className="transition-colors hover:text-[#d01202]">
                     See all {'>>'}
                 </Link>
             </div>
@@ -74,14 +69,9 @@ const SliderBlog = () => {
                                 <div className="group/blog-slide flex h-[450px] items-center justify-between gap-14">
                                     <div className="group/blog-slide-image relative h-full shrink-0 basis-3/5 overflow-hidden">
                                         <span className="absolute left-0 top-0 z-10 m-8 bg-white px-3 py-1 text-sm uppercase">
-                                            {moment(item?.createdAt).format(
-                                                'll',
-                                            )}
+                                            {moment(item?.createdAt).format('ll')}
                                         </span>
-                                        <Link
-                                            to={`/blogs/${item?.slug}`}
-                                            className="inline-block"
-                                        >
+                                        <Link to={`/blogs/${item?.slug}`} className="inline-block">
                                             <img
                                                 src={item?.thumb}
                                                 alt=""
@@ -91,10 +81,7 @@ const SliderBlog = () => {
                                         <div className="absolute bottom-0 left-0 m-8 flex size-16 rounded-full transition-all duration-500 hover:scale-110">
                                             <div className="absolute left-1/2 top-1/2 z-0 inline-flex size-16 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#cbc3ba]"></div>
                                             <img
-                                                src={
-                                                    item?.author?.avatar ||
-                                                    '/images/account-placeholder.jpg'
-                                                }
+                                                src={item?.author?.avatar || '/images/account-placeholder.jpg'}
                                                 alt=""
                                                 className="absolute left-1/2 top-1/2 size-12 -translate-x-1/2 -translate-y-1/2 rounded-full object-cover"
                                             />
@@ -104,25 +91,20 @@ const SliderBlog = () => {
                                         <div className="mb-5">
                                             {item?.tags?.map((tag, index) => {
                                                 return (
-                                                    <div
-                                                        key={index}
-                                                        className="mr-1 inline-block"
-                                                    >
+                                                    <div key={index} className="mr-1 inline-block">
                                                         <Link
                                                             to={`/tag/${tag?.name}`}
                                                             className="text-sm uppercase text-[#848484] transition-colors hover:text-[#D10202]"
                                                         >
                                                             {tag?.name}
                                                         </Link>
-                                                        {index <=
-                                                            item?.tags?.length -
-                                                                2 && ', '}
+                                                        {index <= item?.tags?.length - 2 && ', '}
                                                     </div>
                                                 );
                                             })}
                                         </div>
                                         <Link
-                                            to={`/blog/${item?.slug}`}
+                                            to={`/blogs/${item?.slug}`}
                                             className="mb-4 inline-block text-3xl transition-colors hover:text-[#D10202]"
                                         >
                                             {item?.title}
@@ -131,7 +113,7 @@ const SliderBlog = () => {
                                             {item?.description}
                                         </p>
                                         <Link
-                                            to={`/blog/${item?.slug}`}
+                                            to={`/blogs/${item?.slug}`}
                                             className="hover-text-effect font-bold uppercase"
                                         >
                                             Read more

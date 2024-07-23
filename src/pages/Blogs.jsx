@@ -38,10 +38,7 @@ const Blogs = () => {
                                     <span className="absolute left-0 top-0 z-10 m-8 bg-white px-3 py-1 text-sm uppercase">
                                         {moment(blog?.createdAt).format('ll')}
                                     </span>
-                                    <Link
-                                        to={`/blog/${blog?.slug}`}
-                                        className="block"
-                                    >
+                                    <Link to={`/blogs/${blog?.slug}`} className="block">
                                         <img
                                             src={blog.thumb}
                                             className="size-full object-cover transition-all duration-500"
@@ -51,10 +48,7 @@ const Blogs = () => {
                                     <div className="absolute bottom-0 left-0 m-8 flex size-16 rounded-full transition-all duration-500 hover:scale-110">
                                         <div className="absolute left-1/2 top-1/2 z-0 inline-flex size-16 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#cbc3ba]"></div>
                                         <img
-                                            src={
-                                                blog?.author?.avatar ||
-                                                '/images/account-placeholder.jpg'
-                                            }
+                                            src={blog?.author?.avatar || '/images/account-placeholder.jpg'}
                                             alt=""
                                             className="absolute left-1/2 top-1/2 size-12 -translate-x-1/2 -translate-y-1/2 rounded-full object-cover"
                                         />
@@ -63,25 +57,20 @@ const Blogs = () => {
                                 <div className="mt-5 flex gap-1">
                                     {blog?.tags?.map((tag, index) => {
                                         return (
-                                            <div
-                                                key={index}
-                                                className="text-[#848484]"
-                                            >
+                                            <div key={index} className="text-[#848484]">
                                                 <Link
                                                     to={`/tag/${tag?.name}`}
                                                     className="text-sm uppercase transition-colors hover:text-[#D10202]"
                                                 >
                                                     {tag?.name}
                                                 </Link>
-                                                {index <=
-                                                    blog?.tags?.length - 2 &&
-                                                    ', '}
+                                                {index <= blog?.tags?.length - 2 && ', '}
                                             </div>
                                         );
                                     })}
                                 </div>
                                 <Link
-                                    to={`/blog/${blog?.slug}`}
+                                    to={`/blogs/${blog?.slug}`}
                                     className="mt-5 inline-block text-3xl transition-colors hover:text-[#D10202]"
                                 >
                                     {blog?.title}
@@ -90,7 +79,7 @@ const Blogs = () => {
                                     {blog?.description}
                                 </p>
                                 <Link
-                                    to={`/blog/${blog?.slug}`}
+                                    to={`/blogs/${blog?.slug}`}
                                     className="hover-text-effect mt-4 text-sm font-bold uppercase"
                                 >
                                     Read more
@@ -121,8 +110,7 @@ const Blogs = () => {
                         </button>
 
                         <p className="mt-2 text-sm tracking-wider text-gray-600">
-                            Showing {limit} of{' '}
-                            {[...blogs, ...blogs, ...blogs].length} products
+                            Showing {limit} of {[...blogs, ...blogs, ...blogs].length} products
                         </p>
                     </div>
                 )}

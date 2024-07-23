@@ -43,8 +43,7 @@ const Header = () => {
                 if (!blogSlug) header_el.current.classList.add('shadow-lg');
             } else {
                 if (top == 0) {
-                    if (!blogSlug)
-                        header_el.current.classList.remove('shadow-lg');
+                    if (!blogSlug) header_el.current.classList.remove('shadow-lg');
                     header_el.current.style.background = 'transparent';
                 } else header_el.current.style.background = '#ffffffeb';
             }
@@ -64,16 +63,10 @@ const Header = () => {
             apiRequest.get('/products'),
             apiRequest.get('/blogs'),
         ]).then((results) => {
-            const user =
-                results[0].status == 'fulfilled' && results[0].value.data.user;
-            const categories =
-                results[1].status == 'fulfilled' &&
-                results[1].value.data.categories;
-            const products =
-                results[2].status == 'fulfilled' &&
-                results[2].value.data.products;
-            const blogs =
-                results[3].status == 'fulfilled' && results[3].value.data.blogs;
+            const user = results[0].status == 'fulfilled' && results[0].value.data.user;
+            const categories = results[1].status == 'fulfilled' && results[1].value.data.categories;
+            const products = results[2].status == 'fulfilled' && results[2].value.data.products;
+            const blogs = results[3].status == 'fulfilled' && results[3].value.data.blogs;
             if (user) loginUser(user);
             else {
                 loginUser({});
@@ -110,10 +103,12 @@ const Header = () => {
     }, [wishlist]);
 
     useEffect(() => {
-        apiRequest
-            .get('/promo-code/' + promoCode?.code)
-            .then(() => console.log('APPLY PROMO CODE SUCCESS'))
-            .catch(() => setPromoCode({}));
+        if (promoCode?.code) {
+            apiRequest
+                .get('/promo-code/' + promoCode.code)
+                .then(() => console.log('APPLY PROMO CODE SUCCESS'))
+                .catch(() => setPromoCode({}));
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -167,10 +162,7 @@ const Header = () => {
                         </Link>
                         <div className="flex items-center gap-8 [&>*>i]:cursor-pointer [&>*>i]:text-xl">
                             {!currentUser?.email ? (
-                                <Link
-                                    className="relative hover:opacity-70"
-                                    to="/login"
-                                >
+                                <Link className="relative hover:opacity-70" to="/login">
                                     <i className="fa-light fa-user"></i>
                                 </Link>
                             ) : (
@@ -194,23 +186,15 @@ const Header = () => {
                                                                     currentUser.avatar ||
                                                                     '/images/account-placeholder.jpg'
                                                                 }
-                                                                alt={
-                                                                    currentUser.name
-                                                                }
+                                                                alt={currentUser.name}
                                                                 className="size-full object-cover"
                                                             />
                                                         </div>
                                                         <div className="flex flex-1 flex-col items-start justify-center text-sm">
                                                             <h4 className="font-semibold">
-                                                                {currentUser.firstName +
-                                                                    ' ' +
-                                                                    currentUser.lastName}
+                                                                {currentUser.firstName + ' ' + currentUser.lastName}
                                                             </h4>
-                                                            <p>
-                                                                {
-                                                                    currentUser.email
-                                                                }
-                                                            </p>
+                                                            <p>{currentUser.email}</p>
                                                         </div>
                                                     </div>
                                                     <Link
@@ -238,10 +222,7 @@ const Header = () => {
                                         {/* <i className="fa-light fa-user cursor-pointer text-xl"></i> */}
                                         <div className="size-7 shrink-0 cursor-pointer overflow-hidden rounded-full">
                                             <img
-                                                src={
-                                                    currentUser.avatar ||
-                                                    '/images/account-placeholder.jpg'
-                                                }
+                                                src={currentUser.avatar || '/images/account-placeholder.jpg'}
                                                 alt={currentUser.name}
                                                 className="size-full object-cover"
                                             />
@@ -252,20 +233,13 @@ const Header = () => {
                             <Link to="/wishlist" className="relative">
                                 <i className="fa-light fa-heart hover:opacity-70"></i>
                                 <div className="absolute -right-[45%] -top-[35%] flex size-5 cursor-pointer items-center justify-center rounded-full bg-black text-white">
-                                    <span className="text-sm">
-                                        {wishlist?.length}
-                                    </span>
+                                    <span className="text-sm">{wishlist?.length}</span>
                                 </div>
                             </Link>
-                            <label
-                                className="relative"
-                                htmlFor="cart-short-form"
-                            >
+                            <label className="relative" htmlFor="cart-short-form">
                                 <i className="fa-light fa-cart-shopping hover:opacity-70"></i>
                                 <div className="absolute -right-[30%] -top-[35%] flex size-5 cursor-pointer items-center justify-center rounded-full bg-black text-white">
-                                    <span className="text-sm">
-                                        {cart?.items?.length}
-                                    </span>
+                                    <span className="text-sm">{cart?.items?.length}</span>
                                 </div>
                             </label>
                         </div>
@@ -285,51 +259,32 @@ const Header = () => {
                                     </Link>
                                     <div className="pointer-events-none absolute left-1/2 top-full flex h-auto w-[95%] -translate-x-1/2 translate-y-10 items-start gap-10 border bg-white opacity-0 shadow-md transition-all ">
                                         <div className="grid flex-1 grid-cols-2 gap-x-5 gap-y-10 pl-[5%] pt-[3%] tracking-wider">
-                                            {!category.child.every(
-                                                (child) =>
-                                                    child.child.length === 0,
-                                            ) ? (
+                                            {!category.child.every((child) => child.child.length === 0) ? (
                                                 <React.Fragment>
-                                                    {category.child.map(
-                                                        (child_lv2) => {
-                                                            return (
-                                                                <div
-                                                                    key={
-                                                                        child_lv2?._id
-                                                                    }
-                                                                >
-                                                                    <span className="text-sm font-bold uppercase">
-                                                                        {
-                                                                            child_lv2?.name
-                                                                        }
-                                                                    </span>
-                                                                    <div className="mt-3 *:block">
-                                                                        {child_lv2.child.map(
-                                                                            (
-                                                                                child_lv3,
-                                                                            ) => {
-                                                                                return (
-                                                                                    <Link
-                                                                                        key={
-                                                                                            child_lv3._id
-                                                                                        }
-                                                                                        to={`/shop/${child_lv3.slug}`}
-                                                                                        className="w-fit"
-                                                                                    >
-                                                                                        <span className="py-2 font-light opacity-70 transition-all hover:opacity-100">
-                                                                                            {
-                                                                                                child_lv3.name
-                                                                                            }
-                                                                                        </span>
-                                                                                    </Link>
-                                                                                );
-                                                                            },
-                                                                        )}
-                                                                    </div>
+                                                    {category.child.map((child_lv2) => {
+                                                        return (
+                                                            <div key={child_lv2?._id}>
+                                                                <span className="text-sm font-bold uppercase">
+                                                                    {child_lv2?.name}
+                                                                </span>
+                                                                <div className="mt-3 *:block">
+                                                                    {child_lv2.child.map((child_lv3) => {
+                                                                        return (
+                                                                            <Link
+                                                                                key={child_lv3._id}
+                                                                                to={`/shop/${child_lv3.slug}`}
+                                                                                className="w-fit"
+                                                                            >
+                                                                                <span className="py-2 font-light opacity-70 transition-all hover:opacity-100">
+                                                                                    {child_lv3.name}
+                                                                                </span>
+                                                                            </Link>
+                                                                        );
+                                                                    })}
                                                                 </div>
-                                                            );
-                                                        },
-                                                    )}
+                                                            </div>
+                                                        );
+                                                    })}
                                                 </React.Fragment>
                                             ) : (
                                                 <div>
@@ -337,25 +292,19 @@ const Header = () => {
                                                         {category?.name}
                                                     </span>
                                                     <div className="mt-3 *:block">
-                                                        {category.child.map(
-                                                            (child) => {
-                                                                return (
-                                                                    <Link
-                                                                        key={
-                                                                            child._id
-                                                                        }
-                                                                        to={`/shop/${child.slug}`}
-                                                                        className="w-fit"
-                                                                    >
-                                                                        <span className="py-2 font-light opacity-70 transition-all hover:opacity-100">
-                                                                            {
-                                                                                child.name
-                                                                            }
-                                                                        </span>
-                                                                    </Link>
-                                                                );
-                                                            },
-                                                        )}
+                                                        {category.child.map((child) => {
+                                                            return (
+                                                                <Link
+                                                                    key={child._id}
+                                                                    to={`/shop/${child.slug}`}
+                                                                    className="w-fit"
+                                                                >
+                                                                    <span className="py-2 font-light opacity-70 transition-all hover:opacity-100">
+                                                                        {child.name}
+                                                                    </span>
+                                                                </Link>
+                                                            );
+                                                        })}
                                                     </div>
                                                 </div>
                                             )}
@@ -373,7 +322,7 @@ const Header = () => {
                         })}
                         <div className="[&:hover>a]:border-b-black [&:hover>div]:pointer-events-auto [&:hover>div]:translate-y-0 [&:hover>div]:opacity-100">
                             <Link
-                                to={`/blog`}
+                                to={`/blogs`}
                                 className="relative inline-block h-nav cursor-pointer border-b border-b-transparent px-4 py-2 font-inter text-sm font-bold uppercase tracking-wider transition-colors"
                             >
                                 Blogs
