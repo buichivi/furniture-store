@@ -13,9 +13,6 @@ import 'swiper/css/navigation';
 // Tippy react css
 import 'tippy.js/dist/tippy.css';
 
-// Photoswipe css
-import 'photoswipe/style.css';
-
 // NProgress css
 import 'nprogress/nprogress.css';
 
@@ -126,8 +123,7 @@ function App() {
             <RouterProvider router={router} />
             <Toaster
                 toastOptions={{
-                    className:
-                        'text-center text-[15px] w-fit py-3 px-6 min-w-[200px] border border-gray-400',
+                    className: 'text-center text-[15px] w-fit py-3 px-6 min-w-[200px] border border-gray-400',
                     position: 'top-center',
                 }}
                 containerStyle={{
