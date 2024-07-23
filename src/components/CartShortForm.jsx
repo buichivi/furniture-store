@@ -1,11 +1,11 @@
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import CartItemMini from './CartItemMini';
 import useCartStore from '../store/cartStore';
 import { useEffect, useState } from 'react';
+import { numberWithCommas } from '../utils/format';
 
 const CartShortForm = () => {
     const { cart } = useCartStore();
-    const navigate = useNavigate();
     const [isOpen, setIsOpen] = useState(false);
 
     useEffect(() => {
@@ -113,27 +113,23 @@ const CartShortForm = () => {
                                 <div>
                                     <div className="flex items-center justify-between py-8 text-lg font-bold tracking-wider">
                                         <h4>Subtotal</h4>
-                                        <span>${cart?.subTotal}</span>
+                                        <span>
+                                            ${numberWithCommas(cart?.subTotal)}
+                                        </span>
                                     </div>
                                     <div>
-                                        <label
-                                            htmlFor="cart-short-form"
+                                        <Link
+                                            to="/cart"
                                             className="mb-3 block cursor-pointer py-4 text-center text-sm font-bold uppercase ring-1 ring-black transition-colors hover:text-[#d10202] hover:ring-[#d10202]"
-                                            onClick={() => {
-                                                navigate('/cart');
-                                            }}
                                         >
                                             View cart
-                                        </label>
-                                        <label
-                                            htmlFor="cart-short-form"
+                                        </Link>
+                                        <Link
+                                            to="/checkout"
                                             className="block cursor-pointer bg-black py-4 text-center text-sm font-bold uppercase text-white transition-colors hover:bg-[#d10202]"
-                                            onClick={() => {
-                                                navigate('/checkout');
-                                            }}
                                         >
                                             Check out
-                                        </label>
+                                        </Link>
                                     </div>
                                 </div>
                             )}

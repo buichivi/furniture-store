@@ -30,7 +30,7 @@ const Blogs = () => {
             />
             <div className="container mx-auto px-5">
                 <div className="mt-20 grid grid-cols-2 gap-10">
-                    {[...blogs, ...blogs, ...blogs].map((blog, index) => {
+                    {blogs.map((blog, index) => {
                         if (index + 1 > limit) return null;
                         return (
                             <div key={index}>
@@ -99,7 +99,7 @@ const Blogs = () => {
                         );
                     })}
                 </div>
-                {limit <= [...blogs, ...blogs, ...blogs].length && (
+                {limit <= blogs.length && (
                     <div className="mt-20 text-center">
                         <button
                             className="w-[200px] border border-black bg-black px-4 py-3 text-sm tracking-wider text-white transition-all hover:bg-white hover:text-black"

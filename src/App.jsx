@@ -126,8 +126,12 @@ function App() {
             <RouterProvider router={router} />
             <Toaster
                 toastOptions={{
-                    className: 'text-sm text-center w-fit',
+                    className:
+                        'text-center text-[15px] w-fit py-3 px-6 min-w-[200px] border border-gray-400',
                     position: 'top-center',
+                }}
+                containerStyle={{
+                    top: '5%',
                 }}
             />
         </>

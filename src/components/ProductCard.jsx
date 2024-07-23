@@ -21,6 +21,8 @@ const ProductCard = ({ product = {}, isDisplayGrid = true }) => {
     const { setWishlist } = useDataStore();
     const [isFavor, setIsFavor] = useState(false);
     const productCardRef = useRef();
+    const [selectedColor, setSelectedColor] = useState(product?.colors[0]);
+
     const {
         toggleOpen: toggleOpenCompare,
         setCompares,
@@ -132,7 +134,8 @@ const ProductCard = ({ product = {}, isDisplayGrid = true }) => {
                         <img
                             src={
                                 product?.colors?.length &&
-                                product?.colors[0]?.images[0]
+                                selectedColor &&
+                                selectedColor?.images[0]
                             }
                             alt=""
                             className="h-[350px] w-full object-contain transition-all duration-500 group-hover/product-img:opacity-0"
@@ -140,10 +143,11 @@ const ProductCard = ({ product = {}, isDisplayGrid = true }) => {
                         <img
                             src={
                                 product?.colors?.length &&
-                                product?.colors[0]?.images[1]
+                                selectedColor &&
+                                selectedColor?.images[1]
                             }
                             alt=""
-                            className="absolute left-0 top-0 -z-10 h-[350px] w-full object-contain"
+                            className="absolute left-0 top-0 -z-10 h-[350px] w-full object-contain transition-all duration-500 group-hover/product-img:scale-105"
                         />
                         <div className="absolute left-0 top-0 z-10 h-full w-full p-4">
                             {product?.isNew && (
@@ -262,7 +266,7 @@ const ProductCard = ({ product = {}, isDisplayGrid = true }) => {
                                                 e.preventDefault();
                                                 handleAddToCart(
                                                     product?._id,
-                                                    product?.colors[0]?._id,
+                                                    selectedColor?._id,
                                                     1,
                                                 );
                                             }}
@@ -295,11 +299,38 @@ const ProductCard = ({ product = {}, isDisplayGrid = true }) => {
                         </div>
                     </Link>
                     <div className="mt-2">
-                        {product?.discount > 0 && (
-                            <span className="text-sm text-green-400">
-                                -{product?.discount}%
-                            </span>
-                        )}
+                        <div className="flex items-center justify-between">
+                            {product?.discount > 0 ? (
+                                <span className="text-sm text-green-400">
+                                    -{product?.discount}%
+                                </span>
+                            ) : (
+                                <span></span>
+                            )}
+                            {product?.colors?.length > 1 ? (
+                                <div className="flex items-center gap-[6px]">
+                                    {product?.colors?.map((color, index) => {
+                                        return (
+                                            <span
+                                                key={index}
+                                                className={`relative inline-block size-5 shrink-0 rounded-full border ${selectedColor?._id == color?._id ? 'border-gray-700' : 'border-transparent'} p-1 transition-colors hover:border-gray-700`}
+                                                onClick={() =>
+                                                    setSelectedColor(color)
+                                                }
+                                            >
+                                                <img
+                                                    src={color?.thumb}
+                                                    alt=""
+                                                    className="absolute left-1/2 top-1/2 size-3 -translate-x-1/2 -translate-y-1/2 rounded-full object-cover"
+                                                />
+                                            </span>
+                                        );
+                                    })}
+                                </div>
+                            ) : (
+                                <span></span>
+                            )}
+                        </div>
                         <Link
                             to={`/product/${product?.slug}`}
                             className={`mb-3 line-clamp-2 cursor-pointer text-base tracking-wide transition-colors hover:text-[#D10202] ${!isDisplayGrid && '!text-xl font-normal tracking-wider'}`}

@@ -20,6 +20,7 @@ import {
 import {
     ArrowLeftIcon,
     CreditCardIcon,
+    DocumentTextIcon,
     MapPinIcon,
     PlusCircleIcon,
     XMarkIcon,
@@ -528,9 +529,10 @@ const Checkout = () => {
                         </div>
                         <div className="mt-4 flex items-center justify-center gap-10">
                             <Link
-                                to="/account/orders"
-                                className="rounded-none border border-black bg-black px-4 py-2 text-white transition-colors hover:bg-white hover:text-black"
+                                to={`/account/orders?viewOrder=${order?._id}`}
+                                className="flex items-center gap-2 rounded-none border border-black bg-black px-4 py-2 text-white transition-colors hover:bg-white hover:text-black"
                             >
+                                <DocumentTextIcon className="size-5" />
                                 View detail
                             </Link>
                             <Link

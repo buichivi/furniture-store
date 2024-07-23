@@ -1,8 +1,18 @@
 import React, { useEffect, useRef, useState } from 'react';
-import PhotoSwipeLightbox from 'photoswipe/lightbox';
 import PropTypes from 'prop-types';
 import Tippy from '@tippyjs/react';
 import '@google/model-viewer';
+import { useLocation } from 'react-router-dom';
+import LightGallery from 'lightgallery/react';
+
+// import styles
+import 'lightgallery/css/lightgallery.css';
+import 'lightgallery/css/lg-zoom.css';
+import 'lightgallery/css/lg-thumbnail.css';
+
+// import plugins if you need
+import lgThumbnail from 'lightgallery/plugins/thumbnail';
+import lgZoom from 'lightgallery/plugins/zoom';
 
 const SliderProductImages = ({
     isNew = false,
@@ -17,31 +27,7 @@ const SliderProductImages = ({
     const [selectedImg, setSelectedImg] = useState(null);
     const [isView3DModel, setIsView3DModel] = useState(false);
     const modelViewerRef = useRef(null);
-
-    useEffect(() => {
-        if (viewFullScreen) {
-            let lightbox = new PhotoSwipeLightbox({
-                gallery: '#galleryFullScreen',
-                children: 'a',
-                wheelToZoom: true,
-                pswpModule: () => import('photoswipe'),
-                initialZoomLevel: 'fit',
-                secondaryZoomLevel: 2,
-                maxZoomLevel: 1,
-                showHideAnimationType: 'fade',
-                arrowPrevSVG: `<i class="fa-light fa-angle-left text-white text-xl"></i>`,
-                arrowNextSVG: `<i class="fa-light fa-angle-right text-white text-xl"></i>`,
-                closeSVG: `<i class="fa-light fa-xmark text-xl text-white"></i>`,
-                zoomSVG: `<i class="fa-light fa-magnifying-glass-plus text-lg text-white"></i>`,
-                bgOpacity: 0.9,
-            });
-            lightbox.init();
-            return () => {
-                lightbox.destroy();
-                lightbox = null;
-            };
-        }
-    }, [viewFullScreen]);
+    const location = useLocation();
 
     useEffect(() => {
         setSelectedImg(imageGallery[0]);
@@ -66,6 +52,10 @@ const SliderProductImages = ({
         };
     }, [isView3DModel]);
 
+    useEffect(() => {
+        setIsView3DModel(false);
+    }, [location]);
+
     return (
         <div className="size-full border-b">
             <div className="flex h-full w-full gap-2">
@@ -84,11 +74,8 @@ const SliderProductImages = ({
                                 onClick={() => {
                                     setSelectedImg(img_url);
                                     setIsView3DModel(false);
-                                    const wrapperWidth =
-                                        imgThumbs.current.children[0]
-                                            .clientWidth;
-                                    imgThumbs.current.style.left =
-                                        -(index * wrapperWidth) + 'px';
+                                    const wrapperWidth = imgThumbs.current.children[0].clientWidth;
+                                    imgThumbs.current.style.left = -(index * wrapperWidth) + 'px';
                                 }}
                             />
                         );
@@ -96,25 +83,18 @@ const SliderProductImages = ({
                 </div>
                 <div className="relative h-full flex-1">
                     <div className="absolute left-[3%] top-[3%] z-10 [&_span]:px-3 [&_span]:py-1 [&_span]:text-xs [&_span]:uppercase [&_span]:text-white">
-                        {isNew && (
-                            <span className="mr-1 bg-[#d10202]">New</span>
-                        )}
-                        {discount && isValid && (
-                            <span className="mr-1 bg-black">Sale</span>
-                        )}
-                        {!isValid && (
-                            <span className="bg-[#919191]">Sold out</span>
-                        )}
+                        {isNew && <span className="mr-1 bg-[#d10202]">New</span>}
+                        {discount > 0 && isValid && <span className="mr-1 bg-black">Sale</span>}
+                        {!isValid && <span className="bg-[#919191]">Sold out</span>}
                     </div>
                     {viewFullScreen && (
-                        <Tippy
-                            content="View full screen"
-                            animation="shift-toward"
-                        >
+                        <Tippy content="View full screen" animation="shift-toward">
                             <span
                                 className="absolute right-[3%] top-[3%] z-10 flex size-10 cursor-pointer items-center justify-center rounded-full bg-white text-lg transition-colors hover:bg-[#d10202] hover:text-white"
                                 onClick={() => {
-                                    imgThumbs.current.children[0].click();
+                                    Array.from(imgThumbs.current.children).forEach((child) => {
+                                        if (child.dataset.src == selectedImg) child.click();
+                                    });
                                 }}
                             >
                                 <i className="fa-regular fa-expand text-xl"></i>
@@ -145,47 +125,47 @@ const SliderProductImages = ({
                     )}
                     <div className="relative h-full w-full overflow-hidden">
                         {!isView3DModel ? (
-                            <div
-                                id="galleryFullScreen"
-                                className="relative left-0 top-0 flex h-full w-auto transition-all duration-500 ease-[cubic-bezier(.795,-.035,0,1)]"
-                                ref={imgThumbs}
+                            <LightGallery
+                                plugins={[lgZoom, lgThumbnail]}
+                                mode="lg-slide"
+                                speed={500}
+                                galleryId={'nature'}
+                                elementClassNames={
+                                    'relative left-0 top-0 flex h-full w-auto pb-4 transition-all duration-500 ease-[cubic-bezier(.795,-.035,0,1)]'
+                                }
+                                onInit={({ instance }) => {
+                                    imgThumbs.current = instance.el;
+                                }}
                             >
                                 {imageGallery.map((img_url, index) => {
                                     return (
                                         <a
-                                            href={img_url}
+                                            data-src={img_url}
                                             key={img_url + '-' + index}
-                                            data-pswp-width="500"
-                                            data-pswp-height="600"
                                             target="_blank"
                                             rel="noreferrer"
-                                            className="relative top-0 inline-block h-full w-full flex-auto shrink-0 px-2"
+                                            className="gallery__item relative top-0 inline-block h-full w-full flex-auto shrink-0 px-2"
                                         >
                                             <img
                                                 src={img_url}
-                                                className="size-full cursor-zoom-in object-scale-down object-center transition-transform duration-500"
+                                                className="size-full cursor-zoom-in object-cover object-center transition-transform duration-500"
                                                 onMouseMove={(e) => {
-                                                    const rect =
-                                                        e.target.getBoundingClientRect();
-                                                    const x =
-                                                        e.clientX - rect.left;
-                                                    const y =
-                                                        e.clientY - rect.top;
+                                                    const rect = e.target.getBoundingClientRect();
+                                                    const x = e.clientX - rect.left;
+                                                    const y = e.clientY - rect.top;
                                                     e.target.style.transformOrigin = `${(x * 100) / rect.width}% ${(y * 100) / rect.height}%`;
                                                 }}
                                                 onMouseEnter={(e) => {
-                                                    e.target.style.transform =
-                                                        'scale(2)';
+                                                    e.target.style.transform = 'scale(2)';
                                                 }}
                                                 onMouseLeave={(e) => {
-                                                    e.target.style.transform =
-                                                        'scale(1)';
+                                                    e.target.style.transform = 'scale(1)';
                                                 }}
                                             />
                                         </a>
                                     );
                                 })}
-                            </div>
+                            </LightGallery>
                         ) : (
                             <React.Fragment>
                                 <model-viewer
@@ -198,18 +178,13 @@ const SliderProductImages = ({
                                     touch-action="pan-y"
                                     style={{ width: '100%', height: '100%' }}
                                 >
-                                    <Tippy
-                                        content="View In Room"
-                                        animation="shift-toward"
-                                    >
+                                    <Tippy content="View In Room" animation="shift-toward">
                                         <button
                                             slot="ar-button"
                                             className="absolute bottom-[10%] left-1/2 z-10 flex -translate-x-1/2 items-center gap-2 rounded-md border border-gray-300 bg-white p-2 shadow-md"
                                         >
                                             <ViewInARIcon className="size-6" />
-                                            <span className="text-xs uppercase tracking-wider ">
-                                                View in room
-                                            </span>
+                                            <span className="text-xs uppercase tracking-wider ">View in room</span>
                                         </button>
                                     </Tippy>
                                     <div
@@ -343,21 +318,9 @@ const ViewInARIcon = ({ className }) => {
 
 const LoadingIcon = () => {
     return (
-        <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="48"
-            height="48"
-            viewBox="0 0 24 24"
-        >
+        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24">
             <g stroke="black">
-                <circle
-                    cx="12"
-                    cy="12"
-                    r="9.5"
-                    fill="none"
-                    strokeLinecap="round"
-                    strokeWidth="3"
-                >
+                <circle cx="12" cy="12" r="9.5" fill="none" strokeLinecap="round" strokeWidth="3">
                     <animate
                         attributeName="stroke-dasharray"
                         calcMode="spline"

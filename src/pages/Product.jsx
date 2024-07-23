@@ -157,7 +157,7 @@ const Product = () => {
                 paths={`/product/${product?.slug}`}
             />
             <div className="container mx-auto px-5">
-                <div className="mb-32 flex gap-12">
+                <div className="mb-20 flex gap-12">
                     <div className="aspect-square basis-[55%]">
                         <SliderProductImages
                             isNew={product?.isNew}

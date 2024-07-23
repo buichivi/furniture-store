@@ -22,10 +22,13 @@ const CartItemMini = ({ item = {} }) => {
                     '/cart',
                     {
                         product: item?.product?._id,
-                        color: item?.color?._id,
+                        color: item?.color,
                         quantity: qty,
                     },
-                    { headers: { Authorization: 'Bearer ' + token }, withCredentials: true },
+                    {
+                        headers: { Authorization: 'Bearer ' + token },
+                        withCredentials: true,
+                    },
                 ),
                 {
                     loading: 'Update quantity...',
@@ -68,8 +71,15 @@ const CartItemMini = ({ item = {} }) => {
 
     return (
         <div className="flex h-auto w-full items-center justify-between gap-4">
-            <Link to={`/product/${item?.product?.slug}`} className="inline-block shrink-0 basis-[35%]">
-                <img src={item?.productImage} alt={item?.product?.name} className="w-full object-contain" />
+            <Link
+                to={`/product/${item?.product?.slug}`}
+                className="inline-block shrink-0 basis-[35%]"
+            >
+                <img
+                    src={item?.productImage}
+                    alt={item?.product?.name}
+                    className="w-full object-contain"
+                />
             </Link>
             <div className="flex-1">
                 <Link
@@ -92,14 +102,21 @@ const CartItemMini = ({ item = {} }) => {
                             type="number"
                             className="w-1/2 border-none bg-transparent outline-none"
                             value={quantity}
-                            onChange={(e) => setQuantity(Number(e.target.value))}
+                            onChange={(e) =>
+                                setQuantity(Number(e.target.value))
+                            }
                         />
-                        <span className="cursor-pointer" onClick={() => setQuantity(quantity + 1)}>
+                        <span
+                            className="cursor-pointer"
+                            onClick={() => setQuantity(quantity + 1)}
+                        >
                             <i className="fa-light fa-plus"></i>
                         </span>
                     </div>
                 </div>
-                <span className="font-semibold">${numberWithCommas(item?.itemPrice)}</span>
+                <span className="font-semibold">
+                    ${numberWithCommas(item?.itemPrice)}
+                </span>
             </div>
             <span
                 className="cursor-pointer pr-2 text-xl transition-colors hover:text-[#d10202]"

@@ -48,22 +48,25 @@ const MyAccount = () => {
 
     useEffect(() => {
         const opt = location.search.slice(1).split('=')[0];
+        const value = location.search.slice(1).split('=')[1];
         if (option == 'orders') {
             setCurrentViewAddress({});
+            if (value) {
+                setCurrentViewOrder(orders.find((od) => od?._id == value));
+            }
             if (opt == 'viewOrder' && !currentViewOrder?._id) {
-                const orderId = location.search.slice(1).split('=')[1];
-                const order = orders.find((od) => od?._id == orderId);
+                const order = orders.find((od) => od?._id == value);
                 if (order) setCurrentViewOrder(order);
             } else {
                 location.search = '';
-                setCurrentViewOrder({});
+                // setCurrentViewOrder({});
             }
         }
         if (option == 'addresses') {
             setCurrentViewOrder({});
+            if (value) setCurrentViewAddress(addresses.find((ad) => ad?._id == value));
             if (opt == 'viewAddress' && !currentViewAddress?._id) {
-                const addressId = location.search.slice(1).split('=')[1];
-                const address = addresses.find((ad) => ad?._id == addressId);
+                const address = addresses.find((ad) => ad?._id == value);
                 if (address) setCurrentViewAddress(address);
             } else {
                 location.search = '';
@@ -71,7 +74,7 @@ const MyAccount = () => {
             }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [location.search, option]);
+    }, [location, option, orders]);
 
     useEffect(() => {
         setAddresses(currentUser?.addresses ?? []);
@@ -143,15 +146,9 @@ const MyAccount = () => {
                 <div className="flex items-start gap-10 py-10">
                     <div className="shrink-0 basis-1/4 bg-white px-6 py-5">
                         <h3 className="mb-3 font-lora text-4xl font-semibold">
-                            Hi,{' '}
-                            {currentUser?.firstName +
-                                ' ' +
-                                currentUser?.lastName}
-                            !
+                            Hi, {currentUser?.firstName + ' ' + currentUser?.lastName}!
                         </h3>
-                        <p className="text-sm uppercase text-gray-500">
-                            My account
-                        </p>
+                        <p className="text-sm uppercase text-gray-500">My account</p>
                         <div className="mt-2">
                             <Link
                                 to="/account/infomation"
@@ -240,12 +237,9 @@ const MyAccount = () => {
                     <div className="flex-1">
                         {option == 'orders' && !currentViewOrder?._id && (
                             <React.Fragment>
-                                <h3 className="font-lora text-3xl font-semibold">
-                                    All Orders
-                                </h3>
+                                <h3 className="font-lora text-3xl font-semibold">All Orders</h3>
                                 <p className="text-sm tracking-wide">
-                                    Track your orders, request a return or check
-                                    your order history
+                                    Track your orders, request a return or check your order history
                                 </p>
                                 {orders?.length > 0 ? (
                                     <table className="mt-4 w-full border bg-white">
@@ -265,44 +259,26 @@ const MyAccount = () => {
                                                         key={index}
                                                         className="cursor-pointer text-sm transition-colors hover:bg-gray-100 [&:hover_svg]:text-black [&>td]:p-3"
                                                         onClick={() => {
-                                                            navigate(
-                                                                `/account/orders?viewOrder=` +
-                                                                    order?._id,
-                                                            );
+                                                            navigate(`/account/orders?viewOrder=` + order?._id);
                                                         }}
                                                     >
                                                         <td>#{order?._id}</td>
                                                         <td>
-                                                            {order
-                                                                ?.shippingAddress
-                                                                ?.firstName +
+                                                            {order?.shippingAddress?.firstName +
                                                                 ' ' +
-                                                                order
-                                                                    ?.shippingAddress
-                                                                    ?.lastName}
+                                                                order?.shippingAddress?.lastName}
                                                         </td>
-                                                        <td>
-                                                            {order?.createdAt}
-                                                        </td>
-                                                        <td>
-                                                            $
-                                                            {order?.totalAmount}
-                                                        </td>
+                                                        <td>{order?.createdAt}</td>
+                                                        <td>${order?.totalAmount}</td>
                                                         <td className="uppercase">
                                                             <div className="flex items-center justify-between">
-                                                                <span>
-                                                                    {
-                                                                        order?.paymentMethod
-                                                                    }
-                                                                </span>
+                                                                <span>{order?.paymentMethod}</span>
                                                                 <span className="">
                                                                     <svg
                                                                         xmlns="http://www.w3.org/2000/svg"
                                                                         fill="none"
                                                                         viewBox="0 0 24 24"
-                                                                        strokeWidth={
-                                                                            1.5
-                                                                        }
+                                                                        strokeWidth={1.5}
                                                                         stroke="currentColor"
                                                                         className="size-5 text-gray-500 transition-colors"
                                                                     >
@@ -321,9 +297,7 @@ const MyAccount = () => {
                                         </tbody>
                                     </table>
                                 ) : (
-                                    <p className="mt-6 bg-white p-6 text-sm tracking-wide">
-                                        No order to show
-                                    </p>
+                                    <p className="mt-6 bg-white p-6 text-sm tracking-wide">No order to show</p>
                                 )}
                             </React.Fragment>
                         )}
@@ -355,109 +329,64 @@ const MyAccount = () => {
                                     <span>Back</span>
                                 </button>
                                 <div className="border-b py-2">
-                                    <h4 className="text-lg font-medium">
-                                        Order ID: {currentViewOrder?._id}
-                                    </h4>
-                                    <p className="text-sm">
-                                        Order date:{' '}
-                                        {currentViewOrder?.createdAt}
-                                    </p>
+                                    <h4 className="text-lg font-medium">Order ID: {currentViewOrder?._id}</h4>
+                                    <p className="text-sm">Order date: {currentViewOrder?.createdAt}</p>
                                 </div>
                                 <div>
-                                    {currentViewOrder?.items?.map(
-                                        (item, index) => {
-                                            return (
-                                                <div
-                                                    key={index}
-                                                    className="flex items-center gap-4 border-b py-4"
-                                                >
-                                                    <div className="size-28 shrink-0 overflow-hidden rounded-lg border">
-                                                        <img
-                                                            src={
-                                                                item?.productImage
-                                                            }
-                                                            alt=""
-                                                            className="size-full object-contain"
-                                                        />
-                                                    </div>
-                                                    <div className="shrink-0">
-                                                        <h4 className="text-lg">
-                                                            {
-                                                                item?.product
-                                                                    ?.name
-                                                            }
-                                                        </h4>
-                                                        <span className="text-sm text-gray-500">
-                                                            Color:{' '}
-                                                            {item?.color?.name}
-                                                        </span>
-                                                    </div>
-                                                    <div className="flex-1 text-right [&>*]:block">
-                                                        <span className="text-base font-semibold tracking-wide">
-                                                            $
-                                                            {numberWithCommas(
-                                                                item?.itemPrice,
-                                                            )}
-                                                        </span>
-                                                        <span className="text-sm">
-                                                            Qty:{' '}
-                                                            {item?.quantity}
-                                                        </span>
-                                                    </div>
+                                    {currentViewOrder?.items?.map((item, index) => {
+                                        return (
+                                            <div key={index} className="flex items-center gap-4 border-b py-4">
+                                                <div className="size-28 shrink-0 overflow-hidden rounded-lg border">
+                                                    <img
+                                                        src={item?.productImage}
+                                                        alt=""
+                                                        className="size-full object-contain"
+                                                    />
                                                 </div>
-                                            );
-                                        },
-                                    )}
+                                                <div className="shrink-0">
+                                                    <h4 className="text-lg">{item?.product?.name}</h4>
+                                                    <span className="text-sm text-gray-500">
+                                                        Color: {item?.color?.name}
+                                                    </span>
+                                                </div>
+                                                <div className="flex-1 text-right [&>*]:block">
+                                                    <span className="text-base font-semibold tracking-wide">
+                                                        ${numberWithCommas(item?.itemPrice)}
+                                                    </span>
+                                                    <span className="text-sm">Qty: {item?.quantity}</span>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
                                 </div>
                                 <div className="mt-4">
-                                    <h4 className="text-lg font-bold">
-                                        Order summery
-                                    </h4>
+                                    <h4 className="text-lg font-bold">Order summery</h4>
                                     <div className="w-1/4">
                                         <div className="flex items-center justify-between">
                                             <span>Subtotal: </span>
-                                            <span>
-                                                $
-                                                {numberWithCommas(
-                                                    currentViewOrder?.subTotal,
-                                                )}
-                                            </span>
+                                            <span>${numberWithCommas(currentViewOrder?.subTotal)}</span>
                                         </div>
                                         <div className="flex items-center justify-between">
                                             <span>Discount: </span>
                                             <span>
-                                                <span className="text-green-500">
-                                                    -(
-                                                    {currentViewOrder?.promoCode
-                                                        ?.type == 'coupon' &&
-                                                        currentViewOrder
-                                                            ?.promoCode
-                                                            ?.discount}
-                                                    %)
-                                                </span>
-                                                $
-                                                {numberWithCommas(
-                                                    currentViewOrder?.discount,
+                                                {currentViewOrder?.promoCode?._id && (
+                                                    <span className="text-green-500">
+                                                        -(
+                                                        {currentViewOrder?.promoCode?.type == 'coupon' &&
+                                                            currentViewOrder?.promoCode?.discount}
+                                                        %)
+                                                    </span>
                                                 )}
+                                                ${numberWithCommas(currentViewOrder?.discount)}
                                             </span>
                                         </div>
                                         <div className="flex items-center justify-between">
                                             <span>Shipping fee: </span>
-                                            <span>
-                                                $
-                                                {numberWithCommas(
-                                                    currentViewOrder?.shippingFee,
-                                                )}
-                                            </span>
+                                            <span>${numberWithCommas(currentViewOrder?.shippingFee)}</span>
                                         </div>
                                         <div className="flex items-center justify-between text-lg font-bold">
                                             <span>Total amount: </span>
-                                            <span>
-                                                $
-                                                {numberWithCommas(
-                                                    currentViewOrder?.totalAmount,
-                                                )}
-                                            </span>
+                                            <span>${numberWithCommas(currentViewOrder?.totalAmount)}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -465,46 +394,13 @@ const MyAccount = () => {
                                     <div className="flex-1">
                                         <h4 className="font-bold">Delivery</h4>
                                         <div className="*:text-sm">
+                                            <p>Phone number: {currentViewOrder?.shippingAddress?.phoneNumber}</p>
+                                            <p>Email: {currentViewOrder?.shippingAddress?.email}</p>
                                             <p>
-                                                Phone number:{' '}
-                                                {
-                                                    currentViewOrder
-                                                        ?.shippingAddress
-                                                        ?.phoneNumber
-                                                }
-                                            </p>
-                                            <p>
-                                                Email:{' '}
-                                                {
-                                                    currentViewOrder
-                                                        ?.shippingAddress?.email
-                                                }
-                                            </p>
-                                            <p>
-                                                Address:{' '}
-                                                {
-                                                    currentViewOrder
-                                                        ?.shippingAddress
-                                                        ?.addressLine
-                                                }
-                                                ,{' '}
-                                                {
-                                                    currentViewOrder
-                                                        ?.shippingAddress?.ward
-                                                        ?.name
-                                                }
-                                                ,{' '}
-                                                {
-                                                    currentViewOrder
-                                                        ?.shippingAddress
-                                                        ?.district?.name
-                                                }
-                                                ,{' '}
-                                                {
-                                                    currentViewOrder
-                                                        ?.shippingAddress?.city
-                                                        ?.name
-                                                }
+                                                Address: {currentViewOrder?.shippingAddress?.addressLine},{' '}
+                                                {currentViewOrder?.shippingAddress?.ward?.name},{' '}
+                                                {currentViewOrder?.shippingAddress?.district?.name},{' '}
+                                                {currentViewOrder?.shippingAddress?.city?.name}
                                             </p>
                                         </div>
                                     </div>
@@ -512,17 +408,15 @@ const MyAccount = () => {
                                         <h4>
                                             Payment:
                                             <span className="ml-2 font-bold uppercase">
-                                                {
-                                                    currentViewOrder?.paymentMethod
-                                                }
+                                                {currentViewOrder?.paymentMethod}
                                             </span>
                                         </h4>
                                         <h4>
                                             Payment status:
-                                            <span className="ml-2 font-bold capitalize">
-                                                {
-                                                    currentViewOrder?.paymentStatus
-                                                }
+                                            <span
+                                                className={`ml-2 font-bold capitalize ${currentViewOrder?.paymentStatus == 'paid' ? 'text-green-500' : 'text-red-500'}`}
+                                            >
+                                                {currentViewOrder?.paymentStatus}
                                             </span>
                                         </h4>
                                         <h4>
@@ -531,9 +425,7 @@ const MyAccount = () => {
                                                 className="ml-2 font-bold capitalize"
                                                 style={{
                                                     color: ORDER_STATUS.find(
-                                                        (od) =>
-                                                            od.status ==
-                                                            currentViewOrder?.orderStatus,
+                                                        (od) => od.status == currentViewOrder?.orderStatus,
                                                     ).color,
                                                 }}
                                             >
@@ -549,12 +441,8 @@ const MyAccount = () => {
                                 <div className="bg-white p-4">
                                     <div className="flex items-center justify-between ">
                                         <div>
-                                            <h3 className="font-lora text-3xl font-semibold">
-                                                Addresses
-                                            </h3>
-                                            <p className="text-sm tracking-wide">
-                                                Add a new address.
-                                            </p>
+                                            <h3 className="font-lora text-3xl font-semibold">Addresses</h3>
+                                            <p className="text-sm tracking-wide">Add a new address.</p>
                                         </div>
                                         <label
                                             htmlFor="address-form"
@@ -563,22 +451,15 @@ const MyAccount = () => {
                                             Add
                                         </label>
                                     </div>
-                                    <AddAddressForm
-                                        setAddresses={setAddresses}
-                                    />
+                                    <AddAddressForm setAddresses={setAddresses} />
                                 </div>
                                 {addresses.length == 0 ? (
-                                    <p className="mt-6 bg-white p-6 text-sm tracking-wide">
-                                        No address to show
-                                    </p>
+                                    <p className="mt-6 bg-white p-6 text-sm tracking-wide">No address to show</p>
                                 ) : (
                                     <div className="mt-6 flex flex-col gap-4">
                                         {addresses.map((address, index) => {
                                             return (
-                                                <div
-                                                    key={index}
-                                                    className="bg-white p-6"
-                                                >
+                                                <div key={index} className="bg-white p-6">
                                                     {address?.isDefault && (
                                                         <span className="mb-2 font-lora text-xl font-semibold">
                                                             Default
@@ -586,58 +467,18 @@ const MyAccount = () => {
                                                     )}
                                                     <div className="flex items-start justify-between">
                                                         <div className="text-sm">
+                                                            <p>Name: {address?.firstName + ' ' + address?.lastName}</p>
+                                                            <p>Phone number: {address?.phoneNumber}</p>
+                                                            <p>Email: {address?.email}</p>
                                                             <p>
-                                                                Name:{' '}
-                                                                {address?.firstName +
-                                                                    ' ' +
-                                                                    address?.lastName}
-                                                            </p>
-                                                            <p>
-                                                                Phone number:{' '}
-                                                                {
-                                                                    address?.phoneNumber
-                                                                }
-                                                            </p>
-                                                            <p>
-                                                                Email:{' '}
-                                                                {address?.email}
-                                                            </p>
-                                                            <p>
-                                                                Address:{' '}
-                                                                {
-                                                                    address?.addressLine
-                                                                }
-                                                                ,{' '}
-                                                                {
-                                                                    address
-                                                                        ?.ward
-                                                                        ?.name
-                                                                }
-                                                                ,{' '}
-                                                                {
-                                                                    address
-                                                                        ?.district
-                                                                        ?.name
-                                                                }
-                                                                ,{' '}
-                                                                {
-                                                                    address
-                                                                        ?.city
-                                                                        ?.name
-                                                                }
+                                                                Address: {address?.addressLine}, {address?.ward?.name},{' '}
+                                                                {address?.district?.name}, {address?.city?.name}
                                                             </p>
                                                         </div>
-                                                        <Tippy
-                                                            content="Set default address"
-                                                            animation="shift-toward"
-                                                        >
+                                                        <Tippy content="Set default address" animation="shift-toward">
                                                             <span
                                                                 className="cursor-pointer"
-                                                                onClick={() =>
-                                                                    handleSetDefaultAddress(
-                                                                        address?._id,
-                                                                    )
-                                                                }
+                                                                onClick={() => handleSetDefaultAddress(address?._id)}
                                                             >
                                                                 {address?.isDefault ? (
                                                                     <svg
@@ -657,9 +498,7 @@ const MyAccount = () => {
                                                                         xmlns="http://www.w3.org/2000/svg"
                                                                         fill="none"
                                                                         viewBox="0 0 24 24"
-                                                                        strokeWidth={
-                                                                            1.5
-                                                                        }
+                                                                        strokeWidth={1.5}
                                                                         stroke="currentColor"
                                                                         className="size-5"
                                                                     >
@@ -676,11 +515,7 @@ const MyAccount = () => {
                                                     <div className="mt-4 flex items-center justify-end gap-4">
                                                         <button
                                                             className="inline-block cursor-pointer border border-black bg-white px-4 py-2 text-center text-xs font-bold uppercase text-black transition-all hover:bg-black hover:text-white"
-                                                            onClick={() =>
-                                                                handleDeleteAddress(
-                                                                    address?._id,
-                                                                )
-                                                            }
+                                                            onClick={() => handleDeleteAddress(address?._id)}
                                                         >
                                                             Delete address
                                                         </button>
@@ -700,10 +535,7 @@ const MyAccount = () => {
                         )}
                         {option == 'addresses' && currentViewAddress?._id && (
                             <div className="bg-white p-6">
-                                <EditAddressForm
-                                    address={currentViewAddress}
-                                    setAddresses={setAddresses}
-                                />
+                                <EditAddressForm address={currentViewAddress} setAddresses={setAddresses} />
                             </div>
                         )}
                         {option == 'infomation' && <InfomationForm />}
@@ -736,9 +568,7 @@ const AddAddressForm = ({ setAddresses }) => {
         validationSchema: Yup.object().shape({
             firstName: Yup.string().required('First name is required'),
             lastName: Yup.string().required('Last name is required'),
-            email: Yup.string()
-                .email('Invalid email format')
-                .required('Email is required'),
+            email: Yup.string().email('Invalid email format').required('Email is required'),
             phoneNumber: Yup.string()
                 .matches(/^[0-9]{10}$/, 'Phone number should be 10 digits')
                 .required('Phone number is required'),
@@ -749,11 +579,7 @@ const AddAddressForm = ({ setAddresses }) => {
         }),
         onSubmit: (values, { resetForm }) => {
             toast.promise(
-                apiRequest.post(
-                    '/addresses',
-                    { ...values },
-                    { headers: { Authorization: 'Bearer ' + token } },
-                ),
+                apiRequest.post('/addresses', { ...values }, { headers: { Authorization: 'Bearer ' + token } }),
                 {
                     loading: 'Posting...',
                     success: (res) => {
@@ -780,9 +606,7 @@ const AddAddressForm = ({ setAddresses }) => {
             addressForm.setFieldValue('district', '');
             addressForm.setFieldValue('ward', '');
             axios
-                .get(
-                    `https://esgoo.net/api-tinhthanh/2/${addressForm.values.city.id}.htm`,
-                )
+                .get(`https://esgoo.net/api-tinhthanh/2/${addressForm.values.city.id}.htm`)
                 .then((res) => setDistricts(res.data?.data))
                 .catch((err) => console.log(err));
         }
@@ -795,9 +619,7 @@ const AddAddressForm = ({ setAddresses }) => {
         if (addressForm.values.district?.id) {
             addressForm.setFieldValue('ward', '');
             axios
-                .get(
-                    `https://esgoo.net/api-tinhthanh/3/${addressForm.values.district.id}.htm`,
-                )
+                .get(`https://esgoo.net/api-tinhthanh/3/${addressForm.values.district.id}.htm`)
                 .then((res) => setWards(res.data?.data))
                 .catch((err) => console.log(err));
         }
@@ -813,8 +635,7 @@ const AddAddressForm = ({ setAddresses }) => {
                 id="address-form"
                 className="hidden [&:checked+div]:grid-rows-[1fr]"
                 onChange={(e) => {
-                    const label =
-                        e.currentTarget.previousElementSibling.children[1];
+                    const label = e.currentTarget.previousElementSibling.children[1];
                     if (e.currentTarget.checked) {
                         label.textContent = 'Cancel';
                     } else label.textContent = 'Add';
@@ -822,19 +643,14 @@ const AddAddressForm = ({ setAddresses }) => {
                 readOnly
             />
             <div className="grid grid-rows-[0fr] transition-[grid-template-rows] duration-500 ease-out">
-                <form
-                    onSubmit={addressForm.handleSubmit}
-                    className="overflow-hidden text-sm"
-                >
+                <form onSubmit={addressForm.handleSubmit} className="overflow-hidden text-sm">
                     <div className="mt-4 w-full">
                         <div className="flex w-full items-start gap-6">
                             <div className="flex flex-1 flex-col items-start">
                                 <div className="mb-2 flex w-full items-center justify-between">
                                     <span>First name</span>
                                     {addressForm.errors.firstName && (
-                                        <span className="text-sm text-[#d10202]">
-                                            {addressForm.errors.firstName}
-                                        </span>
+                                        <span className="text-sm text-[#d10202]">{addressForm.errors.firstName}</span>
                                     )}
                                 </div>
                                 <input
@@ -850,9 +666,7 @@ const AddAddressForm = ({ setAddresses }) => {
                                 <div className="mb-2 flex w-full items-center justify-between">
                                     <span>Last name</span>
                                     {addressForm.errors.lastName && (
-                                        <span className="text-sm text-[#d10202]">
-                                            {addressForm.errors.lastName}
-                                        </span>
+                                        <span className="text-sm text-[#d10202]">{addressForm.errors.lastName}</span>
                                     )}
                                 </div>
                                 <input
@@ -870,9 +684,7 @@ const AddAddressForm = ({ setAddresses }) => {
                                 <div className="mb-2 flex w-full items-center justify-between">
                                     <span>Email address</span>
                                     {addressForm.errors.email && (
-                                        <span className="text-sm text-[#d10202]">
-                                            {addressForm.errors.email}
-                                        </span>
+                                        <span className="text-sm text-[#d10202]">{addressForm.errors.email}</span>
                                     )}
                                 </div>
                                 <input
@@ -888,9 +700,7 @@ const AddAddressForm = ({ setAddresses }) => {
                                 <div className="mb-2 flex w-full items-center justify-between">
                                     <span>Phone number</span>
                                     {addressForm.errors.phoneNumber && (
-                                        <span className="text-sm text-[#d10202]">
-                                            {addressForm.errors.phoneNumber}
-                                        </span>
+                                        <span className="text-sm text-[#d10202]">{addressForm.errors.phoneNumber}</span>
                                     )}
                                 </div>
                                 <input
@@ -907,9 +717,7 @@ const AddAddressForm = ({ setAddresses }) => {
                             <div className="mb-2 flex w-full items-center justify-between">
                                 <span>Provinces/ City</span>
                                 {addressForm.errors.city && (
-                                    <span className="text-sm text-[#d10202]">
-                                        {addressForm.errors.city}
-                                    </span>
+                                    <span className="text-sm text-[#d10202]">{addressForm.errors.city}</span>
                                 )}
                             </div>
                             <select
@@ -917,15 +725,11 @@ const AddAddressForm = ({ setAddresses }) => {
                                 value={addressForm.values.city?.id}
                                 onChange={(e) => {
                                     const cityId = e.currentTarget.value;
-                                    const city = cities.find(
-                                        (city) => city.id == cityId,
-                                    );
+                                    const city = cities.find((city) => city.id == cityId);
                                     addressForm.setFieldValue('city', city);
                                 }}
                             >
-                                <option value="">
-                                    Please select provinces/city
-                                </option>
+                                <option value="">Please select provinces/city</option>
                                 {cities.map((city) => {
                                     return (
                                         <option key={city.id} value={city.id}>
@@ -940,36 +744,22 @@ const AddAddressForm = ({ setAddresses }) => {
                                 <div className="mb-2 flex w-full items-center justify-between">
                                     <span>District</span>
                                     {addressForm.errors.district && (
-                                        <span className="text-sm text-[#d10202]">
-                                            {addressForm.errors.district}
-                                        </span>
+                                        <span className="text-sm text-[#d10202]">{addressForm.errors.district}</span>
                                     )}
                                 </div>
                                 <select
                                     className="w-full rounded-lg border-2 px-2 py-2 text-sm outline-none transition-colors focus:border-black"
                                     value={addressForm.values.district?.id}
                                     onChange={(e) => {
-                                        const districtId =
-                                            e.currentTarget.value;
-                                        const district = districts.find(
-                                            (district) =>
-                                                district.id == districtId,
-                                        );
-                                        addressForm.setFieldValue(
-                                            'district',
-                                            district,
-                                        );
+                                        const districtId = e.currentTarget.value;
+                                        const district = districts.find((district) => district.id == districtId);
+                                        addressForm.setFieldValue('district', district);
                                     }}
                                 >
-                                    <option value="">
-                                        Please select district
-                                    </option>
+                                    <option value="">Please select district</option>
                                     {districts.map((district) => {
                                         return (
-                                            <option
-                                                key={district.id}
-                                                value={district.id}
-                                            >
+                                            <option key={district.id} value={district.id}>
                                                 {district.name}
                                             </option>
                                         );
@@ -980,9 +770,7 @@ const AddAddressForm = ({ setAddresses }) => {
                                 <div className="mb-2 flex w-full items-center justify-between">
                                     <span>Ward</span>
                                     {addressForm.errors.ward && (
-                                        <span className="text-sm text-[#d10202]">
-                                            {addressForm.errors.ward}
-                                        </span>
+                                        <span className="text-sm text-[#d10202]">{addressForm.errors.ward}</span>
                                     )}
                                 </div>
                                 <select
@@ -990,19 +778,14 @@ const AddAddressForm = ({ setAddresses }) => {
                                     value={addressForm.values.ward?.id}
                                     onChange={(e) => {
                                         const wardId = e.currentTarget.value;
-                                        const ward = wards.find(
-                                            (ward) => ward.id == wardId,
-                                        );
+                                        const ward = wards.find((ward) => ward.id == wardId);
                                         addressForm.setFieldValue('ward', ward);
                                     }}
                                 >
                                     <option value="">Please select ward</option>
                                     {wards.map((ward) => {
                                         return (
-                                            <option
-                                                key={ward.id}
-                                                value={ward.id}
-                                            >
+                                            <option key={ward.id} value={ward.id}>
                                                 {ward.name}
                                             </option>
                                         );
@@ -1014,9 +797,7 @@ const AddAddressForm = ({ setAddresses }) => {
                             <div className="mb-2 flex w-full items-center justify-between">
                                 <span>Detail address</span>
                                 {addressForm.errors.addressLine && (
-                                    <span className="text-sm text-[#d10202]">
-                                        {addressForm.errors.addressLine}
-                                    </span>
+                                    <span className="text-sm text-[#d10202]">{addressForm.errors.addressLine}</span>
                                 )}
                             </div>
                             <textarea
@@ -1035,8 +816,7 @@ const AddAddressForm = ({ setAddresses }) => {
                             type="reset"
                             className="inline-block cursor-pointer border border-black bg-white px-4 py-2 text-center text-black transition-all hover:bg-black hover:text-white"
                             onClick={() => {
-                                inputToggleForm.current.checked =
-                                    !inputToggleForm.current.checked;
+                                inputToggleForm.current.checked = !inputToggleForm.current.checked;
                             }}
                         >
                             Cancel
@@ -1076,9 +856,7 @@ const EditAddressForm = ({ address, setAddresses }) => {
         validationSchema: Yup.object().shape({
             firstName: Yup.string().required('First name is required'),
             lastName: Yup.string().required('Last name is required'),
-            email: Yup.string()
-                .email('Invalid email format')
-                .required('Email is required'),
+            email: Yup.string().email('Invalid email format').required('Email is required'),
             phoneNumber: Yup.string()
                 .matches(/^[0-9]{10}$/, 'Phone number should be 10 digits')
                 .required('Phone number is required'),
@@ -1121,9 +899,7 @@ const EditAddressForm = ({ address, setAddresses }) => {
                 addressForm.setFieldValue('ward', '');
             }
             axios
-                .get(
-                    `https://esgoo.net/api-tinhthanh/2/${addressForm.values.city.id}.htm`,
-                )
+                .get(`https://esgoo.net/api-tinhthanh/2/${addressForm.values.city.id}.htm`)
                 .then((res) => setDistricts(res.data?.data))
                 .catch((err) => console.log(err));
         }
@@ -1138,9 +914,7 @@ const EditAddressForm = ({ address, setAddresses }) => {
                 addressForm.setFieldValue('ward', '');
             }
             axios
-                .get(
-                    `https://esgoo.net/api-tinhthanh/3/${addressForm.values.district.id}.htm`,
-                )
+                .get(`https://esgoo.net/api-tinhthanh/3/${addressForm.values.district.id}.htm`)
                 .then((res) => setWards(res.data?.data))
                 .catch((err) => console.log(err));
         }
@@ -1163,28 +937,19 @@ const EditAddressForm = ({ address, setAddresses }) => {
                         stroke="currentColor"
                         className="size-5"
                     >
-                        <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"
-                        />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
                     </svg>
 
                     <span>Back</span>
                 </Link>
-                <form
-                    onSubmit={addressForm.handleSubmit}
-                    className="overflow-hidden text-sm"
-                >
+                <form onSubmit={addressForm.handleSubmit} className="overflow-hidden text-sm">
                     <div className="mt-4 w-full">
                         <div className="flex w-full items-start gap-6">
                             <div className="flex flex-1 flex-col items-start">
                                 <div className="mb-2 flex w-full items-center justify-between">
                                     <span>First name</span>
                                     {addressForm.errors.firstName && (
-                                        <span className="text-sm text-[#d10202]">
-                                            {addressForm.errors.firstName}
-                                        </span>
+                                        <span className="text-sm text-[#d10202]">{addressForm.errors.firstName}</span>
                                     )}
                                 </div>
                                 <input
@@ -1200,9 +965,7 @@ const EditAddressForm = ({ address, setAddresses }) => {
                                 <div className="mb-2 flex w-full items-center justify-between">
                                     <span>Last name</span>
                                     {addressForm.errors.lastName && (
-                                        <span className="text-sm text-[#d10202]">
-                                            {addressForm.errors.lastName}
-                                        </span>
+                                        <span className="text-sm text-[#d10202]">{addressForm.errors.lastName}</span>
                                     )}
                                 </div>
                                 <input
@@ -1220,9 +983,7 @@ const EditAddressForm = ({ address, setAddresses }) => {
                                 <div className="mb-2 flex w-full items-center justify-between">
                                     <span>Email address</span>
                                     {addressForm.errors.email && (
-                                        <span className="text-sm text-[#d10202]">
-                                            {addressForm.errors.email}
-                                        </span>
+                                        <span className="text-sm text-[#d10202]">{addressForm.errors.email}</span>
                                     )}
                                 </div>
                                 <input
@@ -1238,9 +999,7 @@ const EditAddressForm = ({ address, setAddresses }) => {
                                 <div className="mb-2 flex w-full items-center justify-between">
                                     <span>Phone number</span>
                                     {addressForm.errors.phoneNumber && (
-                                        <span className="text-sm text-[#d10202]">
-                                            {addressForm.errors.phoneNumber}
-                                        </span>
+                                        <span className="text-sm text-[#d10202]">{addressForm.errors.phoneNumber}</span>
                                     )}
                                 </div>
                                 <input
@@ -1257,9 +1016,7 @@ const EditAddressForm = ({ address, setAddresses }) => {
                             <div className="mb-2 flex w-full items-center justify-between">
                                 <span>Provinces/ City</span>
                                 {addressForm.errors.city && (
-                                    <span className="text-sm text-[#d10202]">
-                                        {addressForm.errors.city}
-                                    </span>
+                                    <span className="text-sm text-[#d10202]">{addressForm.errors.city}</span>
                                 )}
                             </div>
                             <select
@@ -1267,15 +1024,11 @@ const EditAddressForm = ({ address, setAddresses }) => {
                                 value={addressForm.values.city?.id}
                                 onChange={(e) => {
                                     const cityId = e.currentTarget.value;
-                                    const city = cities.find(
-                                        (city) => city.id == cityId,
-                                    );
+                                    const city = cities.find((city) => city.id == cityId);
                                     addressForm.setFieldValue('city', city);
                                 }}
                             >
-                                <option value="">
-                                    Please select provinces/city
-                                </option>
+                                <option value="">Please select provinces/city</option>
                                 {cities.map((city) => {
                                     return (
                                         <option key={city.id} value={city.id}>
@@ -1290,36 +1043,22 @@ const EditAddressForm = ({ address, setAddresses }) => {
                                 <div className="mb-2 flex w-full items-center justify-between">
                                     <span>District</span>
                                     {addressForm.errors.district && (
-                                        <span className="text-sm text-[#d10202]">
-                                            {addressForm.errors.district}
-                                        </span>
+                                        <span className="text-sm text-[#d10202]">{addressForm.errors.district}</span>
                                     )}
                                 </div>
                                 <select
                                     className="w-full rounded-lg border-2 px-2 py-2 text-sm outline-none transition-colors focus:border-black"
                                     value={addressForm.values.district?.id}
                                     onChange={(e) => {
-                                        const districtId =
-                                            e.currentTarget.value;
-                                        const district = districts.find(
-                                            (district) =>
-                                                district.id == districtId,
-                                        );
-                                        addressForm.setFieldValue(
-                                            'district',
-                                            district,
-                                        );
+                                        const districtId = e.currentTarget.value;
+                                        const district = districts.find((district) => district.id == districtId);
+                                        addressForm.setFieldValue('district', district);
                                     }}
                                 >
-                                    <option value="">
-                                        Please select district
-                                    </option>
+                                    <option value="">Please select district</option>
                                     {districts.map((district) => {
                                         return (
-                                            <option
-                                                key={district.id}
-                                                value={district.id}
-                                            >
+                                            <option key={district.id} value={district.id}>
                                                 {district.name}
                                             </option>
                                         );
@@ -1330,9 +1069,7 @@ const EditAddressForm = ({ address, setAddresses }) => {
                                 <div className="mb-2 flex w-full items-center justify-between">
                                     <span>Ward</span>
                                     {addressForm.errors.ward && (
-                                        <span className="text-sm text-[#d10202]">
-                                            {addressForm.errors.ward}
-                                        </span>
+                                        <span className="text-sm text-[#d10202]">{addressForm.errors.ward}</span>
                                     )}
                                 </div>
                                 <select
@@ -1340,19 +1077,14 @@ const EditAddressForm = ({ address, setAddresses }) => {
                                     value={addressForm.values.ward?.id}
                                     onChange={(e) => {
                                         const wardId = e.currentTarget.value;
-                                        const ward = wards.find(
-                                            (ward) => ward.id == wardId,
-                                        );
+                                        const ward = wards.find((ward) => ward.id == wardId);
                                         addressForm.setFieldValue('ward', ward);
                                     }}
                                 >
                                     <option value="">Please select ward</option>
                                     {wards.map((ward) => {
                                         return (
-                                            <option
-                                                key={ward.id}
-                                                value={ward.id}
-                                            >
+                                            <option key={ward.id} value={ward.id}>
                                                 {ward.name}
                                             </option>
                                         );
@@ -1364,9 +1096,7 @@ const EditAddressForm = ({ address, setAddresses }) => {
                             <div className="mb-2 flex w-full items-center justify-between">
                                 <span>Detail address</span>
                                 {addressForm.errors.addressLine && (
-                                    <span className="text-sm text-[#d10202]">
-                                        {addressForm.errors.addressLine}
-                                    </span>
+                                    <span className="text-sm text-[#d10202]">{addressForm.errors.addressLine}</span>
                                 )}
                             </div>
                             <textarea
@@ -1416,9 +1146,7 @@ const InfomationForm = () => {
         validationSchema: Yup.object().shape({
             firstName: Yup.string().required('First name is required'),
             lastName: Yup.string().required('Last name is required'),
-            email: Yup.string()
-                .email('Invalid email format')
-                .required('Email is required'),
+            email: Yup.string().email('Invalid email format').required('Email is required'),
             phoneNumber: Yup.string()
                 .matches(/^[0-9]{10}$/, 'Phone number should be 10 digits')
                 .required('Phone number is required'),
@@ -1464,10 +1192,6 @@ const InfomationForm = () => {
             newPassword: Yup.string()
                 .min(6, 'Requires at least 6 characters')
                 .max(12, 'Does not exceed 12 characters')
-                .notOneOf(
-                    [Yup.ref('currentPassword'), null],
-                    'New password must be different from current password',
-                )
                 .required('New password is required'),
         }),
         onSubmit: (values, { resetForm }) => {
@@ -1491,9 +1215,7 @@ const InfomationForm = () => {
         <div className="">
             <div className="bg-white p-4 ">
                 <div className="flex items-center justify-between">
-                    <h3 className="font-lora text-3xl font-semibold">
-                        Infomation
-                    </h3>
+                    <h3 className="font-lora text-3xl font-semibold">Infomation</h3>
                     <button
                         type="submit"
                         className="border border-black bg-black px-4 py-2 text-white transition-all hover:bg-white hover:text-black"
@@ -1511,17 +1233,13 @@ const InfomationForm = () => {
                     <div className="pointer-events-none fixed left-0 top-0 z-50 flex size-full scale-110 items-center justify-center opacity-0 transition-all">
                         <span
                             onClick={(e) => {
-                                const ip =
-                                    e.currentTarget.parentElement
-                                        .previousElementSibling;
+                                const ip = e.currentTarget.parentElement.previousElementSibling;
                                 ip.checked = !ip.checked;
                             }}
                             className="absolute left-0 top-0 -z-10 size-full bg-[#000000c5]"
                         ></span>
                         <div className="size-1/3 h-auto bg-white p-4">
-                            <h3 className="font-lora font-bold">
-                                Enter password to continue
-                            </h3>
+                            <h3 className="font-lora font-bold">Enter password to continue</h3>
                             <input
                                 type="password"
                                 value={password}
@@ -1533,8 +1251,7 @@ const InfomationForm = () => {
                                 <button
                                     onClick={(e) => {
                                         const ip =
-                                            e.currentTarget.parentElement
-                                                .parentElement.parentElement
+                                            e.currentTarget.parentElement.parentElement.parentElement
                                                 .previousElementSibling;
                                         ip.checked = !ip.checked;
                                     }}
@@ -1546,8 +1263,7 @@ const InfomationForm = () => {
                                     onClick={(e) => {
                                         infomationForm.handleSubmit();
                                         const ip =
-                                            e.currentTarget.parentElement
-                                                .parentElement.parentElement
+                                            e.currentTarget.parentElement.parentElement.parentElement
                                                 .previousElementSibling;
                                         ip.checked = !ip.checked;
                                     }}
@@ -1559,16 +1275,10 @@ const InfomationForm = () => {
                         </div>
                     </div>
                 </div>
-                <form
-                    onSubmit={infomationForm.handleSubmit}
-                    className="mt-4 flex items-start gap-10 pb-4 text-sm"
-                >
+                <form onSubmit={infomationForm.handleSubmit} className="mt-4 flex items-start gap-10 pb-4 text-sm">
                     <div className="relative size-40 shrink-0 overflow-hidden rounded-full [&:hover>label]:opacity-100">
                         <img
-                            src={
-                                currentUser?.avatar ||
-                                '/images/account-placeholder.jpg'
-                            }
+                            src={currentUser?.avatar || '/images/account-placeholder.jpg'}
                             alt=""
                             className="size-full object-cover object-center"
                         />
@@ -1581,17 +1291,10 @@ const InfomationForm = () => {
                                 type="file"
                                 className="hidden"
                                 onChange={(e) => {
-                                    const imgPreview =
-                                        e.currentTarget.parentElement
-                                            .previousElementSibling;
+                                    const imgPreview = e.currentTarget.parentElement.previousElementSibling;
                                     if (e.currentTarget.files.length) {
-                                        imgPreview.src = URL.createObjectURL(
-                                            e.currentTarget.files[0],
-                                        );
-                                        infomationForm.setFieldValue(
-                                            'avatar',
-                                            e.currentTarget.files[0],
-                                        );
+                                        imgPreview.src = URL.createObjectURL(e.currentTarget.files[0]);
+                                        infomationForm.setFieldValue('avatar', e.currentTarget.files[0]);
                                     }
                                 }}
                             />
@@ -1621,9 +1324,7 @@ const InfomationForm = () => {
                                 <div className="mb-2 flex w-full items-center justify-between">
                                     <span>Last name</span>
                                     {infomationForm.errors.lastName && (
-                                        <span className="text-sm text-[#d10202]">
-                                            {infomationForm.errors.lastName}
-                                        </span>
+                                        <span className="text-sm text-[#d10202]">{infomationForm.errors.lastName}</span>
                                     )}
                                 </div>
                                 <input
@@ -1641,9 +1342,7 @@ const InfomationForm = () => {
                                 <div className="mb-2 flex w-full items-center justify-between">
                                     <span>Email address</span>
                                     {infomationForm.errors.email && (
-                                        <span className="text-sm text-[#d10202]">
-                                            {infomationForm.errors.email}
-                                        </span>
+                                        <span className="text-sm text-[#d10202]">{infomationForm.errors.email}</span>
                                     )}
                                 </div>
                                 <input
@@ -1677,47 +1376,9 @@ const InfomationForm = () => {
                     </div>
                 </form>
             </div>
-            <div className="mt-4 bg-white p-4">
-                <h3 className="font-lora text-3xl font-semibold">
-                    Change password
-                </h3>
-                <form onSubmit={passwordForm.handleSubmit} className="mt-2">
-                    <label className="flex w-1/2 max-w-[400px] flex-1 flex-col items-start">
-                        <div className="mb-2 flex w-full items-center justify-between">
-                            <span>Current password</span>
-                            {passwordForm.errors.currentPassword && (
-                                <span className="text-sm text-[#d10202]">
-                                    {passwordForm.errors.currentPassword}
-                                </span>
-                            )}
-                        </div>
-                        <input
-                            placeholder="Current password"
-                            type="password"
-                            name="currentPassword"
-                            value={passwordForm.values.currentPassword}
-                            onChange={passwordForm.handleChange}
-                            className="w-full rounded-lg border-2 py-2 pl-4 text-sm outline-none transition-colors focus:border-black"
-                        />
-                    </label>
-                    <label className="mt-2 flex w-1/2 max-w-[400px] flex-1 flex-col items-start">
-                        <div className="mb-2 flex w-full items-center justify-between">
-                            <span>New password</span>
-                            {passwordForm.errors.newPassword && (
-                                <span className="text-sm text-[#d10202]">
-                                    {passwordForm.errors.newPassword}
-                                </span>
-                            )}
-                        </div>
-                        <input
-                            placeholder="New password"
-                            type="password"
-                            name="newPassword"
-                            value={passwordForm.values.newPassword}
-                            onChange={passwordForm.handleChange}
-                            className="w-full rounded-lg border-2 py-2 pl-4 text-sm outline-none transition-colors focus:border-black"
-                        />
-                    </label>
+            <div className="mt-4 bg-white px-4 pb-8 pt-4">
+                <div className="flex items-center justify-between">
+                    <h3 className="font-lora text-3xl font-semibold">Change password</h3>
                     <button
                         type="submit"
                         className="mt-4 border border-black bg-black px-4 py-2 text-white transition-all hover:bg-white hover:text-black"
@@ -1725,6 +1386,44 @@ const InfomationForm = () => {
                     >
                         Save
                     </button>
+                </div>
+                <form onSubmit={passwordForm.handleSubmit} className="mt-2">
+                    <div className="flex items-center justify-between gap-6">
+                        <label className="flex w-1/2 max-w-[400px] flex-1 flex-col items-start">
+                            <div className="mb-2 flex w-full items-center justify-between">
+                                <span>Current password</span>
+                                {passwordForm.errors.currentPassword && (
+                                    <span className="text-sm text-[#d10202]">
+                                        {passwordForm.errors.currentPassword}
+                                    </span>
+                                )}
+                            </div>
+                            <input
+                                placeholder="Current password"
+                                type="password"
+                                name="currentPassword"
+                                value={passwordForm.values.currentPassword}
+                                onChange={passwordForm.handleChange}
+                                className="w-full rounded-lg border-2 py-2 pl-4 text-sm outline-none transition-colors focus:border-black"
+                            />
+                        </label>
+                        <label className="flex w-1/2 max-w-[400px] flex-1 flex-col items-start">
+                            <div className="mb-2 flex w-full items-center justify-between">
+                                <span>New password</span>
+                                {passwordForm.errors.newPassword && (
+                                    <span className="text-sm text-[#d10202]">{passwordForm.errors.newPassword}</span>
+                                )}
+                            </div>
+                            <input
+                                placeholder="New password"
+                                type="password"
+                                name="newPassword"
+                                value={passwordForm.values.newPassword}
+                                onChange={passwordForm.handleChange}
+                                className="w-full rounded-lg border-2 py-2 pl-4 text-sm outline-none transition-colors focus:border-black"
+                            />
+                        </label>
+                    </div>
                 </form>
             </div>
         </div>

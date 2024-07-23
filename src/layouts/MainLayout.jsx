@@ -37,10 +37,12 @@ const MainLayout = ({ children }) => {
     }, []);
 
     useEffect(() => {
-        console.log(location.pathname.split('/').at(-1).split('-'));
-        document.title = getPageTitle(
-            location.pathname.split('/').at(-1).split('-'),
-        );
+        if (location.pathname.split('/').at(-2) == 'search')
+            document.title = `Search results for "${location.pathname.split('/').at(-1).split('-')}"`;
+        else
+            document.title = getPageTitle(
+                location.pathname.split('/').at(-1).split('-'),
+            );
     }, [location.pathname]);
 
     return (

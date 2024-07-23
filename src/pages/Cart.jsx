@@ -157,9 +157,7 @@ const Cart = () => {
                                                         productId={
                                                             item?.product?._id
                                                         }
-                                                        colorId={
-                                                            item?.color?._id
-                                                        }
+                                                        colorId={item?.color}
                                                         quantity={
                                                             item?.quantity
                                                         }

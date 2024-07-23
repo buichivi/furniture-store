@@ -15,7 +15,7 @@ const FILTER_OPEN_STATE = [
     { name: 'type', open: true },
     { name: 'color', open: true },
     { name: 'price', open: true },
-    { name: 'material', open: true },
+    { name: 'material', open: false },
 ];
 
 const SORT_OPTIONS = [
