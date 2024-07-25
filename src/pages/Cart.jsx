@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Navigation } from '../components';
+import Navigation from '../components/Navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { ArrowLeftIcon, TrashIcon } from '@heroicons/react/24/outline';
 import useCartStore from '../store/cartStore';
@@ -73,44 +73,30 @@ const Cart = () => {
     }, [promoCode, cart]);
 
     const total = useMemo(() => {
-        return (
-            (cart?.subTotal >= discount ? cart?.subTotal - discount : 0) + 10
-        );
+        return (cart?.subTotal >= discount ? cart?.subTotal - discount : 0) + 10;
     }, [discount, cart]);
 
     return (
-        <div className="my-content-top border-t">
+        <div className="my-16 lg:my-content-top lg:border-t">
             <div className="container mx-auto px-5">
                 <Navigation isShowPageName={false} paths="/cart" />
                 <StepProgress />
                 {cart?.items?.length > 0 ? (
-                    <div className="flex items-start gap-10">
-                        <div className="flex-1">
-                            <table className="w-full">
+                    <div className="flex flex-col items-start gap-10 lg:flex-row">
+                        <div className="w-full flex-1">
+                            <table className="hidden w-full lg:table">
                                 <thead>
                                     <tr>
-                                        <th
-                                            align="left"
-                                            className="mr-8 w-2/5 border-b pb-5"
-                                        >
+                                        <th align="left" className="mr-8 w-2/5 border-b pb-5">
                                             Product
                                         </th>
-                                        <th
-                                            align="left"
-                                            className="mr-8 border-b pb-5"
-                                        >
+                                        <th align="left" className="mr-8 border-b pb-5">
                                             Price
                                         </th>
-                                        <th
-                                            align="left"
-                                            className="mr-8 border-b pb-5"
-                                        >
+                                        <th align="left" className="mr-8 border-b pb-5">
                                             Quantity
                                         </th>
-                                        <th
-                                            align="left"
-                                            className="mr-8 border-b pb-5"
-                                        >
+                                        <th align="left" className="mr-8 border-b pb-5">
                                             Subtotal
                                         </th>
                                     </tr>
@@ -126,9 +112,7 @@ const Cart = () => {
                                                             className="w-28 shrink-0"
                                                         >
                                                             <img
-                                                                src={
-                                                                    item?.productImage
-                                                                }
+                                                                src={item?.productImage}
                                                                 className="h-auto w-full object-contain"
                                                             />
                                                         </Link>
@@ -136,48 +120,30 @@ const Cart = () => {
                                                             to={`/product/${item?.product?.slug}`}
                                                             className="flex-1 text-wrap text-base transition-colors hover:text-[#D10202]"
                                                         >
-                                                            {
-                                                                item?.product
-                                                                    ?.name
-                                                            }
+                                                            {item?.product?.name}
                                                         </Link>
                                                     </div>
                                                 </td>
                                                 <td className="border-b">
                                                     <span className="text-base font-bold tracking-wide">
-                                                        $
-                                                        {numberWithCommas(
-                                                            item?.product
-                                                                ?.salePrice,
-                                                        )}
+                                                        ${numberWithCommas(item?.product?.salePrice)}
                                                     </span>
                                                 </td>
                                                 <td className="border-b">
                                                     <CartItemQuantity
-                                                        productId={
-                                                            item?.product?._id
-                                                        }
-                                                        colorId={item?.color}
-                                                        quantity={
-                                                            item?.quantity
-                                                        }
+                                                        productId={item?.product?._id}
+                                                        colorId={item?.color?._id}
+                                                        quantity={item?.quantity}
                                                     />
                                                 </td>
                                                 <td className="border-b">
                                                     <div className="flex items-center justify-between">
                                                         <span className="text-base font-bold tracking-wide">
-                                                            $
-                                                            {numberWithCommas(
-                                                                item?.itemPrice,
-                                                            )}
+                                                            ${numberWithCommas(item?.itemPrice)}
                                                         </span>
                                                         <TrashIcon
                                                             className="size-5 cursor-pointer transition-colors hover:text-[#D10202]"
-                                                            onClick={() =>
-                                                                handleDeleteCartItem(
-                                                                    item?._id,
-                                                                )
-                                                            }
+                                                            onClick={() => handleDeleteCartItem(item?._id)}
                                                         />
                                                     </div>
                                                 </td>
@@ -186,36 +152,82 @@ const Cart = () => {
                                     })}
                                 </tbody>
                             </table>
-                            <div className="mt-4 flex items-center justify-between">
-                                <Link
-                                    to="/"
-                                    className="flex items-center gap-2"
-                                >
+                            <ul className="w-full lg:hidden">
+                                {cart?.items?.map((item, index) => {
+                                    return (
+                                        <li key={index} className="w-full border p-5 [&:not(:first-child)]:mt-2">
+                                            <div className="relative flex items-center gap-4">
+                                                <Link
+                                                    to={`/product/${item?.product?.slug}`}
+                                                    className="inline-block w-[100px] shrink-0"
+                                                >
+                                                    <img
+                                                        src={item?.productImage}
+                                                        alt=""
+                                                        className="w-full object-contain"
+                                                    />
+                                                </Link>
+                                                <div className="flex w-full flex-col gap-2">
+                                                    <Link
+                                                        to={`/product/${item?.product?.slug}`}
+                                                        className="hover:text-[#d10202]"
+                                                    >
+                                                        {item?.product?.name}
+                                                    </Link>
+                                                    <span className="text-sm opacity-90">
+                                                        Color: {item?.color?.name}
+                                                    </span>
+                                                    <TrashIcon
+                                                        className="absolute right-0 top-0 size-5 cursor-pointer transition-colors hover:text-[#D10202]"
+                                                        onClick={() => handleDeleteCartItem(item?._id)}
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center justify-between border-b border-dashed py-3 text-sm tracking-wide">
+                                                <span className="text-sm text-gray-400">Price:</span>
+                                                <span className="font-bold">
+                                                    ${numberWithCommas(item?.itemPrice / item?.quantity)}
+                                                </span>
+                                            </div>
+                                            <div className="flex items-center justify-between border-b border-dashed py-3 text-sm tracking-wide">
+                                                <span className="text-sm text-gray-400">Quantity:</span>
+                                                <CartItemQuantity
+                                                    productId={item?.product?._id}
+                                                    colorId={item?.color?._id}
+                                                    quantity={item?.quantity}
+                                                />
+                                            </div>
+                                            <div className="flex items-center justify-between pt-3 text-sm tracking-wide">
+                                                <span className="text-sm text-gray-400">Subtotal:</span>
+                                                <span className="font-bold">${numberWithCommas(item?.itemPrice)}</span>
+                                            </div>
+                                        </li>
+                                    );
+                                })}
+                            </ul>
+                            <div className="mt-4 flex flex-col items-center justify-between gap-4 lg:flex-row">
+                                <Link to="/" className="hidden items-center gap-2 lg:flex">
                                     <ArrowLeftIcon className="size-4" />
                                     <span>Back to shop</span>
                                 </Link>
                                 <button
-                                    className="float-right border border-black  bg-white px-4 py-2 text-black outline-none transition-colors hover:bg-black hover:text-white"
+                                    className="float-right w-full border border-black bg-white px-4 py-2 text-black outline-none transition-colors hover:bg-black hover:text-white lg:w-fit"
                                     onClick={() => handleEmptyCart()}
                                 >
                                     Empty cart
                                 </button>
                             </div>
                         </div>
-                        <div className="basis-1/3 bg-gray-100 p-6">
+                        <div className="w-full bg-gray-100 p-6 lg:w-1/3">
                             <div>
-                                <h4 className="mb-2 text-sm uppercase tracking-wider">
-                                    Enter promo code
-                                </h4>
-                                <div className="flex h-14 w-full items-center py-2">
+                                <h4 className="mb-2 text-sm uppercase tracking-wider">Enter promo code</h4>
+                                <div className="flex h-14 w-full items-center py-2 text-sm lg:text-base">
                                     <input
                                         type="text"
                                         className="h-full flex-1 border pl-3 uppercase outline-none"
                                         placeholder="Promo code"
                                         value={code}
-                                        onChange={(e) =>
-                                            setCode(e.currentTarget.value)
-                                        }
+                                        onChange={(e) => setCode(e.currentTarget.value)}
                                     />
                                     <button
                                         className="h-full basis-1/3 border border-black bg-black text-white"
@@ -225,18 +237,16 @@ const Cart = () => {
                                     </button>
                                 </div>
                                 <div className="w-full pt-8">
-                                    <div className="flex w-full items-center justify-between py-1 tracking-wide">
+                                    <div className="flex w-full items-center justify-between py-1 text-sm tracking-wide lg:text-base">
                                         <span>Subtotal: </span>
-                                        <span>${cart?.subTotal}</span>
+                                        <span className="font-bold">${cart?.subTotal}</span>
                                     </div>
-                                    <div className="flex w-full items-center justify-between py-1 tracking-wide">
+                                    <div className="flex w-full items-center justify-between py-1 text-sm tracking-wide lg:text-base">
                                         <span>Discount: </span>
                                         <span>
                                             - ${discount}
                                             {promoCode?.type == 'coupon' && (
-                                                <span className="text-green-400">
-                                                    ({promoCode?.discount}%)
-                                                </span>
+                                                <span className="text-green-400">({promoCode?.discount}%)</span>
                                             )}
                                         </span>
                                     </div>
@@ -248,7 +258,7 @@ const Cart = () => {
                                             Remove
                                         </span>
                                     )}
-                                    <div className="flex w-full items-center justify-between py-1 tracking-wide">
+                                    <div className="flex w-full items-center justify-between py-1 text-sm tracking-wide lg:text-base">
                                         <span>Shipping cost: </span>
                                         <span>$10</span>
                                     </div>
@@ -260,7 +270,7 @@ const Cart = () => {
                                 </div>
                                 <Link
                                     to="/checkout"
-                                    className="mt-10 block w-full bg-black py-4 text-center text-sm font-bold uppercase tracking-wider text-white"
+                                    className="mt-10 block w-full bg-black py-4 text-center text-xs font-bold uppercase tracking-wider text-white lg:text-sm"
                                 >
                                     Check out
                                 </Link>
@@ -269,17 +279,13 @@ const Cart = () => {
                     </div>
                 ) : (
                     <div>
-                        <h3 className="mb-6 text-center">
-                            Your cart is currently empty
-                        </h3>
+                        <h3 className="mb-6 text-center text-sm lg:text-base">Your cart is currently empty</h3>
                         <Link
                             to="/"
                             className="mx-auto flex w-fit items-center justify-center gap-2 border border-black  bg-white px-3 py-2 text-black transition-colors hover:bg-black hover:text-white"
                         >
                             <ArrowLeftIcon className="size-5" />
-                            <span className="text-sm font-bold uppercase">
-                                Return to shop
-                            </span>
+                            <span className="text-xs font-bold uppercase lg:text-sm">Return to shop</span>
                         </Link>
                     </div>
                 )}

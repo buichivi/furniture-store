@@ -28,7 +28,7 @@ const Navigation = ({
 
     return (
         <div className="container mx-auto px-5">
-            <div className="flex justify-start py-8 text-sm">
+            <div className="flex justify-start py-4 text-sm lg:py-8">
                 {pathNames
                     .map((path, index) => {
                         let i = 0,
@@ -42,11 +42,7 @@ const Navigation = ({
                             name:
                                 path
                                     .split('-')
-                                    .map(
-                                        (p) =>
-                                            p.charAt(0).toUpperCase() +
-                                            p.slice(1),
-                                    )
+                                    .map((p) => p.charAt(0).toUpperCase() + p.slice(1))
                                     .join(' ') || 'Home',
                             to,
                         };
@@ -55,29 +51,22 @@ const Navigation = ({
                         return (
                             <div
                                 key={index}
-                                className="mr-2 flex items-center gap-2"
+                                className="mr-2 flex items-start gap-2 text-sm lg:items-center lg:text-base"
                             >
                                 {!tag && !brand && !query && !productSlug && (
                                     <React.Fragment>
                                         {pathNames.length - 1 == index ? (
                                             <span
-                                                className={`${!isSearchPage && 'capitalize'} text-black hover:no-underline`}
+                                                className={`${!isSearchPage && 'capitalize'} block text-black hover:no-underline lg:inline-block`}
                                             >
                                                 {name}
                                             </span>
                                         ) : (
-                                            <Link
-                                                to={to}
-                                                className="capitalize text-[#979797] hover:underline"
-                                            >
+                                            <Link to={to} className="capitalize text-[#979797] hover:underline">
                                                 {name}
                                             </Link>
                                         )}
-                                        {index < pathNames.length - 1 && (
-                                            <span className="text-[#b9b9b9]">
-                                                |
-                                            </span>
-                                        )}
+                                        {index < pathNames.length - 1 && <span className="text-[#b9b9b9]">|</span>}
                                     </React.Fragment>
                                 )}
                                 {(tag || brand || query || productSlug) && (
@@ -89,18 +78,11 @@ const Navigation = ({
                                                 {name}
                                             </span>
                                         ) : (
-                                            <Link
-                                                to={to}
-                                                className="capitalize text-[#979797] hover:underline"
-                                            >
+                                            <Link to={to} className="capitalize text-[#979797] hover:underline">
                                                 {name}
                                             </Link>
                                         )}
-                                        {index < pathNames.length - 1 && (
-                                            <span className="text-[#b9b9b9]">
-                                                |
-                                            </span>
-                                        )}
+                                        {index < pathNames.length - 1 && <span className="text-[#b9b9b9]">|</span>}
                                     </React.Fragment>
                                 )}
                             </div>
@@ -108,23 +90,20 @@ const Navigation = ({
                     })}
             </div>
             {isShowPageName ? (
-                <div className="relative py-32">
+                <div className="relative py-24 lg:py-32">
                     <img
-                        src={
-                            getParentCategory(categorySlug, categories)
-                                ?.imageUrl || image
-                        }
+                        src={getParentCategory(categorySlug, categories)?.imageUrl || image}
                         alt=""
                         className="absolute left-0 top-0 size-full object-cover"
                     />
                     <h3
-                        className={`text-center text-5xl font-semibold drop-shadow-lg ${!isSearchPage && 'capitalize'} font-lora tracking-wider text-white`}
+                        className={`text-center text-3xl font-semibold drop-shadow-lg lg:text-5xl ${!isSearchPage && 'capitalize'} font-lora tracking-wider text-white`}
                     >
                         {pathNames.at(-1).split('-').join(' ')}
                     </h3>
                 </div>
             ) : (
-                <div className="py-4"></div>
+                <div className="py-0 lg:py-4"></div>
             )}
         </div>
     );

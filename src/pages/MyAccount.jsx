@@ -21,6 +21,70 @@ const ORDER_STATUS = [
     { status: 'delivered', color: '#5cb85c' },
     { status: 'cancelled', color: '#d9534f' },
 ];
+
+const NAV_ITEMS = [
+    {
+        name: 'Infomation',
+        option: 'infomation',
+        to: '/account/infomation',
+        icon: ({ className = 'size-6' }) => {
+            return (
+                <svg xmlns="http://www.w3.org/2000/svg" className={className} viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2c5.514 0 10 4.486 10 10s-4.486 10-10 10-10-4.486-10-10 4.486-10 10-10zm0-2c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm1 18h-2v-8h2v8zm-1-12.25c.69 0 1.25.56 1.25 1.25s-.56 1.25-1.25 1.25-1.25-.56-1.25-1.25.56-1.25 1.25-1.25z" />
+                </svg>
+            );
+        },
+    },
+    {
+        name: 'Orders',
+        option: 'orders',
+        to: '/account/orders',
+        icon: ({ className = 'size-6' }) => {
+            return (
+                <svg xmlns="http://www.w3.org/2000/svg" className={className} viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M17.677 16.879l-.343.195v-1.717l.343-.195v1.717zm2.823-3.324l-.342.195v1.717l.342-.196v-1.716zm3.5-7.602v11.507l-9.75 5.54-10.25-4.989v-11.507l9.767-5.504 10.233 4.953zm-11.846-1.757l7.022 3.2 1.7-.917-7.113-3.193-1.609.91zm.846 7.703l-7-3.24v8.19l7 3.148v-8.098zm3.021-2.809l-6.818-3.24-2.045 1.168 6.859 3.161 2.004-1.089zm5.979-.943l-2 1.078v2.786l-3 1.688v-2.856l-2 1.078v8.362l7-3.985v-8.151zm-4.907 7.348l-.349.199v1.713l.349-.195v-1.717zm1.405-.8l-.344.196v1.717l.344-.196v-1.717zm.574-.327l-.343.195v1.717l.343-.195v-1.717zm.584-.332l-.35.199v1.717l.35-.199v-1.717zm-16.656-4.036h-2v1h2v-1zm0 2h-3v1h3v-1zm0 2h-2v1h2v-1z" />
+                </svg>
+            );
+        },
+    },
+    {
+        name: 'Addresses',
+        option: 'addresses',
+        to: '/account/addresses',
+        icon: ({ className = 'size-6' }) => {
+            return (
+                <svg xmlns="http://www.w3.org/2000/svg" className={className} viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M20 7.093v-5.093h-3v2.093l3 3zm4 5.907l-12-12-12 12h3v10h18v-10h3zm-5 8h-14v-10.26l7-6.912 7 6.99v10.182zm-5-1h-4v-6h4v6z" />
+                </svg>
+            );
+        },
+    },
+    {
+        name: 'Wishlist',
+        option: 'wishlist',
+        to: '/wishlist',
+        icon: ({ className = 'size-6' }) => {
+            return (
+                <svg
+                    className={className}
+                    clipRule="evenodd"
+                    fillRule="evenodd"
+                    strokeLinejoin="round"
+                    strokeMiterlimit="2"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="currentColor"
+                >
+                    <path
+                        d="m7.234 3.004c-2.652 0-5.234 1.829-5.234 5.177 0 3.725 4.345 7.727 9.303 12.54.194.189.446.283.697.283s.503-.094.697-.283c4.977-4.831 9.303-8.814 9.303-12.54 0-3.353-2.58-5.168-5.229-5.168-1.836 0-3.646.866-4.771 2.554-1.13-1.696-2.935-2.563-4.766-2.563zm0 1.5c1.99.001 3.202 1.353 4.155 2.7.14.198.368.316.611.317.243 0 .471-.117.612-.314.955-1.339 2.19-2.694 4.159-2.694 1.796 0 3.729 1.148 3.729 3.668 0 2.671-2.881 5.673-8.5 11.127-5.454-5.285-8.5-8.389-8.5-11.127 0-1.125.389-2.069 1.124-2.727.673-.604 1.625-.95 2.61-.95z"
+                        fillRule="nonzero"
+                    />
+                </svg>
+            );
+        },
+    },
+];
+
 const MyAccount = () => {
     const { option } = useParams();
     const { currentUser, logout, token } = useAuthStore();
@@ -141,100 +205,53 @@ const MyAccount = () => {
     };
 
     return (
-        <div className="mt-content-top border-t bg-gray-100">
+        <div className="mt-16 border-t bg-gray-100 lg:mt-content-top">
             <div className="container mx-auto px-5">
-                <div className="flex items-start gap-10 py-10">
-                    <div className="shrink-0 basis-1/4 bg-white px-6 py-5">
-                        <h3 className="mb-3 font-lora text-4xl font-semibold">
+                <div className="flex w-full flex-col items-start gap-10 py-10 lg:flex-row">
+                    <div className="w-full shrink-0 bg-white px-6 py-5 lg:w-1/4">
+                        <h3 className="mb-3 font-lora text-2xl font-semibold lg:text-4xl">
                             Hi, {currentUser?.firstName + ' ' + currentUser?.lastName}!
                         </h3>
-                        <p className="text-sm uppercase text-gray-500">My account</p>
-                        <div className="mt-2">
-                            <Link
-                                to="/account/infomation"
-                                className={`flex w-full cursor-pointer items-center gap-3 px-4 py-3 transition-colors hover:bg-black hover:text-white ${option == 'infomation' && 'bg-black text-white'}`}
-                            >
-                                <div className="size-6">
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width="24"
-                                        height="24"
-                                        viewBox="0 0 24 24"
-                                        fill="currentColor"
+                        <p className="text-xs uppercase text-gray-500 lg:text-sm">My account</p>
+                        <div className="mt-2 flex flex-row flex-wrap items-center justify-center gap-y-2 lg:flex-col lg:items-start lg:justify-start">
+                            {NAV_ITEMS.map((item) => {
+                                const IconItem = item.icon;
+                                return (
+                                    <Link
+                                        key={item.option}
+                                        to={item.to}
+                                        className={`flex w-1/3 cursor-pointer items-center gap-3 px-4 py-3 transition-colors hover:bg-black hover:text-white lg:w-full ${option == item.option && 'bg-black text-white'}`}
                                     >
-                                        <path d="M12 2c5.514 0 10 4.486 10 10s-4.486 10-10 10-10-4.486-10-10 4.486-10 10-10zm0-2c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm1 18h-2v-8h2v8zm-1-12.25c.69 0 1.25.56 1.25 1.25s-.56 1.25-1.25 1.25-1.25-.56-1.25-1.25.56-1.25 1.25-1.25z" />
-                                    </svg>
-                                </div>
-                                <span>Infomation</span>
-                            </Link>
-                            <Link
-                                to="/account/orders"
-                                className={`flex w-full cursor-pointer items-center gap-3 px-4 py-3 transition-colors hover:bg-black hover:text-white ${option == 'orders' && 'bg-black text-white'}`}
-                            >
-                                <span className="size-6">
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width="24"
-                                        height="24"
-                                        viewBox="0 0 24 24"
-                                        fill="currentColor"
-                                    >
-                                        <path d="M17.677 16.879l-.343.195v-1.717l.343-.195v1.717zm2.823-3.324l-.342.195v1.717l.342-.196v-1.716zm3.5-7.602v11.507l-9.75 5.54-10.25-4.989v-11.507l9.767-5.504 10.233 4.953zm-11.846-1.757l7.022 3.2 1.7-.917-7.113-3.193-1.609.91zm.846 7.703l-7-3.24v8.19l7 3.148v-8.098zm3.021-2.809l-6.818-3.24-2.045 1.168 6.859 3.161 2.004-1.089zm5.979-.943l-2 1.078v2.786l-3 1.688v-2.856l-2 1.078v8.362l7-3.985v-8.151zm-4.907 7.348l-.349.199v1.713l.349-.195v-1.717zm1.405-.8l-.344.196v1.717l.344-.196v-1.717zm.574-.327l-.343.195v1.717l.343-.195v-1.717zm.584-.332l-.35.199v1.717l.35-.199v-1.717zm-16.656-4.036h-2v1h2v-1zm0 2h-3v1h3v-1zm0 2h-2v1h2v-1z" />
-                                    </svg>
-                                </span>
-                                <span>Orders</span>
-                            </Link>
-                            <Link
-                                to="/account/addresses"
-                                className={`flex w-full cursor-pointer items-center gap-3 px-4 py-3 transition-colors hover:bg-black hover:text-white ${option == 'addresses' && 'bg-black text-white'}`}
-                            >
-                                <div className="size-6">
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width="24"
-                                        height="24"
-                                        viewBox="0 0 24 24"
-                                        fill="currentColor"
-                                    >
-                                        <path d="M20 7.093v-5.093h-3v2.093l3 3zm4 5.907l-12-12-12 12h3v10h18v-10h3zm-5 8h-14v-10.26l7-6.912 7 6.99v10.182zm-5-1h-4v-6h4v6z" />
-                                    </svg>
-                                </div>
-                                <span>Addresses</span>
-                            </Link>
-                            <Link
-                                to="/wishlist"
-                                className="flex w-full cursor-pointer items-center gap-3 px-4 py-3 transition-colors hover:bg-black hover:text-white"
-                            >
-                                <span className="size-6">
-                                    <svg
-                                        clipRule="evenodd"
-                                        fillRule="evenodd"
-                                        strokeLinejoin="round"
-                                        strokeMiterlimit="2"
-                                        viewBox="0 0 24 24"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        fill="currentColor"
-                                    >
-                                        <path
-                                            d="m7.234 3.004c-2.652 0-5.234 1.829-5.234 5.177 0 3.725 4.345 7.727 9.303 12.54.194.189.446.283.697.283s.503-.094.697-.283c4.977-4.831 9.303-8.814 9.303-12.54 0-3.353-2.58-5.168-5.229-5.168-1.836 0-3.646.866-4.771 2.554-1.13-1.696-2.935-2.563-4.766-2.563zm0 1.5c1.99.001 3.202 1.353 4.155 2.7.14.198.368.316.611.317.243 0 .471-.117.612-.314.955-1.339 2.19-2.694 4.159-2.694 1.796 0 3.729 1.148 3.729 3.668 0 2.671-2.881 5.673-8.5 11.127-5.454-5.285-8.5-8.389-8.5-11.127 0-1.125.389-2.069 1.124-2.727.673-.604 1.625-.95 2.61-.95z"
-                                            fillRule="nonzero"
-                                        />
-                                    </svg>
-                                </span>
-                                <span>Wishlist</span>
-                            </Link>
+                                        <IconItem className="size-4 shrink-0 lg:size-6" />
+                                        <span className="text-xs lg:text-base">{item.name}</span>
+                                    </Link>
+                                );
+                            })}
                             <div
-                                className="flex w-full cursor-pointer items-center gap-3 px-4 py-3 transition-colors hover:bg-black hover:text-white"
+                                className="flex w-1/3 cursor-pointer items-center gap-3 px-4 py-3 transition-colors hover:bg-black hover:text-white lg:w-full"
                                 onClick={handleLogout}
                             >
-                                <div className="size-6 text-center">
-                                    <i className="fa-solid fa-arrow-right-from-bracket"></i>
+                                <div className="text-center">
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        strokeWidth={1.5}
+                                        stroke="currentColor"
+                                        className="size-4 lg:size-6"
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M12 9l-3 3m0 0 3 3m-3-3h12.75"
+                                        />
+                                    </svg>
                                 </div>
-                                <span>Log out</span>
+                                <span className="text-xs lg:text-base">Log out</span>
                             </div>
                         </div>
                     </div>
-                    <div className="flex-1">
+                    <div className="w-full flex-1">
                         {option == 'orders' && !currentViewOrder?._id && (
                             <React.Fragment>
                                 <h3 className="font-lora text-3xl font-semibold">All Orders</h3>
@@ -538,7 +555,7 @@ const MyAccount = () => {
                                 <EditAddressForm address={currentViewAddress} setAddresses={setAddresses} />
                             </div>
                         )}
-                        {option == 'infomation' && <InfomationForm />}
+                        {option == 'infomation' && <InfomationForm logout={handleLogout} />}
                     </div>
                 </div>
             </div>
@@ -1130,7 +1147,7 @@ const EditAddressForm = ({ address, setAddresses }) => {
     );
 };
 
-const InfomationForm = () => {
+const InfomationForm = ({ logout }) => {
     const { currentUser, token, loginUser } = useAuthStore();
     const [password, setPassword] = useState('');
 
@@ -1203,6 +1220,7 @@ const InfomationForm = () => {
                     loading: 'Updating...',
                     success: (res) => {
                         resetForm();
+                        logout();
                         return res.data?.message;
                     },
                     error: (error) => error?.response?.data?.error,
@@ -1213,12 +1231,12 @@ const InfomationForm = () => {
 
     return (
         <div className="">
-            <div className="bg-white p-4 ">
+            <div className="bg-white p-4">
                 <div className="flex items-center justify-between">
-                    <h3 className="font-lora text-3xl font-semibold">Infomation</h3>
+                    <h3 className="font-lora text-2xl font-semibold lg:text-3xl">Infomation</h3>
                     <button
                         type="submit"
-                        className="border border-black bg-black px-4 py-2 text-white transition-all hover:bg-white hover:text-black"
+                        className="border border-black bg-black px-4 py-2 text-sm text-white transition-all hover:bg-white hover:text-black lg:text-base"
                         onClick={(e) => {
                             const ip = e.currentTarget.nextElementSibling;
                             ip.checked = !ip.checked;
@@ -1275,7 +1293,10 @@ const InfomationForm = () => {
                         </div>
                     </div>
                 </div>
-                <form onSubmit={infomationForm.handleSubmit} className="mt-4 flex items-start gap-10 pb-4 text-sm">
+                <form
+                    onSubmit={infomationForm.handleSubmit}
+                    className="mt-4 flex flex-col items-center gap-10 pb-4 text-sm lg:flex-row lg:items-start"
+                >
                     <div className="relative size-40 shrink-0 overflow-hidden rounded-full [&:hover>label]:opacity-100">
                         <img
                             src={currentUser?.avatar || '/images/account-placeholder.jpg'}
@@ -1300,9 +1321,9 @@ const InfomationForm = () => {
                             />
                         </label>
                     </div>
-                    <div className="flex-1">
-                        <div className="flex w-full items-start gap-6">
-                            <label className="flex flex-1 flex-col items-start">
+                    <div className="w-full flex-1">
+                        <div className="flex w-full flex-col items-start gap-2 lg:flex-row lg:gap-6">
+                            <label className="flex w-full flex-1 flex-col items-start">
                                 <div className="mb-2 flex w-full items-center justify-between">
                                     <span>First name</span>
                                     {infomationForm.errors.firstName && (
@@ -1320,7 +1341,7 @@ const InfomationForm = () => {
                                     className="w-full rounded-lg border-2 py-2 pl-4 text-sm outline-none transition-colors focus:border-black"
                                 />
                             </label>
-                            <label className="flex flex-1 flex-col items-start">
+                            <label className="flex w-full flex-1 flex-col items-start">
                                 <div className="mb-2 flex w-full items-center justify-between">
                                     <span>Last name</span>
                                     {infomationForm.errors.lastName && (
@@ -1337,8 +1358,8 @@ const InfomationForm = () => {
                                 />
                             </label>
                         </div>
-                        <div className="mt-2 flex w-full items-start gap-6">
-                            <label className="flex flex-1 flex-col items-start">
+                        <div className="mt-2 flex w-full flex-col items-start gap-2 lg:flex-row lg:gap-6">
+                            <label className="flex w-full flex-1 flex-col items-start">
                                 <div className="mb-2 flex w-full items-center justify-between">
                                     <span>Email address</span>
                                     {infomationForm.errors.email && (
@@ -1354,7 +1375,7 @@ const InfomationForm = () => {
                                     className="w-full rounded-lg border-2 py-2 pl-4 text-sm outline-none transition-colors focus:border-black"
                                 />
                             </label>
-                            <label className="flex flex-1 flex-col items-start">
+                            <label className="flex  w-full flex-1 flex-col items-start">
                                 <div className="mb-2 flex w-full items-center justify-between">
                                     <span>Phone number</span>
                                     {infomationForm.errors.phoneNumber && (
@@ -1378,18 +1399,18 @@ const InfomationForm = () => {
             </div>
             <div className="mt-4 bg-white px-4 pb-8 pt-4">
                 <div className="flex items-center justify-between">
-                    <h3 className="font-lora text-3xl font-semibold">Change password</h3>
+                    <h3 className="font-lora text-2xl font-semibold lg:text-3xl">Change password</h3>
                     <button
                         type="submit"
-                        className="mt-4 border border-black bg-black px-4 py-2 text-white transition-all hover:bg-white hover:text-black"
+                        className="sborder border-black bg-black px-4 py-2 text-sm text-white transition-all hover:bg-white hover:text-black lg:text-base"
                         onClick={passwordForm.handleSubmit}
                     >
                         Save
                     </button>
                 </div>
-                <form onSubmit={passwordForm.handleSubmit} className="mt-2">
-                    <div className="flex items-center justify-between gap-6">
-                        <label className="flex w-1/2 max-w-[400px] flex-1 flex-col items-start">
+                <form onSubmit={passwordForm.handleSubmit} className="mt-2 text-sm lg:text-base">
+                    <div className="flex w-full flex-col items-center justify-between gap-2 lg:flex-row lg:gap-6">
+                        <label className="flex w-full flex-1 flex-col items-start lg:w-1/2 lg:max-w-[400px]">
                             <div className="mb-2 flex w-full items-center justify-between">
                                 <span>Current password</span>
                                 {passwordForm.errors.currentPassword && (
@@ -1407,7 +1428,7 @@ const InfomationForm = () => {
                                 className="w-full rounded-lg border-2 py-2 pl-4 text-sm outline-none transition-colors focus:border-black"
                             />
                         </label>
-                        <label className="flex w-1/2 max-w-[400px] flex-1 flex-col items-start">
+                        <label className="flex w-full flex-1 flex-col items-start lg:w-1/2 lg:max-w-[400px]">
                             <div className="mb-2 flex w-full items-center justify-between">
                                 <span>New password</span>
                                 {passwordForm.errors.newPassword && (
@@ -1436,6 +1457,9 @@ AddAddressForm.propTypes = {
 EditAddressForm.propTypes = {
     address: PropTypes.object,
     setAddresses: PropTypes.func,
+};
+InfomationForm.propTypes = {
+    logout: PropTypes.func,
 };
 
 export default MyAccount;

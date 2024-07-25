@@ -1,7 +1,6 @@
-import { Link, useParams } from 'react-router-dom';
-import { Navigation } from '../components';
-import { useEffect, useState } from 'react';
-import useAuthStore from '../store/authStore';
+import { Link, useLoaderData, useParams } from 'react-router-dom';
+import Navigation from '../components/Navigation';
+import { useEffect, useMemo, useState } from 'react';
 import apiRequest from '../utils/apiRequest';
 import moment from 'moment';
 import '../utils/ckeditor.css';
@@ -28,68 +27,66 @@ const getRelateBlog = (id, blogs) => {
 };
 
 const BlogDetail = () => {
+    const blogData = useLoaderData();
     const { blogSlug } = useParams();
-    const { token } = useAuthStore();
     const { blogs } = useDataStore();
-    const [blog, setBlog] = useState();
     const [tags, setTags] = useState([]);
+
+    const relatedBlogs = useMemo(() => {
+        return getRelateBlog(blogData?._id, blogs);
+    }, [blogs, blogData]);
+
+    console.log(relatedBlogs);
 
     useEffect(() => {
         apiRequest
-            .get('/blogs/' + blogSlug, {
-                headers: { Authorization: 'Bearer ' + token },
-            })
-            .then((res) => setBlog(res.data?.blog))
-            .catch((err) => console.log(err));
-        apiRequest
-            .get('/tags/', { headers: { Authorization: 'Bearer ' + token } })
+            .get('/tags/')
             .then((res) => setTags(res.data?.tags))
             .catch((err) => console.log(err));
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [blogSlug]);
+    }, []);
 
     console.log(location);
 
     return (
-        <div className="border-t py-content-top">
+        <div className="border-t py-16 lg:py-content-top">
+            <Navigation paths={`/blogs/${blogSlug}`} isShowPageName={false} />
             <div className="container mx-auto px-5">
-                <Navigation paths={`/blogs/${blogSlug}`} isShowPageName={false} />
-                <div className="flex items-start gap-10">
-                    <div className="flex-1">
+                <div className="flex flex-col items-start gap-10 lg:flex-row">
+                    <div className="w-full flex-1">
                         <div className="w-full">
-                            <img src={blog?.thumb} alt="" className="aspect-auto size-full object-cover" />
+                            <img src={blogData?.thumb} alt="" className="aspect-auto size-full object-cover" />
                         </div>
-                        <div className="flex items-center gap-1">
+                        <div className="flex items-center justify-around gap-1">
                             <div className="flex gap-1">
-                                {blog?.tags?.map((tag, index) => {
+                                {blogData?.tags?.map((tag, index) => {
                                     return (
                                         <div key={index} className="text-[#848484]">
                                             <Link
                                                 to={`/tag/${tag?.name}`}
-                                                className="text-sm uppercase transition-colors hover:text-[#D10202]"
+                                                className="text-xs uppercase transition-colors hover:text-[#D10202] lg:text-sm"
                                             >
                                                 {tag?.name}
                                             </Link>
-                                            {index <= blog?.tags?.length - 2 && ', '}
+                                            {index <= blogData?.tags?.length - 2 && ', '}
                                         </div>
                                     );
                                 })}
                             </div>
-                            <span className="m-8 bg-white px-3 py-1 text-sm uppercase">
-                                {moment(blog?.createdAt).format('ll')}
+                            <span className="m-2 bg-white px-1 py-1 text-sm uppercase lg:m-8 lg:px-3">
+                                {moment(blogData?.createdAt).format('ll')}
                             </span>
                             <span className="text-sm text-[#848484]">BY ADMIN</span>
                         </div>
                         <div className="ck-content pb-8">
-                            <div dangerouslySetInnerHTML={{ __html: blog?.post }}></div>
+                            <div dangerouslySetInnerHTML={{ __html: blogData?.post }}></div>
                         </div>
                     </div>
-                    <div className="sticky top-[120px] shrink-0 basis-1/4">
-                        {getRelateBlog(blog?._id, blogs).length > 0 && (
+                    <div className="shrink-0 basis-1/4 lg:sticky lg:top-[120px]">
+                        {relatedBlogs.length > 0 && (
                             <div>
                                 <h4 className="text-2xl font-bold">Relate Blog</h4>
                                 <div className="mt-4">
-                                    {getRelateBlog(blog?._id, blogs).map((blog, index) => {
+                                    {relatedBlogs.map((blog, index) => {
                                         return (
                                             <div key={index} className="flex items-start gap-2">
                                                 <Link

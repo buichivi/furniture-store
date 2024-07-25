@@ -1,11 +1,6 @@
 import apiRequest from '../utils/apiRequest';
 import useAuthStore from '../store/authStore';
-import {
-    Link,
-    useLocation,
-    useNavigate,
-    useNavigation,
-} from 'react-router-dom';
+import { Link, useLocation, useNavigate, useNavigation } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
@@ -41,9 +36,7 @@ const Login = () => {
             remember: false,
         },
         validationSchema: Yup.object({
-            email: Yup.string()
-                .email('Invalid email')
-                .required('This field is required'),
+            email: Yup.string().email('Invalid email').required('This field is required'),
             password: Yup.string()
                 .min(6, 'Requires at least 6 characters')
                 .max(12, 'Does not exceed 12 characters')
@@ -88,15 +81,11 @@ const Login = () => {
     }, [navigation.state]);
 
     return (
-        <div className="flex h-screen w-screen items-center">
-            <div className="relative h-full w-1/2">
+        <div className="flex h-screen w-screen items-center lg:flex-row">
+            <div className="relative hidden h-full w-1/2 lg:block">
                 <div className="absolute left-[10%] top-[15%]">
-                    <h3 className="text-3xl font-bold text-white">
-                        Turn your ideas into reality
-                    </h3>
-                    <p className="mb-2 text-white">
-                        Good design is good business.
-                    </p>
+                    <h3 className="text-3xl font-bold text-white">Turn your ideas into reality</h3>
+                    <p className="mb-2 text-white">Good design is good business.</p>
                 </div>
                 <img
                     src="https://images.unsplash.com/photo-1618220179428-22790b461013?q=80&w=1527&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
@@ -105,20 +94,14 @@ const Login = () => {
                 />
             </div>
             <div className="flex h-[70%] w-full flex-1 items-center justify-center">
-                <div className="flex h-full min-w-[60%] flex-col justify-between">
+                <div className="flex h-full min-w-[60%] flex-col items-center justify-between">
                     <Link to="/" className="w-32">
-                        <img
-                            src="/images/logo.png"
-                            alt=""
-                            className="w-full object-cover"
-                        />
+                        <img src="/images/logo.png" alt="" className="w-full object-cover" />
                     </Link>
                     <form onSubmit={formik.handleSubmit}>
                         <div className="mb-10">
-                            <h2 className="text-2xl font-semibold">Login</h2>
-                            <p className="text-sm">
-                                Welcome back! Please enter your account
-                            </p>
+                            {/* <h2 className="text-2xl font-semibold">Login</h2> */}
+                            <p className="text-sm">Welcome back! Please enter your account</p>
                         </div>
                         <div className="mb-4">
                             <label className="relative block pb-2 pt-4">
@@ -174,13 +157,11 @@ const Login = () => {
                                 onChange={formik.handleChange}
                                 className="size-4 rounded-none accent-black outline-none"
                             />
-                            <span className="text-sm">
-                                Remember me for 30 days
-                            </span>
+                            <span className="text-sm">Remember me for 30 days</span>
                         </label>
                         <button
                             type="submit"
-                            className="block w-full border border-black bg-black p-4 text-sm uppercase text-white transition-colors hover:bg-white hover:text-black "
+                            className="block w-full border border-black bg-black p-4 text-xs uppercase text-white transition-colors hover:bg-white hover:text-black lg:text-sm "
                         >
                             Login
                         </button>

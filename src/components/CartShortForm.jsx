@@ -28,33 +28,24 @@ const CartShortForm = () => {
                     htmlFor="cart-short-form"
                     className="block h-full w-full bg-[#3f3f3f80] opacity-0 transition-all duration-500"
                 ></label>
-                <div className="absolute right-0 top-0 flex h-full w-[30%] translate-x-full flex-col overflow-y-hidden bg-white p-[30px] transition-all duration-500 2xl:w-1/5">
+                <div className="absolute right-0 top-0 flex h-full w-4/5 translate-x-full flex-col overflow-y-hidden bg-white p-[30px] transition-all duration-500 lg:w-[30%] 2xl:w-1/5">
                     <div className="mb-8 flex shrink-0 items-center justify-between">
-                        <h4
-                            className={`tracking-wider ${cart?.items?.length == 0 && 'invisible'}`}
-                        >
+                        <h4 className={`tracking-wider ${cart?.items?.length == 0 && 'invisible'}`}>
                             Cart ({cart?.items?.length})
                         </h4>
-                        <label
-                            htmlFor="cart-short-form"
-                            className="cursor-pointer text-2xl"
-                        >
+                        <label htmlFor="cart-short-form" className="cursor-pointer text-2xl">
                             <i className="fa-light fa-xmark"></i>
                         </label>
                     </div>
                     {cart?.items?.length == 0 ? (
                         <div className="absolute left-1/2 top-1/2 -z-10 flex h-full w-full -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center">
                             <svg
-                                width="150"
-                                height="150"
+                                className="size-20 lg:size-40"
                                 viewBox="0 0 150 150"
                                 fill="none"
                                 xmlns="http://www.w3.org/2000/svg"
                             >
-                                <path
-                                    d="M150 0H0V150H150V0Z"
-                                    fill="white"
-                                ></path>
+                                <path d="M150 0H0V150H150V0Z" fill="white"></path>
                                 <path
                                     d="M34.5824 74.3272L33.4081 68.3582C32.1926 62.179 36.9225 56.428 43.2201 56.428H131.802C138.025 56.428 142.737 62.0523 141.647 68.1798L130.534 130.633C129.685 135.406 125.536 138.882 120.689 138.882H56.6221C51.9655 138.882 47.9253 135.668 46.8782 131.13L45.1458 123.623"
                                     stroke="#808080"
@@ -96,7 +87,7 @@ const CartShortForm = () => {
                                     fill="#808080"
                                 ></path>
                             </svg>
-                            <p className="mt-4 font-inter text-base tracking-wide">
+                            <p className="mt-4 font-inter text-sm tracking-wide lg:text-base">
                                 Your cart is currently empty
                             </p>
                         </div>
@@ -104,29 +95,25 @@ const CartShortForm = () => {
                         <div className="flex h-full flex-1 flex-col">
                             <div className="flex h-[55%] flex-col gap-8 overflow-y-auto pr-1 [scrollbar-width:thin]">
                                 {cart?.items?.map((item, index) => {
-                                    return (
-                                        <CartItemMini key={index} item={item} />
-                                    );
+                                    return <CartItemMini key={index} item={item} />;
                                 })}
                             </div>
                             {cart?.items?.length > 0 && (
                                 <div>
-                                    <div className="flex items-center justify-between py-8 text-lg font-bold tracking-wider">
+                                    <div className="flex items-center justify-between py-8 text-base font-bold tracking-wider lg:text-lg">
                                         <h4>Subtotal</h4>
-                                        <span>
-                                            ${numberWithCommas(cart?.subTotal)}
-                                        </span>
+                                        <span>${numberWithCommas(cart?.subTotal)}</span>
                                     </div>
                                     <div>
                                         <Link
                                             to="/cart"
-                                            className="mb-3 block cursor-pointer py-4 text-center text-sm font-bold uppercase ring-1 ring-black transition-colors hover:text-[#d10202] hover:ring-[#d10202]"
+                                            className="mb-3 block cursor-pointer py-4 text-center text-xs font-bold uppercase ring-1 ring-black transition-colors hover:text-[#d10202] hover:ring-[#d10202] lg:text-sm"
                                         >
                                             View cart
                                         </Link>
                                         <Link
                                             to="/checkout"
-                                            className="block cursor-pointer bg-black py-4 text-center text-sm font-bold uppercase text-white transition-colors hover:bg-[#d10202]"
+                                            className="block cursor-pointer bg-black py-4 text-center text-xs font-bold uppercase text-white transition-colors hover:bg-[#d10202] lg:text-sm"
                                         >
                                             Check out
                                         </Link>

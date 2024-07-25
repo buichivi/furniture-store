@@ -9,13 +9,21 @@ const SliderProducts = ({ title = '', products = [] }) => {
     const prevRef = useRef();
 
     return (
-        <>
-            <h3 className="mb-12 font-inter text-2xl font-bold capitalize tracking-wider">
+        <div>
+            <h3 className="mb-12 text-center font-inter text-xl font-bold capitalize tracking-wider lg:text-left lg:text-2xl">
                 {title}
             </h3>
             <Swiper
                 slidesPerView={4}
                 spaceBetween={30}
+                breakpoints={{
+                    320: {
+                        slidesPerView: 2,
+                    },
+                    1024: {
+                        slidesPerView: 4,
+                    },
+                }}
                 modules={[Navigation]}
                 onInit={(swiper) => {
                     swiper.params.navigation.prevEl = prevRef.current;
@@ -23,7 +31,6 @@ const SliderProducts = ({ title = '', products = [] }) => {
                     swiper.navigation.init();
                     swiper.navigation.update();
                 }}
-                loop={true}
                 className="[&:hover_.nextBtn]:opacity-100 [&:hover_.prevBtn]:opacity-100 "
             >
                 {products.map((product, index) => (
@@ -33,18 +40,18 @@ const SliderProducts = ({ title = '', products = [] }) => {
                 ))}
                 <span
                     ref={prevRef}
-                    className="nextBtn absolute left-1 top-1/2 z-10 size-12 -translate-y-1/2 cursor-pointer rounded-full bg-[#ffffff80] text-center text-lg leading-[48px] text-black opacity-0 transition-all hover:bg-white"
+                    className="nextBtn absolute left-1 top-1/2 z-10 size-10 -translate-y-1/2 cursor-pointer rounded-full bg-[#ffffff80] text-center text-lg leading-10 text-black shadow-md transition-all hover:bg-white lg:size-12 lg:leading-[48px] lg:opacity-0"
                 >
                     <i className="fa-sharp fa-light fa-angle-left"></i>
                 </span>
                 <span
                     ref={nextRef}
-                    className="prevBtn absolute right-1 top-1/2 z-10 size-12 -translate-y-1/2 cursor-pointer  rounded-full bg-[#ffffff80] text-center text-lg leading-[48px] text-black opacity-0 transition-all hover:bg-white"
+                    className="prevBtn absolute right-1 top-1/2 z-10 size-10 -translate-y-1/2 cursor-pointer rounded-full bg-[#ffffff80]  text-center text-lg leading-10 text-black shadow-md transition-all hover:bg-white lg:size-12 lg:leading-[48px] lg:opacity-0"
                 >
                     <i className="fa-sharp fa-light fa-angle-right"></i>
                 </span>
             </Swiper>
-        </>
+        </div>
     );
 };
 

@@ -1,5 +1,5 @@
-import ReviewItem from './ReviewItem';
-import ReviewStars from './ReviewStars';
+// import ReviewItem from './ReviewItem';
+// import ReviewStars from './ReviewStars';
 import PropTypes from 'prop-types';
 import useAuthStore from '../store/authStore';
 import { Link } from 'react-router-dom';
@@ -7,6 +7,10 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import toast from 'react-hot-toast';
 import apiRequest from '../utils/apiRequest';
+import { lazy, Suspense } from 'react';
+
+const ReviewItem = lazy(() => import('./ReviewItem'));
+const ReviewStars = lazy(() => import('./ReviewStars'));
 
 const UserReview = ({ product = {}, averageRating = 5, setProduct }) => {
     const { currentUser, token } = useAuthStore();
@@ -36,10 +40,7 @@ const UserReview = ({ product = {}, averageRating = 5, setProduct }) => {
                         // setReviews((reviews) => [...reviews, { user: currentUser, ...res.data?.review }]);
                         setProduct((product) => ({
                             ...product,
-                            reviews: [
-                                ...product.reviews,
-                                { user: currentUser, ...res.data?.review },
-                            ],
+                            reviews: [...product.reviews, { user: currentUser, ...res.data?.review }],
                         }));
                         return res.data?.message;
                     },
@@ -52,21 +53,25 @@ const UserReview = ({ product = {}, averageRating = 5, setProduct }) => {
     return (
         <div>
             <div className="mb-10 text-center">
-                <h3 className="mb-5 text-2xl font-bold capitalize tracking-widest">
-                    Customers Reviews
-                </h3>
+                <h3 className="mb-5 text-xl font-bold capitalize tracking-widest lg:text-2xl">Customers Reviews</h3>
                 {product?.reviews?.length > 0 ? (
                     <div className="flex items-center justify-center gap-2">
-                        <ReviewStars size="16px" stars={averageRating} />
+                        <Suspense fallback={null}>
+                            <ReviewStars size="16px" stars={averageRating} />
+                        </Suspense>
                         <span>({product?.reviews?.length})</span>
                     </div>
                 ) : (
-                    <p>There are no reviews yet.</p>
+                    <p className="text-sm lg:text-base">There are no reviews yet.</p>
                 )}
             </div>
             <div>
                 {product?.reviews?.map((review, index) => {
-                    return <ReviewItem key={index} review={review} />;
+                    return (
+                        <Suspense fallback={null} key={index}>
+                            <ReviewItem review={review} />
+                        </Suspense>
+                    );
                 })}
             </div>
             {!currentUser?._id ? (
@@ -82,11 +87,11 @@ const UserReview = ({ product = {}, averageRating = 5, setProduct }) => {
                 <form onSubmit={reviewForm.handleSubmit} className="mt-14">
                     <div className="mb-12">
                         {product?.reviews?.length > 0 ? (
-                            <h3 className="mb-5 text-center text-2xl font-bold tracking-wider">
+                            <h3 className="mb-5 text-center text-xl font-bold tracking-wider lg:text-2xl">
                                 Add a review
                             </h3>
                         ) : (
-                            <h3 className="mb-5 text-center text-2xl font-bold">
+                            <h3 className="mb-5 text-center text-xl font-bold lg:text-2xl">
                                 Be the first to review “{product?.name}”
                             </h3>
                         )}
@@ -100,10 +105,7 @@ const UserReview = ({ product = {}, averageRating = 5, setProduct }) => {
                                             key={index}
                                             className={`cursor-pointer [&:hover~span_i:first-child]:inline-block [&:hover~span_i:last-child]:hidden ${index + 1 <= reviewForm.values.rating && '[&_i:first-child]:hidden [&_i:last-child]:inline-block'}`}
                                             onClick={() => {
-                                                reviewForm.setFieldValue(
-                                                    'rating',
-                                                    index + 1,
-                                                );
+                                                reviewForm.setFieldValue('rating', index + 1);
                                             }}
                                         >
                                             <i className="fa-sharp fa-light fa-star"></i>
@@ -113,16 +115,14 @@ const UserReview = ({ product = {}, averageRating = 5, setProduct }) => {
                             </div>
                         </div>
                         {reviewForm.errors.rating && (
-                            <span className="block text-center text-sm text-red-500">
+                            <span className="block text-center text-xs text-red-500 lg:text-sm">
                                 {reviewForm.errors.rating}
                             </span>
                         )}
                     </div>
                     <div>
                         {reviewForm.errors.comment && (
-                            <span className="text-sm text-red-500">
-                                {reviewForm.errors.comment}
-                            </span>
+                            <span className="text-xs text-red-500 lg:text-sm">{reviewForm.errors.comment}</span>
                         )}
                         <textarea
                             name="comment"
@@ -131,11 +131,11 @@ const UserReview = ({ product = {}, averageRating = 5, setProduct }) => {
                             rows="7"
                             spellCheck="false"
                             placeholder="Your review *"
-                            className="mb-5 w-full resize-y border border-black px-6 py-5 outline-none placeholder:tracking-wider"
+                            className="mb-1 w-full resize-y border border-black px-4 py-4 outline-none placeholder:tracking-wider lg:mb-5 lg:px-6 lg:py-5"
                         ></textarea>
                         <button
                             type="submit"
-                            className="w-full bg-black py-4 text-sm font-bold uppercase tracking-wider text-white transition-colors hover:bg-[#d10202]"
+                            className="w-full bg-black py-4 text-xs font-bold uppercase tracking-wider text-white transition-colors hover:bg-[#d10202] lg:text-sm"
                         >
                             Submit
                         </button>

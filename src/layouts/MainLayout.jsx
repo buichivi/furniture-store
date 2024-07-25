@@ -1,9 +1,10 @@
 import { useEffect, useRef } from 'react';
 import { Header, Footer } from './components';
 import PropTypes from 'prop-types';
-import { CompareProduct, ProductQuickView } from '../components';
-import { useLocation } from 'react-router-dom';
-// import { useLocation } from 'react-router-dom';
+import ScrollToTop from '../components/ScrollToTop';
+import ProductQuickView from '../components/ProductQuickView';
+import CompareProduct from '../components/CompareProduct';
+import { useLocation, Outlet } from 'react-router-dom';
 
 const getPageTitle = (name) => {
     let title = '';
@@ -17,7 +18,6 @@ const getPageTitle = (name) => {
 const MainLayout = ({ children }) => {
     const scroll_to_top = useRef();
     const location = useLocation();
-    // const location = useLocation();
 
     useEffect(() => {
         const scrollToTop = () => {
@@ -39,15 +39,13 @@ const MainLayout = ({ children }) => {
     useEffect(() => {
         if (location.pathname.split('/').at(-2) == 'search')
             document.title = `Search results for "${location.pathname.split('/').at(-1).split('-')}"`;
-        else
-            document.title = getPageTitle(
-                location.pathname.split('/').at(-1).split('-'),
-            );
+        else document.title = getPageTitle(location.pathname.split('/').at(-1).split('-'));
     }, [location.pathname]);
 
     return (
         <div className="relative">
             <Header />
+            <Outlet />
             {children}
             <Footer />
             <div
@@ -61,6 +59,7 @@ const MainLayout = ({ children }) => {
             </div>
             <ProductQuickView />
             <CompareProduct />
+            <ScrollToTop />
         </div>
     );
 };

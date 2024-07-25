@@ -1,9 +1,13 @@
-import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
-import { useEffect, useState } from 'react';
+import { MagnifyingGlassIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { lazy, useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import useDebounced from '../utils/useDebounced';
 import apiRequest from '../utils/apiRequest';
-import SearchItem from './SearchItem';
+// import SearchItem from './SearchItem';
+import PropTypes from 'prop-types';
+import { Suspense } from 'react';
+
+const SearchItem = lazy(() => import('./SearchItem'));
 
 function escapeRegExp(string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& là chuỗi trùng khớp
@@ -11,7 +15,7 @@ function escapeRegExp(string) {
 
 const LIMIT_RESULT = 3;
 
-const Search = () => {
+const Search = ({ className = '' }) => {
     const { query } = useParams();
     const [isFocus, setIsFocus] = useState();
     const [qry, setQry] = useState(query ?? '');
@@ -25,9 +29,7 @@ const Search = () => {
             if (__query) {
                 try {
                     setLoading(true);
-                    const response = await apiRequest.get(
-                        '/products/search/' + __query,
-                    );
+                    const response = await apiRequest.get('/products/search/' + __query);
                     setSearchedProducts(response.data?.products);
                     setLoading(false);
                 } catch (err) {
@@ -40,7 +42,7 @@ const Search = () => {
 
     return (
         <div
-            className="relative w-[30%]"
+            className={`relative ${className}`}
             onBlur={() => {
                 setIsFocus(false);
             }}
@@ -55,22 +57,27 @@ const Search = () => {
                     }
                 }}
                 onFocus={() => setIsFocus(true)}
-                placeholder="Search"
-                className="h-auto w-full border border-gray-400 bg-transparent py-2 pl-12 pr-4 text-sm outline-none focus:bg-white"
+                placeholder="SEARCH"
+                className="h-auto w-full border border-gray-400 bg-transparent py-2 pl-12 pr-4 text-sm tracking-wider outline-none focus:bg-white"
             />
+            {qry && (
+                <XMarkIcon
+                    className="absolute right-2 top-1/2 size-5 -translate-y-1/2"
+                    onClick={(e) => {
+                        e.preventDefault();
+                        e.currentTarget.previousElementSibling.focus();
+                        setQry('');
+                    }}
+                />
+            )}
             <div className="absolute right-6 top-1/2 -translate-y-1/2 cursor-pointer text-lg">
-                {loading && (
-                    <i className="fa-duotone fa-spinner-third fa-spin [--fa-animation-duration:1s]"></i>
-                )}
+                {loading && <i className="fa-duotone fa-spinner-third fa-spin [--fa-animation-duration:1s]"></i>}
             </div>
             <div
                 className="absolute left-4 top-1/2 -translate-y-1/2 cursor-pointer text-lg"
-                onClick={() => navigate('/search/' + qry)}
+                onClick={() => qry && navigate('/search/' + qry)}
             >
-                <label
-                    className="cursor-pointer text-xl hover:opacity-70"
-                    htmlFor="search-short-form"
-                >
+                <label className="cursor-pointer text-xl hover:opacity-70" htmlFor="search-short-form">
                     <MagnifyingGlassIcon className="size-5" />
                 </label>
             </div>
@@ -80,42 +87,37 @@ const Search = () => {
                     e.preventDefault();
                 }}
             >
-                {searchedProducts.length == 0 && (
-                    <p className="text-center text-sm italic">
-                        Type something to search
-                    </p>
-                )}
+                {searchedProducts.length == 0 && <p className="text-center text-sm italic">Type something to search</p>}
                 <div className={`flex flex-col gap-8`}>
-                    {searchedProducts
-                        .slice(0, LIMIT_RESULT)
-                        .map((product, index) => {
-                            const item = {
-                                ...product,
-                                name: product?.name?.replace(
-                                    new RegExp(
-                                        `(${escapeRegExp(__query)})`,
-                                        'gi',
-                                    ), // Tìm từ khóa với biểu thức chính quy không phân biệt hoa thường
-                                    `<span class="text-[#d10202] font-bold">$1</span>`, // Thay thế với HTML làm nổi bật
-                                ),
-                            };
-                            return <SearchItem key={index} item={item} />;
-                        })}
+                    {searchedProducts.slice(0, LIMIT_RESULT).map((product, index) => {
+                        const item = {
+                            ...product,
+                            name: product?.name?.replace(
+                                new RegExp(`(${escapeRegExp(__query)})`, 'gi'), // Tìm từ khóa với biểu thức chính quy không phân biệt hoa thường
+                                `<span class="text-[#d10202] font-bold">$1</span>`, // Thay thế với HTML làm nổi bật
+                            ),
+                        };
+                        return (
+                            <Suspense fallback={null} key={index}>
+                                <SearchItem item={item} />
+                            </Suspense>
+                        );
+                    })}
                 </div>
                 {searchedProducts.length > LIMIT_RESULT && !loading && (
                     <div className="mt-4 text-center">
-                        <Link
-                            to={`/search/${__query}`}
-                            className="hover-text-effect text-sm font-bold uppercase"
-                        >
-                            View all <span>{searchedProducts.length}</span>{' '}
-                            results
+                        <Link to={`/search/${__query}`} className="hover-text-effect text-sm font-bold uppercase">
+                            View all <span>{searchedProducts.length}</span> results
                         </Link>
                     </div>
                 )}
             </div>
         </div>
     );
+};
+
+Search.propTypes = {
+    className: PropTypes.string,
 };
 
 export default Search;

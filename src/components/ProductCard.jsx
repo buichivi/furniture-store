@@ -94,7 +94,7 @@ const ProductCard = ({ product = {}, isDisplayGrid = true }) => {
             {
                 root: null,
                 rootMargin: '0px',
-                threshold: 0.5,
+                threshold: 0.3,
             },
         );
         observer.observe(productCardRef.current);
@@ -121,36 +121,72 @@ const ProductCard = ({ product = {}, isDisplayGrid = true }) => {
                 <>
                     <Link
                         to={`/product/${product?.slug}`}
-                        className={`group/product-img relative inline-block h-[350px] w-full shrink-0 overflow-hidden ${!isDisplayGrid && 'basis-[40%]'}`}
+                        className={`group/product-img relative inline-block h-[250px] w-full shrink-0 overflow-hidden lg:h-[350px] ${!isDisplayGrid && 'basis-[40%]'}`}
                     >
                         <img
                             src={product?.colors?.length && selectedColor && selectedColor?.images[0]}
                             alt=""
+                            loading="lazy"
                             className="h-full w-full object-contain object-center transition-all duration-500 group-hover/product-img:opacity-0"
                         />
                         <img
                             src={product?.colors?.length && selectedColor && selectedColor?.images[1]}
                             alt=""
+                            loading="lazy"
                             className="absolute left-0 top-0 -z-10 h-full w-full object-contain object-center transition-all duration-500 group-hover/product-img:scale-105"
                         />
-                        <div className="absolute left-0 top-0 z-10 h-full w-full p-4">
+                        <div className="absolute left-0 top-0 z-10 h-full w-full p-1 lg:p-4">
                             {product?.isNew && (
-                                <span className="mr-1 bg-[#D10202] px-3 py-[2px] text-xs uppercase text-white">
+                                <span className="mr-1 bg-[#D10202] px-2 py-[2px] text-[10px] uppercase text-white lg:px-3">
                                     New
                                 </span>
                             )}
                             {product?.discount > 0 && (
-                                <span className="mr-1 bg-[#000] px-3 py-[2px] text-xs uppercase text-white">Sale</span>
+                                <span className="mr-1 bg-[#000] px-2 py-[2px] text-[10px] uppercase text-white lg:px-3">
+                                    Sale
+                                </span>
                             )}
                             {!product?.isValid && (
-                                <span className="bg-[#919191] px-3 py-[2px] text-xs uppercase text-white">
+                                <span className="bg-[#919191] px-2 py-[2px] text-[10px] uppercase text-white lg:px-3">
                                     Sold out
                                 </span>
                             )}
                         </div>
+                        <div
+                            className="absolute right-[3%] top-[3%] z-20 rounded-full bg-white p-2 text-black transition-colors hover:bg-[#d10202] hover:text-white lg:hidden"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                if (!isFavor) handleAddToWishlist();
+                                else handleRemoveFromWishlist();
+                            }}
+                        >
+                            {!isFavor ? (
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className="size-5 cursor-pointer hover:opacity-70"
+                                    viewBox="0 0 256 256"
+                                >
+                                    <path
+                                        fill="currentColor"
+                                        d="M178 40c-20.65 0-38.73 8.88-50 23.89C116.73 48.88 98.65 40 78 40a62.07 62.07 0 0 0-62 62c0 70 103.79 126.66 108.21 129a8 8 0 0 0 7.58 0C136.21 228.66 240 172 240 102a62.07 62.07 0 0 0-62-62m-50 174.8c-18.26-10.64-96-59.11-96-112.8a46.06 46.06 0 0 1 46-46c19.45 0 35.78 10.36 42.6 27a8 8 0 0 0 14.8 0c6.82-16.67 23.15-27 42.6-27a46.06 46.06 0 0 1 46 46c0 53.61-77.76 102.15-96 112.8"
+                                    />
+                                </svg>
+                            ) : (
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className="size-5 cursor-pointer hover:opacity-70"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        fill="currentColor"
+                                        d="m12 21.35l-1.45-1.32C5.4 15.36 2 12.27 2 8.5C2 5.41 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.08C13.09 3.81 14.76 3 16.5 3C19.58 3 22 5.41 22 8.5c0 3.77-3.4 6.86-8.55 11.53z"
+                                    />
+                                </svg>
+                            )}
+                        </div>
                         <div className="absolute right-0 top-0 z-10 h-full w-full">
                             <div className="absolute left-0 top-0 z-20 flex h-full w-full flex-col">
-                                <div className="flex flex-1 flex-col items-end justify-end gap-4 p-4">
+                                <div className="flex flex-1 flex-col items-end justify-end gap-4 p-2 lg:p-4">
                                     <Tippy
                                         content="Quick view"
                                         placement="left"
@@ -158,7 +194,7 @@ const ProductCard = ({ product = {}, isDisplayGrid = true }) => {
                                         className="!bg-[#D10202] px-3 !text-sm [&.tippy-box[data-placement^=left]>.tippy-arrow:before]:border-l-[#D10202]"
                                     >
                                         <div
-                                            className="flex size-9 translate-y-3 cursor-pointer items-center justify-center rounded-full bg-white text-base opacity-0 transition-all delay-[50ms]  hover:bg-[#D10202] hover:text-white group-hover/product:translate-y-0 group-hover/product:opacity-100"
+                                            className="hidden size-9 translate-y-3 cursor-pointer items-center justify-center rounded-full bg-white text-base opacity-0 transition-all delay-[50ms] hover:bg-[#D10202]  hover:text-white group-hover/product:translate-y-0 group-hover/product:opacity-100 lg:flex"
                                             onClick={(e) => {
                                                 e.preventDefault();
                                                 setProduct(product);
@@ -177,7 +213,7 @@ const ProductCard = ({ product = {}, isDisplayGrid = true }) => {
                                         hideOnClick={false}
                                     >
                                         <div
-                                            className="flex size-9 translate-y-3 cursor-pointer items-center justify-center rounded-full bg-white text-base opacity-0 transition-all delay-[100ms]  hover:bg-[#D10202] hover:text-white group-hover/product:translate-y-0 group-hover/product:opacity-100"
+                                            className="hidden size-9 translate-y-3 cursor-pointer items-center justify-center rounded-full bg-white text-base opacity-0 transition-all delay-[100ms] hover:bg-[#D10202]  hover:text-white group-hover/product:translate-y-0 group-hover/product:opacity-100 lg:flex"
                                             onClick={(e) => {
                                                 const existedProd = compareProducts.find(
                                                     (prod) => prod?._id == product?._id,
@@ -200,7 +236,7 @@ const ProductCard = ({ product = {}, isDisplayGrid = true }) => {
                                         hideOnClick={false}
                                     >
                                         <div
-                                            className="flex size-9 translate-y-3 cursor-pointer items-center justify-center rounded-full bg-white text-base opacity-0 transition-all delay-[150ms] hover:bg-[#D10202] hover:text-white group-hover/product:translate-y-0 group-hover/product:opacity-100"
+                                            className="hidden size-9 translate-y-3 cursor-pointer items-center justify-center rounded-full bg-white text-base opacity-0 transition-all delay-[150ms] hover:bg-[#D10202] hover:text-white group-hover/product:translate-y-0 group-hover/product:opacity-100 lg:flex"
                                             onClick={(e) => {
                                                 e.preventDefault();
                                                 if (!isFavor) handleAddToWishlist();
@@ -220,14 +256,14 @@ const ProductCard = ({ product = {}, isDisplayGrid = true }) => {
                                         onClick={() => {
                                             navigate(`/product/${product?.slug}`);
                                         }}
-                                        className={`flex w-full translate-y-3 items-center justify-center gap-2 bg-black py-3 text-center text-sm font-semibold uppercase text-white opacity-0 transition-all ease-out hover:bg-[#D10202] hover:text-white group-hover/product:translate-y-0 group-hover/product:opacity-100 ${!isDisplayGrid && 'hidden'}`}
+                                        className={`flex w-full items-center justify-center gap-2 bg-black py-2 text-center text-xs font-semibold uppercase text-white opacity-100 transition-all ease-out hover:bg-[#D10202] hover:text-white lg:translate-y-3 lg:py-3 lg:text-sm lg:opacity-0 lg:group-hover/product:translate-y-0 lg:group-hover/product:opacity-100 ${!isDisplayGrid && 'hidden'}`}
                                     >
                                         <span>Select options</span>
                                     </span>
                                 )}
                                 {product?.colors?.length == 1 && product?.isValid && (
                                     <div
-                                        className={`flex w-full translate-y-3 items-center justify-center gap-2 bg-black py-3 text-center text-sm font-semibold uppercase text-white opacity-0 transition-all ease-out hover:bg-[#D10202] hover:text-white group-hover/product:translate-y-0 group-hover/product:opacity-100 ${!isDisplayGrid && 'hidden'}`}
+                                        className={`flex w-full items-center justify-center gap-2 bg-black py-2 text-center text-xs font-semibold uppercase text-white opacity-100 transition-all ease-out hover:bg-[#D10202] hover:text-white lg:translate-y-3 lg:py-3 lg:text-sm lg:opacity-0 lg:group-hover/product:translate-y-0 lg:group-hover/product:opacity-100 ${!isDisplayGrid && 'hidden'}`}
                                         onClick={(e) => {
                                             e.preventDefault();
                                             handleAddToCart(product?._id, selectedColor?._id, 1);
@@ -241,7 +277,7 @@ const ProductCard = ({ product = {}, isDisplayGrid = true }) => {
                                         onClick={() => {
                                             navigate(`/product/${product?.slug}`);
                                         }}
-                                        className={`flex w-full translate-y-3 items-center justify-center gap-2 bg-black py-3 text-center text-sm font-semibold uppercase text-white opacity-0 transition-all ease-out hover:bg-[#D10202] hover:text-white group-hover/product:translate-y-0 group-hover/product:opacity-100 ${!isDisplayGrid && 'hidden'}`}
+                                        className={`flex w-full items-center justify-center gap-2 bg-black py-2 text-center text-xs font-semibold uppercase text-white opacity-100 transition-all ease-out hover:bg-[#D10202] hover:text-white lg:translate-y-3 lg:py-3 lg:text-sm lg:opacity-0 lg:group-hover/product:translate-y-0 lg:group-hover/product:opacity-100 ${!isDisplayGrid && 'hidden'}`}
                                     >
                                         <span>Read more</span>
                                     </span>
@@ -289,12 +325,12 @@ const ProductCard = ({ product = {}, isDisplayGrid = true }) => {
                         </div>
                         <Link
                             to={`/product/${product?.slug}`}
-                            className={`mb-3 line-clamp-2 cursor-pointer text-base tracking-wide transition-colors hover:text-[#D10202] ${!isDisplayGrid && '!text-xl font-normal tracking-wider'}`}
+                            className={`mb-3 line-clamp-2 cursor-pointer text-[15px] tracking-wide transition-colors hover:text-[#D10202] lg:text-base ${!isDisplayGrid && '!text-xl font-normal tracking-wider'}`}
                         >
                             {product?.name}
                         </Link>
                         <div
-                            className={`flex items-center gap-4 text-base tracking-wide ${!isDisplayGrid && 'text-xl'}`}
+                            className={`flex items-center gap-4 text-sm tracking-wide lg:text-base ${!isDisplayGrid && 'text-xl'}`}
                         >
                             {product?.discount > 0 && (
                                 <span className="font-semibold">

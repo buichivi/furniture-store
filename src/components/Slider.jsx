@@ -24,7 +24,7 @@ const Slider = () => {
                         el: '.swiper-pagination',
                         clickable: true,
                         renderBullet: (_, className) => {
-                            return `<span class="bullet ${className}"></span>`;
+                            return `<span class="bullet !size-3 ${className}"></span>`;
                         },
                     }}
                     modules={[Pagination, EffectFade, Autoplay]}
@@ -42,31 +42,38 @@ const Slider = () => {
                             <SwiperSlide key={index} className="">
                                 {({ isActive }) => (
                                     <div
-                                        className={`relative flex h-full w-full cursor-pointer items-center transition-all ${
+                                        className={`relative flex h-full w-full cursor-pointer flex-col items-center transition-all ${
                                             !isActive && 'opacity-0'
                                         }`}
                                     >
                                         <div
-                                            className={`absolute left-0 top-[35%] w-full [&>*]:transition-all [&>*]:duration-700 ${
+                                            className={`absolute left-1/2 top-[20%] w-full -translate-x-1/2 text-center lg:left-0 lg:top-[35%] lg:translate-x-0 lg:text-left [&>*]:transition-all [&>*]:duration-700 ${
                                                 isActive
                                                     ? '[&>*]:translate-x-0 [&>*]:opacity-100'
-                                                    : '[&>*]:opacity-1 [&>*]:-translate-x-full'
+                                                    : '[&>*]:-translate-x-full [&>*]:opacity-0'
                                             }`}
                                         >
-                                            <h4 className="mb-4 font-inter uppercase delay-100">{title}</h4>
-                                            <h2 className="w-[40%] text-[48px] font-medium leading-normal tracking-wider delay-300">
+                                            <h4 className="mb-4 font-inter text-sm uppercase delay-100 lg:text-base">
+                                                {title}
+                                            </h4>
+                                            <h2 className="w-full text-3xl font-medium leading-normal tracking-wider delay-300 lg:w-[40%] lg:text-[48px]">
                                                 {heading}
                                             </h2>
-                                            <p className="text-lg font-normal delay-500">{description}</p>
-                                            <Link to={link} className="hover-text-effect mt-10 delay-700">
+                                            <p className="text-sm font-normal delay-500 lg:text-lg">{description}</p>
+                                            <Link
+                                                to={link}
+                                                className="hover-text-effect mt-4 delay-300 lg:mt-10 lg:delay-700"
+                                            >
                                                 SHOP NOW
                                             </Link>
                                         </div>
                                         <img
                                             src={image}
                                             alt=""
-                                            className={`slide-img absolute right-0 top-[25%] h-auto w-1/2 transition-all duration-1000 ${
-                                                isActive ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'
+                                            className={`slide-img absolute right-1/2 top-[65%] h-auto w-1/2 translate-x-1/2 transition-all duration-1000 lg:right-0 lg:top-[25%] lg:translate-x-0 lg:translate-y-0 ${
+                                                isActive
+                                                    ? 'translate-y-0 opacity-100 lg:translate-x-0'
+                                                    : 'translate-y-full opacity-0 lg:translate-x-full'
                                             }`}
                                         />
                                     </div>
@@ -74,7 +81,7 @@ const Slider = () => {
                             </SwiperSlide>
                         );
                     })}
-                    <div className="swiper-pagination absolute bottom-0 left-0 m-0 !w-auto"></div>
+                    <div className="swiper-pagination absolute !left-1/2 bottom-0 m-0 !w-auto !-translate-x-1/2 lg:left-0 lg:translate-x-0"></div>
                 </Swiper>
             )}
         </React.Fragment>

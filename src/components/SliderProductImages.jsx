@@ -1,9 +1,10 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import Tippy from '@tippyjs/react';
 import '@google/model-viewer';
 import { useLocation } from 'react-router-dom';
 import LightGallery from 'lightgallery/react';
+import QRCode from 'react-qr-code';
 
 // import styles
 import 'lightgallery/css/lightgallery.css';
@@ -26,6 +27,8 @@ const SliderProductImages = ({
     const imgThumbs = useRef();
     const [selectedImg, setSelectedImg] = useState(null);
     const [isView3DModel, setIsView3DModel] = useState(false);
+    const [isOpenQRCode, setIsOpenQRCode] = useState(false);
+    const viewInRoomBtn = useRef(null);
     const modelViewerRef = useRef(null);
     const location = useLocation();
 
@@ -54,23 +57,30 @@ const SliderProductImages = ({
 
     useEffect(() => {
         setIsView3DModel(false);
-    }, [location]);
+    }, [location, model3D]);
 
     return (
         <div className="size-full border-b">
-            <div className="flex h-full w-full gap-2">
+            <div className="flex h-full w-full flex-col-reverse gap-2 lg:flex-row">
                 <div
-                    className="flex shrink-0 flex-col gap-2 overflow-y-auto transition-all duration-1000 [&::-webkit-scrollbar]:hidden"
+                    className="flex shrink-0 flex-row gap-0 overflow-x-auto overflow-y-hidden transition-all duration-1000 lg:flex-col lg:gap-2 lg:overflow-y-auto lg:overflow-x-hidden [&::-webkit-scrollbar]:hidden"
                     style={{
                         flexBasis: thumbWidth,
                     }}
                 >
+                    {model3D && (
+                        <img
+                            src={'https://placehold.co/600x600?text=3D'}
+                            className={`mx-1 size-[25%] cursor-pointer object-contain transition-opacity hover:opacity-50 lg:mx-0 lg:size-auto`}
+                            onClick={() => setIsView3DModel(true)}
+                        />
+                    )}
                     {imageGallery.map((img_url, index) => {
                         return (
                             <img
                                 key={index}
                                 src={img_url}
-                                className={`cursor-pointer object-contain transition-opacity hover:opacity-50 ${selectedImg == img_url && 'border opacity-50'}`}
+                                className={`mx-1 size-[25%] cursor-pointer object-contain transition-opacity hover:opacity-50 lg:mx-0 lg:size-auto ${selectedImg == img_url && 'border opacity-50'}`}
                                 onClick={() => {
                                     setSelectedImg(img_url);
                                     setIsView3DModel(false);
@@ -81,8 +91,8 @@ const SliderProductImages = ({
                         );
                     })}
                 </div>
-                <div className="relative h-full flex-1">
-                    <div className="absolute left-[3%] top-[3%] z-10 [&_span]:px-3 [&_span]:py-1 [&_span]:text-xs [&_span]:uppercase [&_span]:text-white">
+                <div className="relative h-full max-h-screen lg:flex-1">
+                    <div className="absolute left-[3%] top-[3%] z-10 [&_span]:px-3 [&_span]:py-1 [&_span]:text-[10px] [&_span]:uppercase [&_span]:text-white lg:[&_span]:text-xs">
                         {isNew && <span className="mr-1 bg-[#d10202]">New</span>}
                         {discount > 0 && isValid && <span className="mr-1 bg-black">Sale</span>}
                         {!isValid && <span className="bg-[#919191]">Sold out</span>}
@@ -101,10 +111,10 @@ const SliderProductImages = ({
                             </span>
                         </Tippy>
                     )}
-                    {model3D && (
+                    {/* {model3D && (
                         <Tippy content="View 3D model" animation="shift-toward">
                             <button
-                                className="absolute right-[12%] top-[3%] z-10 flex size-10 items-center justify-center gap-2 rounded-full text-sm hover:bg-[#d10202] hover:text-white"
+                                className="absolute right-[15%] top-[3%] z-10 flex size-10 items-center justify-center gap-2 rounded-full text-sm hover:bg-[#d10202] hover:text-white"
                                 onClick={() => setIsView3DModel(!isView3DModel)}
                             >
                                 <svg
@@ -122,33 +132,45 @@ const SliderProductImages = ({
                                 </svg>
                             </button>
                         </Tippy>
-                    )}
+                    )} */}
                     <div className="relative h-full w-full overflow-hidden">
-                        {!isView3DModel ? (
-                            <LightGallery
-                                plugins={[lgZoom, lgThumbnail]}
-                                mode="lg-slide"
-                                speed={500}
-                                galleryId={'nature'}
-                                elementClassNames={
-                                    'relative left-0 top-0 flex h-full w-auto pb-4 transition-all duration-500 ease-[cubic-bezier(.795,-.035,0,1)]'
-                                }
-                                onInit={({ instance }) => {
-                                    imgThumbs.current = instance.el;
-                                }}
-                            >
-                                {imageGallery.map((img_url, index) => {
+                        {model3D && (
+                            <Tippy content="View In Room" animation="shift-toward">
+                                <button
+                                    className="absolute bottom-[10%] left-1/2 z-10 flex -translate-x-1/2 items-center gap-2 rounded-md border border-gray-300 bg-white p-2 shadow-md"
+                                    onClick={() => {
+                                        if (window.innerWidth <= 576) viewInRoomBtn.current.click();
+                                        else setIsOpenQRCode(true);
+                                    }}
+                                >
+                                    <ViewInARIcon className="size-6" />
+                                    <span className="text-xs uppercase tracking-wider ">View in room</span>
+                                </button>
+                            </Tippy>
+                        )}
+                        <LightGallery
+                            plugins={[lgZoom, lgThumbnail]}
+                            mode="lg-slide"
+                            speed={500}
+                            galleryId={'nature'}
+                            elementClassNames={`relative left-0 top-0 ${isView3DModel ? 'hidden' : 'flex'} h-full w-auto pb-4 transition-all duration-500 ease-[cubic-bezier(.795,-.035,0,1)]`}
+                            onInit={({ instance }) => {
+                                imgThumbs.current = instance.el;
+                            }}
+                        >
+                            {imageGallery.length > 0 &&
+                                imageGallery.map((img_url, index) => {
                                     return (
                                         <a
-                                            data-src={img_url}
+                                            href={img_url}
                                             key={img_url + '-' + index}
                                             target="_blank"
                                             rel="noreferrer"
-                                            className="gallery__item relative top-0 inline-block h-full w-full flex-auto shrink-0 px-2"
+                                            className="gallery__item relative top-0 inline-block h-full w-full flex-auto shrink-0 overflow-hidden px-2"
                                         >
                                             <img
                                                 src={img_url}
-                                                className="size-full cursor-zoom-in object-cover object-center transition-transform duration-500"
+                                                className="size-full cursor-zoom-in object-contain object-center transition-transform duration-500 lg:object-cover"
                                                 onMouseMove={(e) => {
                                                     const rect = e.target.getBoundingClientRect();
                                                     const x = e.clientX - rect.left;
@@ -165,39 +187,52 @@ const SliderProductImages = ({
                                         </a>
                                     );
                                 })}
-                            </LightGallery>
-                        ) : (
-                            <React.Fragment>
-                                <model-viewer
-                                    ref={modelViewerRef}
-                                    src={model3D}
-                                    ar
-                                    shadow-intensity="1"
-                                    camera-controls
-                                    auto-rotate
-                                    touch-action="pan-y"
-                                    style={{ width: '100%', height: '100%' }}
+                        </LightGallery>
+                        <div className={`${isView3DModel ? 'block' : 'hidden'}`}>
+                            <model-viewer
+                                ref={modelViewerRef}
+                                src={model3D}
+                                ar
+                                shadow-intensity="1"
+                                camera-controls
+                                auto-rotate
+                                touch-action="pan-y"
+                                style={{ width: '100%', height: '100%', minHeight: '400px' }}
+                            >
+                                <button ref={viewInRoomBtn} slot="ar-button"></button>
+                                <div
+                                    slot="progress-bar"
+                                    id="progress-bar"
+                                    className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
                                 >
-                                    <Tippy content="View In Room" animation="shift-toward">
-                                        <button
-                                            slot="ar-button"
-                                            className="absolute bottom-[10%] left-1/2 z-10 flex -translate-x-1/2 items-center gap-2 rounded-md border border-gray-300 bg-white p-2 shadow-md"
-                                        >
-                                            <ViewInARIcon className="size-6" />
-                                            <span className="text-xs uppercase tracking-wider ">View in room</span>
-                                        </button>
-                                    </Tippy>
-                                    <div
-                                        slot="progress-bar"
-                                        id="progress-bar"
-                                        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
-                                    >
-                                        <LoadingIcon />
-                                    </div>
-                                </model-viewer>
-                            </React.Fragment>
-                        )}
+                                    <LoadingIcon />
+                                </div>
+                            </model-viewer>
+                        </div>
                     </div>
+                </div>
+            </div>
+            <input
+                type="checkbox"
+                checked={isOpenQRCode}
+                onChange={(e) => setIsOpenQRCode(e.currentTarget.checked)}
+                className="hidden [&:checked+div>div:last-child]:scale-100 [&:checked+div]:pointer-events-auto [&:checked+div]:opacity-100"
+            />
+            <div className="pointer-events-none fixed left-0 top-0 z-50 flex size-full items-center justify-center opacity-0 transition-all">
+                <div
+                    className="absolute left-0 top-0 -z-[1] size-full bg-[#000000a6]"
+                    onClick={() => setIsOpenQRCode(false)}
+                ></div>
+                <div className="flex size-auto max-w-[25%] scale-110 flex-col items-center justify-center bg-white p-5 text-center transition-all duration-500">
+                    <h3 className="font-lora text-xl font-bold">How to View in Augmented Reality</h3>
+                    <h4 className="mb-4 text-sm tracking-wider">
+                        Scan this QR code with your phone to view the object in your space. The experience launches
+                        directly from your browser - no app required!
+                    </h4>
+                    <QRCode size={500} value={window.location.href} className="size-52" viewBox={`0 0 256 256`} />
+                    <p className="mt-4 text-xs tracking-widest opacity-90">
+                        iOS 13+, iPadOS 13+ or Android with ARCore 1.9+ required
+                    </p>
                 </div>
             </div>
         </div>

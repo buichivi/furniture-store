@@ -12,15 +12,9 @@ const StepProgress = () => {
             setCurrentStep(0);
         } else if (location.pathname == '/checkout' && location.hash == '') {
             setCurrentStep(1);
-        } else if (
-            location.pathname == '/checkout' &&
-            location.hash == '#success'
-        ) {
+        } else if (location.pathname == '/checkout' && location.hash == '#success') {
             setCurrentStep(3);
-        } else if (
-            location.pathname == '/checkout' &&
-            location.hash == '#fail'
-        ) {
+        } else if (location.pathname == '/checkout' && location.hash == '#fail') {
             setCurrentStep(3);
         }
     }, [location]);
@@ -37,7 +31,7 @@ const StepProgress = () => {
     }, [currentStep]);
 
     return (
-        <div className="mx-auto flex w-1/2 items-center justify-center gap-1 pb-32 pt-4">
+        <div className="mx-auto flex w-full items-center justify-center gap-1 px-8 pb-20 pt-4 lg:w-1/2 lg:px-0 lg:pb-32">
             {steps.map((step, index) => {
                 return (
                     <React.Fragment key={index}>
@@ -60,7 +54,7 @@ const StepProgress = () => {
                                 )}
                             </span>
                             <span
-                                className={`absolute left-1/2 top-[110%] w-[120px] -translate-x-1/2 text-sm opacity-30 ${step && '!opacity-100'}`}
+                                className={`absolute left-1/2 top-[110%] w-[120px] -translate-x-1/2 text-xs opacity-30 lg:text-sm ${step && '!opacity-100'}`}
                             >
                                 {index === 0 && 'Shopping cart'}
                                 {index === 1 && 'Checkout'}

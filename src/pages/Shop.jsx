@@ -1,15 +1,16 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Filter, Navigation, ProductCard, SliderProducts } from '../components';
+import React, { lazy, useEffect, useMemo, useRef, useState } from 'react';
+import ProductCard from '../components/ProductCard';
+import Navigation from '../components/Navigation';
 import { Link, useParams } from 'react-router-dom';
 import useDataStore from '../store/dataStore';
-import {
-    ChevronDownIcon,
-    PlusIcon,
-    XMarkIcon,
-} from '@heroicons/react/24/outline';
+import { ChevronDownIcon, PlusIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import apiRequest from '../utils/apiRequest';
 import Tippy from '@tippyjs/react';
 import PropTypes from 'prop-types';
+import { Suspense } from 'react';
+
+const SliderProducts = lazy(() => import('../components/SliderProducts'));
+const Filter = lazy(() => import('../components/Filter'));
 
 const FILTER_OPEN_STATE = [
     { name: 'type', open: true },
@@ -82,10 +83,7 @@ const updateParentSelection = (categories) => {
     return categories.map((category) => {
         if (category.child.length > 0) {
             category.child = updateParentSelection(category.child);
-            const allChildrenSelected = category.child.every(
-                (child) => child.selected,
-            );
-            console.log(allChildrenSelected);
+            const allChildrenSelected = category.child.every((child) => child.selected);
             category.selected = allChildrenSelected;
         }
         return category;
@@ -101,8 +99,7 @@ const handleCategorySelect = (id, selected, categories) => {
 const Shop = () => {
     const { query, tag, brand, categorySlug } = useParams();
     const [isDisplayGrid, setIsDisplayGrid] = useState(true);
-    const { products, categories, categoryTree, setCategoryTree } =
-        useDataStore();
+    const { products, categories, categoryTree, setCategoryTree } = useDataStore();
     const [filters, setFilters] = useState({
         typeFilters: [],
         colorsFilters: [],
@@ -114,7 +111,6 @@ const Shop = () => {
     const [key, setKey] = useState(0);
     const [openState, setOpenState] = useState(FILTER_OPEN_STATE);
     const [sort, setSort] = useState(SORT_OPTIONS[0]);
-    const [currentPage, setCurrentPage] = useState(1);
     const [limit, setLimit] = useState(PAGE_SIZE);
     const [isLoadmore, setIsLoadmore] = useState(false);
 
@@ -127,11 +123,7 @@ const Shop = () => {
         if (query) {
             apiRequest
                 .get('/products/search/' + query)
-                .then((res) =>
-                    setSearchedProducts(
-                        res.data?.products?.filter((prod) => prod.active),
-                    ),
-                )
+                .then((res) => setSearchedProducts(res.data?.products?.filter((prod) => prod.active)))
                 .catch((err) => console.log(err));
         }
     }, [query]);
@@ -142,11 +134,7 @@ const Shop = () => {
         if (tag) {
             apiRequest
                 .get('/products/tag/' + tag)
-                .then((res) =>
-                    setProductTags(
-                        res.data?.products?.filter((prod) => prod.active),
-                    ),
-                )
+                .then((res) => setProductTags(res.data?.products?.filter((prod) => prod.active)))
                 .catch((err) => console.log(err));
         }
     }, [tag]);
@@ -157,33 +145,26 @@ const Shop = () => {
         if (brand) {
             apiRequest
                 .get('/products/brand/' + brand)
-                .then((res) =>
-                    setProductBrand(
-                        res.data?.products?.filter((prod) => prod.active),
-                    ),
-                )
+                .then((res) => setProductBrand(res.data?.products?.filter((prod) => prod.active)))
                 .catch((err) => console.log(err));
         }
     }, [brand]);
 
     useEffect(() => {
-        setCurrentPage(1);
-    }, [filters]);
-
-    useEffect(() => {
         const category = categories.find((cate) => cate.slug == categorySlug);
         if (category) {
-            setCategoryTree(
-                handleCategorySelect(category._id, true, categoryTree),
-            );
+            setCategoryTree(handleCategorySelect(category._id, true, categoryTree));
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [categorySlug, categories]);
 
+    const currentCategory = useMemo(() => {
+        return categoryTree.find((cate) => cate.slug == categorySlug);
+    }, [categorySlug, categoryTree]);
+
     const filteredProducts = useMemo(() => {
         let listProducts = [];
-        const { typeFilters, colorsFilters, priceRange, materialFilters } =
-            filters;
+        const { typeFilters, colorsFilters, priceRange, materialFilters } = filters;
         if (query) listProducts = searchedProducts;
         else if (tag) listProducts = productTags;
         else if (brand) listProducts = productBrands;
@@ -193,32 +174,18 @@ const Shop = () => {
             .filter((prod) => {
                 const typeMatch =
                     getSelectedCategories(typeFilters).length == 0 ||
-                    getSelectedCategories(typeFilters).find(
-                        (type) => type._id == prod.category._id,
-                    );
+                    getSelectedCategories(typeFilters).find((type) => type._id == prod.category._id);
                 const colorMatch =
                     colorsFilters.filter((color) => color.selected) == 0 ||
                     colorsFilters
                         .filter((color) => color.selected)
-                        .some((color) =>
-                            prod.colors.some((cl) => cl?.name == color?.name),
-                        );
-                const priceMatch =
-                    prod.salePrice >= priceRange[0] &&
-                    prod.salePrice <= priceRange[1];
+                        .some((color) => prod.colors.some((cl) => cl?.name == color?.name));
+                const priceMatch = prod.salePrice >= priceRange[0] && prod.salePrice <= priceRange[1];
                 const materialMatch =
                     materialFilters.filter((mt) => mt.selected) == 0 ||
-                    materialFilters
-                        .filter((mt) => mt.selected)
-                        .find((mt) => mt.name == prod.material);
+                    materialFilters.filter((mt) => mt.selected).find((mt) => mt.name == prod.material);
                 const onSaleMatch = !onSaleOnly || prod.discount;
-                return (
-                    typeMatch &&
-                    colorMatch &&
-                    priceMatch &&
-                    materialMatch &&
-                    onSaleMatch
-                );
+                return typeMatch && colorMatch && priceMatch && materialMatch && onSaleMatch;
             })
             .sort((a, b) => {
                 if (sort.option == 'latest') {
@@ -229,44 +196,19 @@ const Shop = () => {
                     return b.salePrice - a.salePrice;
                 }
             });
-    }, [
-        products,
-        filters,
-        onSaleOnly,
-        sort,
-        query,
-        tag,
-        brand,
-        searchedProducts,
-        productTags,
-        productBrands,
-        location.pathname,
-    ]);
+    }, [products, filters, onSaleOnly, sort, query, tag, brand, searchedProducts, productTags, productBrands]);
 
     const isFiltering = useMemo(() => {
         return (
-            filters?.colorsFilters?.filter((color) => color.selected).length >
-                0 ||
+            filters?.colorsFilters?.filter((color) => color.selected).length > 0 ||
             filters?.materialFilters?.filter((mt) => mt.selected).length > 0 ||
             (filters?.priceRange?.length > 0 && filters?.priceRange[0] > 0) ||
             (filters?.priceRange?.length > 0 && filters?.priceRange[1] < 2000)
         );
     }, [filters]);
 
-    const currentData = useMemo(() => {
-        const firstPageIndex = (currentPage - 1) * PAGE_SIZE;
-        const lastPageIndex = firstPageIndex + PAGE_SIZE;
-        return filteredProducts.slice(firstPageIndex, lastPageIndex);
-    }, [currentPage, filteredProducts]);
-
-    const currentCategory = useMemo(() => {
-        return categoryTree.find((cate) => cate.slug == categorySlug);
-    }, [categorySlug, categoryTree]);
-
-    console.log(filteredProducts);
-
     return (
-        <div className="mt-content-top border-t">
+        <div className="mt-16 lg:mt-content-top">
             <div className="relative">
                 {!query ? (
                     <Navigation
@@ -274,31 +216,23 @@ const Shop = () => {
                         image="https://plus.unsplash.com/premium_photo-1683140425081-14c44089acd0?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                     />
                 ) : (
-                    <Navigation
-                        paths={`/search/Search results for "${query}"`}
-                    />
+                    <Navigation paths={`/search/Search results for "${query}"`} />
                 )}
             </div>
             <div className="container mx-auto h-fit border-t px-5 py-16">
                 {!currentCategory?._id ? (
                     <React.Fragment>
-                        <div className="flex">
+                        <div className="sticky top-20 z-20 flex lg:static">
                             <div
-                                className={`shrink-0 transition-all duration-500 ${!isCloseFilter ? 'w-1/4' : 'w-[80px]'}`}
+                                className={`shrink-0 transition-all duration-500 ${!isCloseFilter ? 'lg:w-1/4' : 'lg:w-[80px]'}`}
                             >
                                 <Tippy
-                                    content={
-                                        isCloseFilter
-                                            ? 'Open filters'
-                                            : 'Close filters'
-                                    }
+                                    content={isCloseFilter ? 'Open filters' : 'Close filters'}
                                     animation="shift-toward"
                                 >
                                     <div
-                                        className="flex w-fit cursor-pointer items-center gap-2 bg-gray-200 p-2"
-                                        onClick={() =>
-                                            setIsCloseFilter(!isCloseFilter)
-                                        }
+                                        className="flex h-9 w-fit cursor-pointer items-center gap-2 bg-gray-200 p-2"
+                                        onClick={() => setIsCloseFilter(!isCloseFilter)}
                                     >
                                         <span>Filter</span>
                                         <PlusIcon
@@ -307,46 +241,32 @@ const Shop = () => {
                                     </div>
                                 </Tippy>
                             </div>
-                            <div
-                                className={`ml-8 flex flex-1 flex-col transition-all duration-500`}
-                            >
+                            <div className={`flex flex-1 flex-col transition-all duration-500 lg:ml-8`}>
                                 <div className="mb-5 flex max-h-10 flex-1 items-center justify-between">
-                                    <div className="flex items-center gap-4">
+                                    <div className="hidden items-center gap-4 lg:flex">
                                         <span
                                             className={`cursor-pointer text-2xl ${!isDisplayGrid && 'text-[#D10202]'} transition-colors hover:text-[#D10202]`}
-                                            onClick={() =>
-                                                setIsDisplayGrid(false)
-                                            }
+                                            onClick={() => setIsDisplayGrid(false)}
                                         >
                                             <i className="fa-light fa-diagram-cells"></i>
                                         </span>
                                         <span
                                             className={`cursor-pointer text-2xl ${isDisplayGrid && 'text-[#D10202]'} transition-colors hover:text-[#D10202]`}
-                                            onClick={() =>
-                                                setIsDisplayGrid(true)
-                                            }
+                                            onClick={() => setIsDisplayGrid(true)}
                                         >
                                             <i className="fa-light fa-grid-2"></i>
                                         </span>
                                     </div>
-                                    <div className="flex items-center gap-6">
-                                        <label className="flex cursor-pointer select-none items-center gap-4 bg-[#EFEFEF] px-4 py-2">
+                                    <div className="flex flex-1 items-center justify-end gap-6 border-l border-l-white lg:border-none">
+                                        <label className="hidden cursor-pointer select-none items-center gap-4 bg-gray-200 px-4 py-2 lg:flex">
                                             <input
                                                 type="checkbox"
                                                 checked={onSaleOnly}
-                                                onChange={(e) =>
-                                                    setOnSaleOnly(
-                                                        e.currentTarget.checked,
-                                                    )
-                                                }
+                                                onChange={(e) => setOnSaleOnly(e.currentTarget.checked)}
                                                 className="hidden [&:checked+span]:bg-black [&:checked+span_path]:[stroke-dashoffset:0] [&:checked+span_path]:[stroke:#fff]"
                                             />
                                             <span className="inline-block size-5 bg-transparent ring-1 ring-[#b1b1b1] transition-colors ">
-                                                <svg
-                                                    className=""
-                                                    viewBox="0 0 100 100"
-                                                    fill="none"
-                                                >
+                                                <svg className="" viewBox="0 0 100 100" fill="none">
                                                     <path
                                                         d="m 20 55 l 20 20 l 41 -50"
                                                         stroke="#000"
@@ -363,11 +283,10 @@ const Shop = () => {
                                                 Show only products on sale
                                             </span>
                                         </label>
-
-                                        <div className="relative">
+                                        <div className="relative flex-1 lg:flex-none">
                                             <label
                                                 htmlFor="sort"
-                                                className="flex min-w-60 cursor-pointer items-center justify-between bg-[#EFEFEF] px-4 py-2 text-sm tracking-wide"
+                                                className="flex min-w-60 cursor-pointer items-center justify-between bg-gray-200 px-4 py-2 text-sm tracking-wide"
                                             >
                                                 <span>{sort.name}</span>
                                                 <ChevronDownIcon className="size-4 transition-all duration-500" />
@@ -377,128 +296,98 @@ const Shop = () => {
                                                 className="hidden [&:checked+div]:pointer-events-auto [&:checked+div]:translate-y-0 [&:checked+div]:opacity-100"
                                                 id="sort"
                                                 onChange={(e) => {
-                                                    const sortIcon =
-                                                        e.currentTarget
-                                                            .previousElementSibling
-                                                            .children[1];
-                                                    if (e.currentTarget.checked)
-                                                        sortIcon.classList.add(
-                                                            'rotate-180',
-                                                        );
-                                                    else
-                                                        sortIcon.classList.remove(
-                                                            'rotate-180',
-                                                        );
+                                                    const sortIcon = e.currentTarget.previousElementSibling.children[1];
+                                                    if (e.currentTarget.checked) sortIcon.classList.add('rotate-180');
+                                                    else sortIcon.classList.remove('rotate-180');
                                                 }}
                                             />
                                             <div className="pointer-events-none absolute left-0 top-[115%] z-20 flex w-full translate-y-10 flex-col gap-2 border border-gray-100 bg-white px-4 py-2 opacity-0 shadow-lg transition-all duration-500 [&>*:hover]:cursor-pointer [&>*:hover]:opacity-50 [&>*]:text-sm [&>*]:transition-all">
-                                                {SORT_OPTIONS.map(
-                                                    (op, index) => {
-                                                        return (
-                                                            <span
-                                                                key={index}
-                                                                onClick={(
-                                                                    e,
-                                                                ) => {
-                                                                    const input =
-                                                                        e
-                                                                            .currentTarget
-                                                                            .parentElement
-                                                                            .previousElementSibling;
-                                                                    input.checked =
-                                                                        !input.checked;
-                                                                    setSort(op);
-                                                                }}
-                                                                className="py-1"
-                                                            >
-                                                                {op.name}
-                                                            </span>
-                                                        );
-                                                    },
-                                                )}
+                                                {SORT_OPTIONS.map((op, index) => {
+                                                    return (
+                                                        <span
+                                                            key={index}
+                                                            onClick={(e) => {
+                                                                const input =
+                                                                    e.currentTarget.parentElement
+                                                                        .previousElementSibling;
+                                                                input.checked = !input.checked;
+                                                                setSort(op);
+                                                            }}
+                                                            className="py-1"
+                                                        >
+                                                            {op.name}
+                                                        </span>
+                                                    );
+                                                })}
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div
-                            className="flex h-fit overflow-hidden"
-                            ref={contentRef}
-                        >
+                        <div className="flex h-fit overflow-hidden" ref={contentRef}>
                             <input
                                 type="checkbox"
                                 id="toggle-filter"
                                 checked={isCloseFilter}
-                                className="hidden [&:checked+div+div]:basis-full [&:checked+div+div_.shop-content]:grid-cols-4 [&:checked+div]:mr-0 [&:checked+div]:w-0"
+                                className="hidden lg:[&:checked+div+div_.shop-content]:grid-cols-4 [&:checked+div>div:last-child]:translate-x-full lg:[&:checked+div>div:last-child]:-translate-x-full [&:checked+div]:pointer-events-none [&:checked+div]:opacity-0 lg:[&:checked+div]:mr-0 lg:[&:checked+div]:w-0 lg:[&:checked+div]:opacity-0"
                             />
-                            <div className="mr-8 w-1/4 shrink-0 overflow-hidden transition-all duration-500">
+                            <div className="pointer-events-auto fixed left-0 top-0 z-[60] flex size-full items-center justify-end bg-transparent opacity-100 transition-all duration-300 lg:static lg:z-0 lg:mr-8 lg:inline-block lg:size-auto lg:h-fit lg:w-1/4 lg:opacity-100">
                                 <div
-                                    style={{
-                                        width:
-                                            contentRef?.current?.innerWidth / 4,
-                                    }}
-                                >
-                                    <Filter
-                                        key={key}
-                                        filters={filters}
-                                        setFilters={setFilters}
-                                        resetPrice={resetPrice}
-                                        openState={openState}
-                                        setOpenState={setOpenState}
-                                    />
+                                    className="absolute left-0 top-0 -z-[1] size-full bg-[#000000a6] lg:hidden"
+                                    onClick={() => setIsCloseFilter(true)}
+                                ></div>
+                                <div className="h-full w-2/3 translate-x-0 overflow-y-auto overflow-x-hidden bg-white p-4 transition-all duration-500 lg:w-full lg:p-0">
+                                    <div className="mb-4 flex items-center justify-between lg:hidden">
+                                        <h3 className="font-lora text-xl font-semibold">Filter</h3>
+                                        <XMarkIcon className="size-5" onClick={() => setIsCloseFilter(true)} />
+                                    </div>
+                                    <Suspense fallback={null}>
+                                        <Filter
+                                            key={key}
+                                            filters={filters}
+                                            setFilters={setFilters}
+                                            resetPrice={resetPrice}
+                                            openState={openState}
+                                            setOpenState={setOpenState}
+                                        />
+                                    </Suspense>
                                 </div>
                             </div>
-                            <div className="flex h-fit basis-3/4 flex-col transition-all duration-500">
+                            <div
+                                className={`flex h-fit ${isCloseFilter ? 'basis-full' : 'basis-full lg:basis-3/4'} flex-col transition-all duration-500`}
+                            >
                                 <div className="mb-6 flex flex-wrap items-center gap-2">
-                                    {filters?.colorsFilters?.filter(
-                                        (color) => color.selected,
-                                    ).length > 0 && (
+                                    {filters?.colorsFilters?.filter((color) => color.selected).length > 0 && (
                                         <div className="flex gap-2">
                                             {filters?.colorsFilters
-                                                ?.filter(
-                                                    (color) => color.selected,
-                                                )
+                                                ?.filter((color) => color.selected)
                                                 .map((color, index) => (
                                                     <div
                                                         key={index}
                                                         className="flex cursor-pointer items-center gap-2 bg-gray-200 px-2 py-1 transition-colors hover:bg-black hover:text-white"
                                                         onClick={() => {
-                                                            setFilters(
-                                                                (filters) => ({
-                                                                    ...filters,
-                                                                    colorsFilters:
-                                                                        filters.colorsFilters.map(
-                                                                            (
-                                                                                cl,
-                                                                            ) => {
-                                                                                return cl._id ==
-                                                                                    color._id
-                                                                                    ? {
-                                                                                          ...cl,
-                                                                                          selected: false,
-                                                                                      }
-                                                                                    : cl;
-                                                                            },
-                                                                        ),
+                                                            setFilters((filters) => ({
+                                                                ...filters,
+                                                                colorsFilters: filters.colorsFilters.map((cl) => {
+                                                                    return cl._id == color._id
+                                                                        ? {
+                                                                              ...cl,
+                                                                              selected: false,
+                                                                          }
+                                                                        : cl;
                                                                 }),
-                                                            );
+                                                            }));
                                                         }}
                                                     >
-                                                        <span className="text-sm">
-                                                            Color:{' '}
-                                                        </span>
-                                                        <span className="text-sm italic">
-                                                            {color.name}
-                                                        </span>
+                                                        <span className="text-sm">Color: </span>
+                                                        <span className="text-sm italic">{color.name}</span>
                                                         <XMarkIcon className="size-4" />
                                                     </div>
                                                 ))}
                                         </div>
                                     )}
-                                    {filters?.materialFilters?.filter(
-                                        (mt) => mt.selected,
-                                    ).length > 0 && (
+                                    {filters?.materialFilters?.filter((mt) => mt.selected).length > 0 && (
                                         <div className="flex gap-2">
                                             {filters?.materialFilters
                                                 ?.filter((mt) => mt.selected)
@@ -507,41 +396,28 @@ const Shop = () => {
                                                         key={index}
                                                         className="flex cursor-pointer items-center gap-2 bg-gray-200 px-2 py-1 transition-colors hover:bg-black hover:text-white"
                                                         onClick={() => {
-                                                            setFilters(
-                                                                (filters) => ({
-                                                                    ...filters,
-                                                                    materialFilters:
-                                                                        filters.materialFilters.map(
-                                                                            (
-                                                                                _mt,
-                                                                            ) => {
-                                                                                return _mt._id ==
-                                                                                    mt._id
-                                                                                    ? {
-                                                                                          ..._mt,
-                                                                                          selected: false,
-                                                                                      }
-                                                                                    : _mt;
-                                                                            },
-                                                                        ),
+                                                            setFilters((filters) => ({
+                                                                ...filters,
+                                                                materialFilters: filters.materialFilters.map((_mt) => {
+                                                                    return _mt._id == mt._id
+                                                                        ? {
+                                                                              ..._mt,
+                                                                              selected: false,
+                                                                          }
+                                                                        : _mt;
                                                                 }),
-                                                            );
+                                                            }));
                                                         }}
                                                     >
-                                                        <span className="text-sm">
-                                                            Material:{' '}
-                                                        </span>
-                                                        <span className="text-sm italic">
-                                                            {mt.name}
-                                                        </span>
+                                                        <span className="text-sm">Material: </span>
+                                                        <span className="text-sm italic">{mt.name}</span>
                                                         <XMarkIcon className="size-4" />
                                                     </div>
                                                 ))}
                                         </div>
                                     )}
                                     {filters?.priceRange?.length > 0 &&
-                                        (filters?.priceRange[0] > 0 ||
-                                            filters.priceRange[1] < 2000) && (
+                                        (filters?.priceRange[0] > 0 || filters.priceRange[1] < 2000) && (
                                             <div
                                                 className="flex cursor-pointer items-center gap-2 bg-gray-200 px-2 py-1 transition-colors hover:bg-black hover:text-white"
                                                 onClick={() => {
@@ -549,18 +425,12 @@ const Shop = () => {
                                                         ...filters,
                                                         priceRange: [0, 2000],
                                                     }));
-                                                    setResetPrice(
-                                                        (resetPrice) =>
-                                                            !resetPrice,
-                                                    );
+                                                    setResetPrice((resetPrice) => !resetPrice);
                                                 }}
                                             >
-                                                <span className="text-sm">
-                                                    Price range:{' '}
-                                                </span>
+                                                <span className="text-sm">Price range: </span>
                                                 <span className="text-sm italic">
-                                                    ${filters?.priceRange[0]} -
-                                                    ${filters?.priceRange[1]}
+                                                    ${filters?.priceRange[0]} - ${filters?.priceRange[1]}
                                                 </span>
                                                 <XMarkIcon className="size-4" />
                                             </div>
@@ -576,38 +446,33 @@ const Shop = () => {
                                         </button>
                                     )}
                                 </div>
-                                {currentData.length == 0 && (
-                                    <div className="w-full bg-gray-200 px-2 py-4 text-sm">
-                                        No products were found
+                                {filteredProducts.length == 0 && isFiltering && (
+                                    <div className="w-full bg-gray-200 px-2 py-4 text-sm">No products were found</div>
+                                )}
+                                {filteredProducts.length == 0 && !isFiltering && (
+                                    <div className="flex flex-col items-center justify-center pb-6 pt-14">
+                                        <h4 className="font-lora text-2xl font-semibold">No Products</h4>
+                                        <img
+                                            src="/images/no-product.png"
+                                            alt=""
+                                            className="size-[200px] grayscale lg:size-[300px]"
+                                        />
                                     </div>
                                 )}
                                 <div
-                                    className={`shop-content flex-1 transition-[grid-template-columns] duration-500 ${isDisplayGrid ? 'grid grid-cols-3 gap-8' : 'flex flex-col items-start gap-10'}`}
+                                    className={`shop-content flex-1 transition-[grid-template-columns] duration-500 ${isDisplayGrid ? 'grid grid-cols-2 gap-8 lg:grid-cols-3' : 'flex flex-col items-start gap-10'}`}
                                 >
-                                    {/* {currentData.map((product, index) => {
-                                        return (
-                                            <ProductCard
-                                                key={index}
-                                                product={product}
-                                                isDisplayGrid={isDisplayGrid}
-                                            />
-                                        );
-                                    })} */}
                                     {filteredProducts.map((product, index) => {
                                         if (index + 1 > limit) return null;
                                         return (
-                                            <ProductCard
-                                                key={index}
-                                                product={product}
-                                                isDisplayGrid={isDisplayGrid}
-                                            />
+                                            <ProductCard key={index} product={product} isDisplayGrid={isDisplayGrid} />
                                         );
                                     })}
                                 </div>
                                 {limit < filteredProducts.length && (
                                     <div className="mt-20 text-center">
                                         <button
-                                            className="w-[200px] border border-black bg-black px-4 py-3 text-sm tracking-wider text-white transition-all hover:bg-white hover:text-black"
+                                            className="w-[200px] border border-black bg-black p-2 text-sm tracking-wider text-white transition-all hover:bg-white hover:text-black lg:px-4 lg:py-3"
                                             onClick={() => {
                                                 setIsLoadmore(true); // Bắt đầu quá trình tải
                                                 setTimeout(() => {
@@ -618,16 +483,15 @@ const Shop = () => {
                                         >
                                             {isLoadmore ? (
                                                 <span>
-                                                    <i className="fa-light fa-loader animate-spin text-lg"></i>
+                                                    <i className="fa-light fa-loader animate-spin text-base lg:text-lg"></i>
                                                 </span>
                                             ) : (
                                                 <span>Show more</span>
                                             )}
                                         </button>
 
-                                        <p className="mt-2 text-sm tracking-wider text-gray-600">
-                                            Showing {limit} of{' '}
-                                            {filteredProducts.length} products
+                                        <p className="mt-2 text-xs tracking-wider text-gray-600 lg:text-sm">
+                                            Showing {limit} of {filteredProducts.length} products
                                         </p>
                                     </div>
                                 )}
@@ -649,18 +513,10 @@ const Shop = () => {
                             {currentCategory?.child?.map((cate) => {
                                 return (
                                     <React.Fragment key={cate._id}>
-                                        {!currentCategory?.child?.every(
-                                            (child) =>
-                                                child?.child?.length == 0,
-                                        ) ? (
+                                        {!currentCategory?.child?.every((child) => child?.child?.length == 0) ? (
                                             <React.Fragment>
                                                 {cate.child.map((cat) => {
-                                                    return (
-                                                        <CategoryItem
-                                                            key={cat._id}
-                                                            category={cat}
-                                                        />
-                                                    );
+                                                    return <CategoryItem key={cat._id} category={cat} />;
                                                 })}
                                             </React.Fragment>
                                         ) : (
@@ -671,12 +527,12 @@ const Shop = () => {
                             })}
                         </div>
                         <div className="mt-20">
-                            <SliderProducts
-                                title="New arrival"
-                                products={products
-                                    .filter((prod) => prod?.isNew)
-                                    .slice(0, 6)}
-                            />
+                            <Suspense fallback={null}>
+                                <SliderProducts
+                                    title="New arrival"
+                                    products={products.filter((prod) => prod?.isNew).slice(0, 6)}
+                                />
+                            </Suspense>
                         </div>
                     </div>
                 )}
@@ -688,11 +544,8 @@ const Shop = () => {
 const CategoryItem = ({ category }) => {
     console.log(category);
     return (
-        <div className="w-1/5 px-4 text-center [&:hover_img]:scale-110">
-            <Link
-                to={`/shop/${category?.slug}`}
-                className="mx-auto inline-block aspect-square w-full overflow-hidden"
-            >
+        <div className="w-1/2 px-4 text-center lg:w-1/5 [&:hover_img]:scale-110">
+            <Link to={`/shop/${category?.slug}`} className="mx-auto inline-block aspect-square w-full overflow-hidden">
                 <img
                     src={category?.imageUrl}
                     alt=""

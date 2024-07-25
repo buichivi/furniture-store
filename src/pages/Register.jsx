@@ -33,9 +33,7 @@ const Register = () => {
             avatar: '',
         },
         validationSchema: Yup.object({
-            email: Yup.string()
-                .email('Invalid email')
-                .required('This field is required'),
+            email: Yup.string().email('Invalid email').required('This field is required'),
             password: Yup.string()
                 .min(6, 'Requires at least 6 characters')
                 .max(12, 'Does not exceed 12 characters')
@@ -82,14 +80,47 @@ const Register = () => {
                 alt=""
                 className="absolute left-0 top-0 -z-10 h-full w-full object-cover"
             />
-            <div className="min-h-[90%] w-2/3 bg-white shadow-xl">
-                <Link to="/" className="mx-auto mb-6 block w-40 py-8">
+            <div className="h-full w-full overflow-y-auto bg-white py-4 shadow-xl lg:h-[90%] lg:w-2/3">
+                <Link to="/" className="mx-auto mt-6 block w-24 py-2 lg:w-40 lg:py-8">
                     <img src="/images/logo.png" alt="" />
                 </Link>
-                {/* <h3 className="text-center text-2xl font-semibold">Registration</h3>
-                <p className="mb-4 text-center text-sm">Welcome to Fixtures</p> */}
-                <form onSubmit={formik.handleSubmit} className="mx-auto w-2/3">
-                    <div className="flex items-center gap-10">
+                {/* <h3 className="text-center text-2xl font-semibold">Registration</h3>*/}
+                <p className="mb-4 text-center text-sm">Welcome to Fixtures</p>
+                <form onSubmit={formik.handleSubmit} className="mx-auto w-4/5 text-sm lg:w-2/3 lg:text-base">
+                    <label className="relative block flex-1 pb-2 pt-4 lg:hidden">
+                        <input
+                            type="file"
+                            name="avatar"
+                            id="avatar"
+                            accept="image/*"
+                            onChange={(e) => {
+                                previewAvatar.current.src = URL.createObjectURL(e.currentTarget.files[0]);
+                                // setFile(e.currentTarget.files[0]);
+                                formik.setFieldValue('avatar', e.currentTarget.files[0]);
+                            }}
+                            className="hidden w-full border-b py-2 pl-2 outline-none transition-colors duration-500 placeholder:font-light focus:border-b-black"
+                        />
+                        <label htmlFor="avatar" className="flex cursor-pointer items-center gap-4">
+                            <span className="size-32 overflow-hidden rounded-full border">
+                                <img
+                                    ref={previewAvatar}
+                                    src="/images/account-placeholder.jpg"
+                                    alt=""
+                                    className="size-full object-cover object-center p-1"
+                                />
+                            </span>
+                            <div className="flex flex-col items-center">
+                                <i className="fa-light fa-cloud-arrow-up text-xl"></i>
+                                <span className="text-sm">Select your avatar</span>
+                            </div>
+                        </label>
+                        {formik.errors.avatar && (
+                            <span className="absolute left-0 top-0 text-sm text-[#d10202dc]">
+                                {formik.errors.avatar}
+                            </span>
+                        )}
+                    </label>
+                    <div className="flex items-center gap-4 lg:gap-10">
                         <label className="relative block flex-1 pb-2 pt-4">
                             <input
                                 type="text"
@@ -123,10 +154,9 @@ const Register = () => {
                             )}
                         </label>
                     </div>
-
-                    <div className="flex items-center justify-between gap-10">
-                        <div className="flex-1">
-                            <label className="relative block flex-1 pb-2 pt-4">
+                    <div className="flex flex-col-reverse items-start justify-between gap-10 lg:flex-row lg:items-center">
+                        <div className="w-full flex-1">
+                            <label className="relative block w-full flex-1 pb-2 pt-4">
                                 <input
                                     type="tel"
                                     name="phoneNumber"
@@ -142,7 +172,7 @@ const Register = () => {
                                     </span>
                                 )}
                             </label>
-                            <label className="relative block flex-1 pb-2 pt-4">
+                            <label className="relative block  w-full flex-1 pb-2 pt-4">
                                 <input
                                     type="email"
                                     name="email"
@@ -159,29 +189,20 @@ const Register = () => {
                                 )}
                             </label>
                         </div>
-                        <label className="relative block flex-1 pb-2 pt-4">
+                        <label className="relative hidden flex-1 pb-2 pt-4 lg:block">
                             <input
                                 type="file"
                                 name="avatar"
                                 id="avatar"
                                 accept="image/*"
                                 onChange={(e) => {
-                                    previewAvatar.current.src =
-                                        URL.createObjectURL(
-                                            e.currentTarget.files[0],
-                                        );
+                                    previewAvatar.current.src = URL.createObjectURL(e.currentTarget.files[0]);
                                     // setFile(e.currentTarget.files[0]);
-                                    formik.setFieldValue(
-                                        'avatar',
-                                        e.currentTarget.files[0],
-                                    );
+                                    formik.setFieldValue('avatar', e.currentTarget.files[0]);
                                 }}
                                 className="hidden w-full border-b py-2 pl-2 outline-none transition-colors duration-500 placeholder:font-light focus:border-b-black"
                             />
-                            <label
-                                htmlFor="avatar"
-                                className="flex cursor-pointer items-center gap-4"
-                            >
+                            <label htmlFor="avatar" className="flex cursor-pointer items-center gap-4">
                                 <span className="size-32 overflow-hidden rounded-full border">
                                     <img
                                         ref={previewAvatar}
@@ -192,9 +213,7 @@ const Register = () => {
                                 </span>
                                 <div className="flex flex-col items-center">
                                     <i className="fa-light fa-cloud-arrow-up text-xl"></i>
-                                    <span className="text-sm">
-                                        Select your avatar
-                                    </span>
+                                    <span className="text-sm">Select your avatar</span>
                                 </div>
                             </label>
                             {formik.errors.avatar && (
@@ -204,7 +223,7 @@ const Register = () => {
                             )}
                         </label>
                     </div>
-                    <div className="flex items-center gap-10">
+                    <div className="flex items-center gap-4 lg:gap-10">
                         <label className="relative block flex-1 pb-2 pt-4">
                             <input
                                 type="password"
@@ -240,18 +259,14 @@ const Register = () => {
                     </div>
                     <button
                         type="submit"
-                        className="mt-6 block w-full border border-black bg-black py-3 text-sm font-bold uppercase tracking-wider text-white transition-colors hover:bg-white hover:text-black"
+                        className="mt-6 block w-full border border-black bg-black py-3 text-xs font-bold uppercase tracking-wider text-white transition-colors hover:bg-white hover:text-black lg:text-sm"
                     >
                         Sign up
                     </button>
                 </form>
                 <p className="mt-6 text-center text-sm">
                     Already have an account?{' '}
-                    <Link
-                        ref={loginLink}
-                        to={`/login` + location.search}
-                        className="hover-text-effect ml-1"
-                    >
+                    <Link ref={loginLink} to={`/login` + location.search} className="hover-text-effect ml-1">
                         Log in
                     </Link>
                 </p>
