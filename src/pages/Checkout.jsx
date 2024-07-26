@@ -40,6 +40,7 @@ const Checkout = () => {
     const location = useLocation();
     const [address, setAddresses] = useState({});
     const [cities, setCities] = useState([]);
+    const [isCreatingOrder, setIsCreatingOrder] = useState(false);
     const [isOrderCreated, setIsOrderCreated] = useState(false);
 
     useEffect(() => {
@@ -101,6 +102,7 @@ const Checkout = () => {
         toast.promise(apiRequest.post('/orders', { ...data }, { headers: { Authorization: `Bearer ${token}` } }), {
             loading: 'Creating order...',
             success: (res) => {
+                setIsCreatingOrder(false);
                 setCart({ items: [] });
                 setOrder(res.data?.order);
                 setPromoCode({});
@@ -126,10 +128,74 @@ const Checkout = () => {
             )
             .then((res) => {
                 const openInNewTab = (url) => {
-                    const newWindow = window.open(url, '_parent', 'noopener,noreferrer');
-                    if (newWindow) newWindow.opener = null;
+                    let newWindow;
+                    if (window.innerWidth <= 576) newWindow = window.open(url, '_parent', 'noopener,noreferrer');
+                    else {
+                        const w = window.innerWidth / 2,
+                            h = (window.innerHeight * 2) / 3;
+                        const dualScreenLeft = window.screenLeft !== undefined ? window.screenLeft : window.screenX;
+                        const dualScreenTop = window.screenTop !== undefined ? window.screenTop : window.screenY;
+
+                        const width = window.innerWidth
+                            ? window.innerWidth
+                            : document.documentElement.clientWidth
+                              ? document.documentElement.clientWidth
+                              : screen.width;
+                        const height = window.innerHeight
+                            ? window.innerHeight
+                            : document.documentElement.clientHeight
+                              ? document.documentElement.clientHeight
+                              : screen.height;
+
+                        const systemZoom = width / window.screen.availWidth;
+                        const left = (width - w) / 2 / systemZoom + dualScreenLeft;
+                        const top = (height - h) / 2 / systemZoom + dualScreenTop;
+                        newWindow = window.open(
+                            url,
+                            'vnpayURL',
+                            `popup=true, width=${w / systemZoom}, 
+                            height=${h / systemZoom}, 
+                            top=${top}, 
+                            left=${left}`,
+                        );
+                    }
+                    return newWindow;
                 };
-                openInNewTab(res.data?.paymentUrl);
+                const popup = openInNewTab(res.data?.paymentUrl);
+                if (window.innerWidth > 576) {
+                    var timer = setInterval(function () {
+                        setIsCreatingOrder(true);
+                        try {
+                            let returnUrl = popup?.location?.href;
+                            if (returnUrl && returnUrl.includes(window.location.origin)) {
+                                popup.close();
+                            }
+                            if (popup.closed) {
+                                clearInterval(timer);
+                                if (returnUrl.includes(window.location.origin)) {
+                                    apiRequest
+                                        .get('/orders/vnpay-return?' + returnUrl.split('?')[1], {
+                                            headers: { Authorization: 'Bearer ' + token },
+                                        })
+                                        .then((res) => {
+                                            if (res.data?.code == '00') {
+                                                toast.success(res.data?.message);
+                                                handleCreateOrder('paid', 'vnpay');
+                                                setIsOrderCreated(true);
+                                            }
+                                        })
+                                        .catch((err) => {
+                                            navigate('/checkout#fail');
+                                            toast.error(err?.response?.data?.error || 'Transaction error');
+                                        });
+                                }
+                            }
+                        } catch (err) {
+                            console.error(err);
+                            if (popup.closed) clearInterval(timer);
+                        }
+                    }, 500);
+                }
             })
             .catch((err) => console.log(err));
     };
@@ -157,6 +223,15 @@ const Checkout = () => {
 
     return (
         <div className="my-16 lg:my-content-top lg:border-t">
+            {isCreatingOrder && (
+                <div className="fixed left-0 top-0 z-50 flex h-screen w-screen items-center justify-center bg-[#000000a9]">
+                    <img
+                        src="/images/Dual Ring@1x-0.6s-200px-200px.svg"
+                        alt=""
+                        className="rotate-in-center size-16 invert"
+                    />
+                </div>
+            )}
             <div className="container mx-auto px-5">
                 <Navigation isShowPageName={false} paths="/checkout" />
                 <div className="w-full">
@@ -187,7 +262,7 @@ const Checkout = () => {
                                 </div>
                             </div>
                         )}
-                        <div className="flex-1">
+                        <div className="w-full flex-1">
                             <div className="mb-10">
                                 <SelectAddressShipping
                                     cities={cities}

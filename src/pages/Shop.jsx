@@ -159,7 +159,8 @@ const Shop = () => {
     }, [categorySlug, categories]);
 
     const currentCategory = useMemo(() => {
-        return categoryTree.find((cate) => cate.slug == categorySlug);
+        if (categorySlug) return categoryTree.find((cate) => cate.slug == categorySlug);
+        return categoryTree;
     }, [categorySlug, categoryTree]);
 
     const filteredProducts = useMemo(() => {
@@ -220,321 +221,342 @@ const Shop = () => {
                 )}
             </div>
             <div className="container mx-auto h-fit border-t px-5 py-16">
-                {!currentCategory?._id ? (
-                    <React.Fragment>
-                        <div className="sticky top-20 z-20 flex lg:static">
-                            <div
-                                className={`shrink-0 transition-all duration-500 ${!isCloseFilter ? 'lg:w-1/4' : 'lg:w-[80px]'}`}
-                            >
-                                <Tippy
-                                    content={isCloseFilter ? 'Open filters' : 'Close filters'}
-                                    animation="shift-toward"
-                                >
+                {currentCategory?.length > 0 ? (
+                    <ShopPage />
+                ) : (
+                    <>
+                        {!currentCategory?._id ? (
+                            <React.Fragment>
+                                <div className="sticky top-20 z-20 flex lg:static">
                                     <div
-                                        className="flex h-9 w-fit cursor-pointer items-center gap-2 bg-gray-200 p-2"
-                                        onClick={() => setIsCloseFilter(!isCloseFilter)}
+                                        className={`shrink-0 transition-all duration-500 ${!isCloseFilter ? 'lg:w-1/4' : 'lg:w-[80px]'}`}
                                     >
-                                        <span>Filter</span>
-                                        <PlusIcon
-                                            className={`size-5 transition-all duration-500 ${!isCloseFilter ? 'rotate-45' : 'rotate-0'}`}
-                                        />
-                                    </div>
-                                </Tippy>
-                            </div>
-                            <div className={`flex flex-1 flex-col transition-all duration-500 lg:ml-8`}>
-                                <div className="mb-5 flex max-h-10 flex-1 items-center justify-between">
-                                    <div className="hidden items-center gap-4 lg:flex">
-                                        <span
-                                            className={`cursor-pointer text-2xl ${!isDisplayGrid && 'text-[#D10202]'} transition-colors hover:text-[#D10202]`}
-                                            onClick={() => setIsDisplayGrid(false)}
+                                        <Tippy
+                                            content={isCloseFilter ? 'Open filters' : 'Close filters'}
+                                            animation="shift-toward"
                                         >
-                                            <i className="fa-light fa-diagram-cells"></i>
-                                        </span>
-                                        <span
-                                            className={`cursor-pointer text-2xl ${isDisplayGrid && 'text-[#D10202]'} transition-colors hover:text-[#D10202]`}
-                                            onClick={() => setIsDisplayGrid(true)}
-                                        >
-                                            <i className="fa-light fa-grid-2"></i>
-                                        </span>
-                                    </div>
-                                    <div className="flex flex-1 items-center justify-end gap-6 border-l border-l-white lg:border-none">
-                                        <label className="hidden cursor-pointer select-none items-center gap-4 bg-gray-200 px-4 py-2 lg:flex">
-                                            <input
-                                                type="checkbox"
-                                                checked={onSaleOnly}
-                                                onChange={(e) => setOnSaleOnly(e.currentTarget.checked)}
-                                                className="hidden [&:checked+span]:bg-black [&:checked+span_path]:[stroke-dashoffset:0] [&:checked+span_path]:[stroke:#fff]"
-                                            />
-                                            <span className="inline-block size-5 bg-transparent ring-1 ring-[#b1b1b1] transition-colors ">
-                                                <svg className="" viewBox="0 0 100 100" fill="none">
-                                                    <path
-                                                        d="m 20 55 l 20 20 l 41 -50"
-                                                        stroke="#000"
-                                                        strokeWidth="8"
-                                                        className="transition-all"
-                                                        strokeDasharray="100"
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                        strokeDashoffset="100"
-                                                    ></path>
-                                                </svg>
-                                            </span>
-                                            <span className="text-sm font-normal tracking-wide">
-                                                Show only products on sale
-                                            </span>
-                                        </label>
-                                        <div className="relative flex-1 lg:flex-none">
-                                            <label
-                                                htmlFor="sort"
-                                                className="flex min-w-60 cursor-pointer items-center justify-between bg-gray-200 px-4 py-2 text-sm tracking-wide"
+                                            <div
+                                                className="flex h-9 w-fit cursor-pointer items-center gap-2 bg-gray-200 p-2"
+                                                onClick={() => setIsCloseFilter(!isCloseFilter)}
                                             >
-                                                <span>{sort.name}</span>
-                                                <ChevronDownIcon className="size-4 transition-all duration-500" />
-                                            </label>
-                                            <input
-                                                type="checkbox"
-                                                className="hidden [&:checked+div]:pointer-events-auto [&:checked+div]:translate-y-0 [&:checked+div]:opacity-100"
-                                                id="sort"
-                                                onChange={(e) => {
-                                                    const sortIcon = e.currentTarget.previousElementSibling.children[1];
-                                                    if (e.currentTarget.checked) sortIcon.classList.add('rotate-180');
-                                                    else sortIcon.classList.remove('rotate-180');
-                                                }}
-                                            />
-                                            <div className="pointer-events-none absolute left-0 top-[115%] z-20 flex w-full translate-y-10 flex-col gap-2 border border-gray-100 bg-white px-4 py-2 opacity-0 shadow-lg transition-all duration-500 [&>*:hover]:cursor-pointer [&>*:hover]:opacity-50 [&>*]:text-sm [&>*]:transition-all">
-                                                {SORT_OPTIONS.map((op, index) => {
-                                                    return (
-                                                        <span
-                                                            key={index}
-                                                            onClick={(e) => {
-                                                                const input =
-                                                                    e.currentTarget.parentElement
-                                                                        .previousElementSibling;
-                                                                input.checked = !input.checked;
-                                                                setSort(op);
-                                                            }}
-                                                            className="py-1"
-                                                        >
-                                                            {op.name}
-                                                        </span>
-                                                    );
-                                                })}
+                                                <span>Filter</span>
+                                                <PlusIcon
+                                                    className={`size-5 transition-all duration-500 ${!isCloseFilter ? 'rotate-45' : 'rotate-0'}`}
+                                                />
+                                            </div>
+                                        </Tippy>
+                                    </div>
+                                    <div className={`flex flex-1 flex-col transition-all duration-500 lg:ml-8`}>
+                                        <div className="mb-5 flex max-h-10 flex-1 items-center justify-between">
+                                            <div className="hidden items-center gap-4 lg:flex">
+                                                <span
+                                                    className={`cursor-pointer text-2xl ${!isDisplayGrid && 'text-[#D10202]'} transition-colors hover:text-[#D10202]`}
+                                                    onClick={() => setIsDisplayGrid(false)}
+                                                >
+                                                    <i className="fa-light fa-diagram-cells"></i>
+                                                </span>
+                                                <span
+                                                    className={`cursor-pointer text-2xl ${isDisplayGrid && 'text-[#D10202]'} transition-colors hover:text-[#D10202]`}
+                                                    onClick={() => setIsDisplayGrid(true)}
+                                                >
+                                                    <i className="fa-light fa-grid-2"></i>
+                                                </span>
+                                            </div>
+                                            <div className="flex flex-1 items-center justify-end gap-6 border-l border-l-white lg:border-none">
+                                                <label className="hidden cursor-pointer select-none items-center gap-4 bg-gray-200 px-4 py-2 lg:flex">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={onSaleOnly}
+                                                        onChange={(e) => setOnSaleOnly(e.currentTarget.checked)}
+                                                        className="hidden [&:checked+span]:bg-black [&:checked+span_path]:[stroke-dashoffset:0] [&:checked+span_path]:[stroke:#fff]"
+                                                    />
+                                                    <span className="inline-block size-5 bg-transparent ring-1 ring-[#b1b1b1] transition-colors ">
+                                                        <svg className="" viewBox="0 0 100 100" fill="none">
+                                                            <path
+                                                                d="m 20 55 l 20 20 l 41 -50"
+                                                                stroke="#000"
+                                                                strokeWidth="8"
+                                                                className="transition-all"
+                                                                strokeDasharray="100"
+                                                                strokeLinecap="round"
+                                                                strokeLinejoin="round"
+                                                                strokeDashoffset="100"
+                                                            ></path>
+                                                        </svg>
+                                                    </span>
+                                                    <span className="text-sm font-normal tracking-wide">
+                                                        Show only products on sale
+                                                    </span>
+                                                </label>
+                                                <div className="relative flex-1 lg:flex-none">
+                                                    <label
+                                                        htmlFor="sort"
+                                                        className="flex min-w-60 cursor-pointer items-center justify-between bg-gray-200 px-4 py-2 text-sm tracking-wide"
+                                                    >
+                                                        <span>{sort.name}</span>
+                                                        <ChevronDownIcon className="size-4 transition-all duration-500" />
+                                                    </label>
+                                                    <input
+                                                        type="checkbox"
+                                                        className="hidden [&:checked+div]:pointer-events-auto [&:checked+div]:translate-y-0 [&:checked+div]:opacity-100"
+                                                        id="sort"
+                                                        onChange={(e) => {
+                                                            const sortIcon =
+                                                                e.currentTarget.previousElementSibling.children[1];
+                                                            if (e.currentTarget.checked)
+                                                                sortIcon.classList.add('rotate-180');
+                                                            else sortIcon.classList.remove('rotate-180');
+                                                        }}
+                                                    />
+                                                    <div className="pointer-events-none absolute left-0 top-[115%] z-20 flex w-full translate-y-10 flex-col gap-2 border border-gray-100 bg-white px-4 py-2 opacity-0 shadow-lg transition-all duration-500 [&>*:hover]:cursor-pointer [&>*:hover]:opacity-50 [&>*]:text-sm [&>*]:transition-all">
+                                                        {SORT_OPTIONS.map((op, index) => {
+                                                            return (
+                                                                <span
+                                                                    key={index}
+                                                                    onClick={(e) => {
+                                                                        const input =
+                                                                            e.currentTarget.parentElement
+                                                                                .previousElementSibling;
+                                                                        input.checked = !input.checked;
+                                                                        setSort(op);
+                                                                    }}
+                                                                    className="py-1"
+                                                                >
+                                                                    {op.name}
+                                                                </span>
+                                                            );
+                                                        })}
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                        <div className="flex h-fit overflow-hidden" ref={contentRef}>
-                            <input
-                                type="checkbox"
-                                id="toggle-filter"
-                                checked={isCloseFilter}
-                                className="hidden lg:[&:checked+div+div_.shop-content]:grid-cols-4 [&:checked+div>div:last-child]:translate-x-full lg:[&:checked+div>div:last-child]:-translate-x-full [&:checked+div]:pointer-events-none [&:checked+div]:opacity-0 lg:[&:checked+div]:mr-0 lg:[&:checked+div]:w-0 lg:[&:checked+div]:opacity-0"
-                            />
-                            <div className="pointer-events-auto fixed left-0 top-0 z-[60] flex size-full items-center justify-end bg-transparent opacity-100 transition-all duration-300 lg:static lg:z-0 lg:mr-8 lg:inline-block lg:size-auto lg:h-fit lg:w-1/4 lg:opacity-100">
-                                <div
-                                    className="absolute left-0 top-0 -z-[1] size-full bg-[#000000a6] lg:hidden"
-                                    onClick={() => setIsCloseFilter(true)}
-                                ></div>
-                                <div className="h-full w-2/3 translate-x-0 overflow-y-auto overflow-x-hidden bg-white p-4 transition-all duration-500 lg:w-full lg:p-0">
-                                    <div className="mb-4 flex items-center justify-between lg:hidden">
-                                        <h3 className="font-lora text-xl font-semibold">Filter</h3>
-                                        <XMarkIcon className="size-5" onClick={() => setIsCloseFilter(true)} />
+                                <div className="flex h-fit overflow-hidden" ref={contentRef}>
+                                    <input
+                                        type="checkbox"
+                                        id="toggle-filter"
+                                        checked={isCloseFilter}
+                                        className="hidden lg:[&:checked+div+div_.shop-content]:grid-cols-4 [&:checked+div>div:last-child]:translate-x-full lg:[&:checked+div>div:last-child]:-translate-x-full [&:checked+div]:pointer-events-none [&:checked+div]:opacity-0 lg:[&:checked+div]:mr-0 lg:[&:checked+div]:w-0 lg:[&:checked+div]:opacity-0"
+                                    />
+                                    <div className="pointer-events-auto fixed left-0 top-0 z-[60] flex size-full items-center justify-end bg-transparent opacity-100 transition-all duration-300 lg:static lg:z-0 lg:mr-8 lg:inline-block lg:size-auto lg:h-fit lg:w-1/4 lg:opacity-100">
+                                        <div
+                                            className="absolute left-0 top-0 -z-[1] size-full bg-[#000000a6] lg:hidden"
+                                            onClick={() => setIsCloseFilter(true)}
+                                        ></div>
+                                        <div className="h-full w-2/3 translate-x-0 overflow-y-auto overflow-x-hidden bg-white p-4 transition-all duration-500 lg:w-full lg:p-0">
+                                            <div className="mb-4 flex items-center justify-between lg:hidden">
+                                                <h3 className="font-lora text-xl font-semibold">Filter</h3>
+                                                <XMarkIcon className="size-5" onClick={() => setIsCloseFilter(true)} />
+                                            </div>
+                                            <Suspense fallback={null}>
+                                                <Filter
+                                                    key={key}
+                                                    filters={filters}
+                                                    setFilters={setFilters}
+                                                    resetPrice={resetPrice}
+                                                    openState={openState}
+                                                    setOpenState={setOpenState}
+                                                />
+                                            </Suspense>
+                                        </div>
                                     </div>
+                                    <div
+                                        className={`flex h-fit ${isCloseFilter ? 'basis-full' : 'basis-full lg:basis-3/4'} flex-col transition-all duration-500`}
+                                    >
+                                        <div className="mb-6 flex flex-wrap items-center gap-2">
+                                            {filters?.colorsFilters?.filter((color) => color.selected).length > 0 && (
+                                                <div className="flex gap-2">
+                                                    {filters?.colorsFilters
+                                                        ?.filter((color) => color.selected)
+                                                        .map((color, index) => (
+                                                            <div
+                                                                key={index}
+                                                                className="flex cursor-pointer items-center gap-2 bg-gray-200 px-2 py-1 transition-colors hover:bg-black hover:text-white"
+                                                                onClick={() => {
+                                                                    setFilters((filters) => ({
+                                                                        ...filters,
+                                                                        colorsFilters: filters.colorsFilters.map(
+                                                                            (cl) => {
+                                                                                return cl._id == color._id
+                                                                                    ? {
+                                                                                          ...cl,
+                                                                                          selected: false,
+                                                                                      }
+                                                                                    : cl;
+                                                                            },
+                                                                        ),
+                                                                    }));
+                                                                }}
+                                                            >
+                                                                <span className="text-sm">Color: </span>
+                                                                <span className="text-sm italic">{color.name}</span>
+                                                                <XMarkIcon className="size-4" />
+                                                            </div>
+                                                        ))}
+                                                </div>
+                                            )}
+                                            {filters?.materialFilters?.filter((mt) => mt.selected).length > 0 && (
+                                                <div className="flex gap-2">
+                                                    {filters?.materialFilters
+                                                        ?.filter((mt) => mt.selected)
+                                                        .map((mt, index) => (
+                                                            <div
+                                                                key={index}
+                                                                className="flex cursor-pointer items-center gap-2 bg-gray-200 px-2 py-1 transition-colors hover:bg-black hover:text-white"
+                                                                onClick={() => {
+                                                                    setFilters((filters) => ({
+                                                                        ...filters,
+                                                                        materialFilters: filters.materialFilters.map(
+                                                                            (_mt) => {
+                                                                                return _mt._id == mt._id
+                                                                                    ? {
+                                                                                          ..._mt,
+                                                                                          selected: false,
+                                                                                      }
+                                                                                    : _mt;
+                                                                            },
+                                                                        ),
+                                                                    }));
+                                                                }}
+                                                            >
+                                                                <span className="text-sm">Material: </span>
+                                                                <span className="text-sm italic">{mt.name}</span>
+                                                                <XMarkIcon className="size-4" />
+                                                            </div>
+                                                        ))}
+                                                </div>
+                                            )}
+                                            {filters?.priceRange?.length > 0 &&
+                                                (filters?.priceRange[0] > 0 || filters.priceRange[1] < 2000) && (
+                                                    <div
+                                                        className="flex cursor-pointer items-center gap-2 bg-gray-200 px-2 py-1 transition-colors hover:bg-black hover:text-white"
+                                                        onClick={() => {
+                                                            setFilters((filters) => ({
+                                                                ...filters,
+                                                                priceRange: [0, 2000],
+                                                            }));
+                                                            setResetPrice((resetPrice) => !resetPrice);
+                                                        }}
+                                                    >
+                                                        <span className="text-sm">Price range: </span>
+                                                        <span className="text-sm italic">
+                                                            ${filters?.priceRange[0]} - ${filters?.priceRange[1]}
+                                                        </span>
+                                                        <XMarkIcon className="size-4" />
+                                                    </div>
+                                                )}
+                                            {isFiltering && (
+                                                <button
+                                                    className="hover-text-effect text-sm"
+                                                    onClick={() => {
+                                                        setKey(key + 1);
+                                                    }}
+                                                >
+                                                    Clear all
+                                                </button>
+                                            )}
+                                        </div>
+                                        {filteredProducts.length == 0 && isFiltering && (
+                                            <div className="w-full bg-gray-200 px-2 py-4 text-sm">
+                                                No products were found
+                                            </div>
+                                        )}
+                                        {filteredProducts.length == 0 && !isFiltering && (
+                                            <div className="flex flex-col items-center justify-center pb-6 pt-14">
+                                                <h4 className="font-lora text-2xl font-semibold">No Products</h4>
+                                                <img
+                                                    src="/images/no-product.png"
+                                                    alt=""
+                                                    className="size-[200px] grayscale lg:size-[300px]"
+                                                />
+                                            </div>
+                                        )}
+                                        <div
+                                            className={`shop-content flex-1 transition-[grid-template-columns] duration-500 ${isDisplayGrid ? 'grid grid-cols-2 gap-8 lg:grid-cols-3' : 'flex flex-col items-start gap-10'}`}
+                                        >
+                                            {filteredProducts.map((product, index) => {
+                                                if (index + 1 > limit) return null;
+                                                return (
+                                                    <ProductCard
+                                                        key={index}
+                                                        product={product}
+                                                        isDisplayGrid={isDisplayGrid}
+                                                    />
+                                                );
+                                            })}
+                                        </div>
+                                        {limit < filteredProducts.length && (
+                                            <div className="mt-20 text-center">
+                                                <button
+                                                    className="w-[200px] border border-black bg-black p-2 text-sm tracking-wider text-white transition-all hover:bg-white hover:text-black lg:px-4 lg:py-3"
+                                                    onClick={() => {
+                                                        setIsLoadmore(true); // Bắt đầu quá trình tải
+                                                        setTimeout(() => {
+                                                            setIsLoadmore(false);
+                                                            setLimit(limit + PAGE_SIZE);
+                                                        }, 1000);
+                                                    }}
+                                                >
+                                                    {isLoadmore ? (
+                                                        <span>
+                                                            <i className="fa-light fa-loader animate-spin text-base lg:text-lg"></i>
+                                                        </span>
+                                                    ) : (
+                                                        <span>Show more</span>
+                                                    )}
+                                                </button>
+
+                                                <p className="mt-2 text-xs tracking-wider text-gray-600 lg:text-sm">
+                                                    Showing {limit} of {filteredProducts.length} products
+                                                </p>
+                                            </div>
+                                        )}
+                                        {/* <Pagination
+                                        className="pt-10"
+                                        currentPage={currentPage}
+                                        totalCount={filteredProducts.length}
+                                        pageSize={PAGE_SIZE}
+                                        onPageChange={(page) =>
+                                            setCurrentPage(page)
+                                        }
+                                    /> */}
+                                    </div>
+                                </div>
+                            </React.Fragment>
+                        ) : (
+                            <div>
+                                <div className="flex w-full flex-wrap justify-center gap-y-10">
+                                    {currentCategory?.child?.map((cate) => {
+                                        return (
+                                            <React.Fragment key={cate._id}>
+                                                {!currentCategory?.child?.every(
+                                                    (child) => child?.child?.length == 0,
+                                                ) ? (
+                                                    <React.Fragment>
+                                                        {cate.child.map((cat) => {
+                                                            return <CategoryItem key={cat._id} category={cat} />;
+                                                        })}
+                                                    </React.Fragment>
+                                                ) : (
+                                                    <CategoryItem category={cate} />
+                                                )}
+                                            </React.Fragment>
+                                        );
+                                    })}
+                                    {!currentCategory && <h4>Shop page</h4>}
+                                </div>
+                                <div className="mt-20">
                                     <Suspense fallback={null}>
-                                        <Filter
-                                            key={key}
-                                            filters={filters}
-                                            setFilters={setFilters}
-                                            resetPrice={resetPrice}
-                                            openState={openState}
-                                            setOpenState={setOpenState}
+                                        <SliderProducts
+                                            title="New arrival"
+                                            products={products.filter((prod) => prod?.isNew).slice(0, 6)}
                                         />
                                     </Suspense>
                                 </div>
                             </div>
-                            <div
-                                className={`flex h-fit ${isCloseFilter ? 'basis-full' : 'basis-full lg:basis-3/4'} flex-col transition-all duration-500`}
-                            >
-                                <div className="mb-6 flex flex-wrap items-center gap-2">
-                                    {filters?.colorsFilters?.filter((color) => color.selected).length > 0 && (
-                                        <div className="flex gap-2">
-                                            {filters?.colorsFilters
-                                                ?.filter((color) => color.selected)
-                                                .map((color, index) => (
-                                                    <div
-                                                        key={index}
-                                                        className="flex cursor-pointer items-center gap-2 bg-gray-200 px-2 py-1 transition-colors hover:bg-black hover:text-white"
-                                                        onClick={() => {
-                                                            setFilters((filters) => ({
-                                                                ...filters,
-                                                                colorsFilters: filters.colorsFilters.map((cl) => {
-                                                                    return cl._id == color._id
-                                                                        ? {
-                                                                              ...cl,
-                                                                              selected: false,
-                                                                          }
-                                                                        : cl;
-                                                                }),
-                                                            }));
-                                                        }}
-                                                    >
-                                                        <span className="text-sm">Color: </span>
-                                                        <span className="text-sm italic">{color.name}</span>
-                                                        <XMarkIcon className="size-4" />
-                                                    </div>
-                                                ))}
-                                        </div>
-                                    )}
-                                    {filters?.materialFilters?.filter((mt) => mt.selected).length > 0 && (
-                                        <div className="flex gap-2">
-                                            {filters?.materialFilters
-                                                ?.filter((mt) => mt.selected)
-                                                .map((mt, index) => (
-                                                    <div
-                                                        key={index}
-                                                        className="flex cursor-pointer items-center gap-2 bg-gray-200 px-2 py-1 transition-colors hover:bg-black hover:text-white"
-                                                        onClick={() => {
-                                                            setFilters((filters) => ({
-                                                                ...filters,
-                                                                materialFilters: filters.materialFilters.map((_mt) => {
-                                                                    return _mt._id == mt._id
-                                                                        ? {
-                                                                              ..._mt,
-                                                                              selected: false,
-                                                                          }
-                                                                        : _mt;
-                                                                }),
-                                                            }));
-                                                        }}
-                                                    >
-                                                        <span className="text-sm">Material: </span>
-                                                        <span className="text-sm italic">{mt.name}</span>
-                                                        <XMarkIcon className="size-4" />
-                                                    </div>
-                                                ))}
-                                        </div>
-                                    )}
-                                    {filters?.priceRange?.length > 0 &&
-                                        (filters?.priceRange[0] > 0 || filters.priceRange[1] < 2000) && (
-                                            <div
-                                                className="flex cursor-pointer items-center gap-2 bg-gray-200 px-2 py-1 transition-colors hover:bg-black hover:text-white"
-                                                onClick={() => {
-                                                    setFilters((filters) => ({
-                                                        ...filters,
-                                                        priceRange: [0, 2000],
-                                                    }));
-                                                    setResetPrice((resetPrice) => !resetPrice);
-                                                }}
-                                            >
-                                                <span className="text-sm">Price range: </span>
-                                                <span className="text-sm italic">
-                                                    ${filters?.priceRange[0]} - ${filters?.priceRange[1]}
-                                                </span>
-                                                <XMarkIcon className="size-4" />
-                                            </div>
-                                        )}
-                                    {isFiltering && (
-                                        <button
-                                            className="hover-text-effect text-sm"
-                                            onClick={() => {
-                                                setKey(key + 1);
-                                            }}
-                                        >
-                                            Clear all
-                                        </button>
-                                    )}
-                                </div>
-                                {filteredProducts.length == 0 && isFiltering && (
-                                    <div className="w-full bg-gray-200 px-2 py-4 text-sm">No products were found</div>
-                                )}
-                                {filteredProducts.length == 0 && !isFiltering && (
-                                    <div className="flex flex-col items-center justify-center pb-6 pt-14">
-                                        <h4 className="font-lora text-2xl font-semibold">No Products</h4>
-                                        <img
-                                            src="/images/no-product.png"
-                                            alt=""
-                                            className="size-[200px] grayscale lg:size-[300px]"
-                                        />
-                                    </div>
-                                )}
-                                <div
-                                    className={`shop-content flex-1 transition-[grid-template-columns] duration-500 ${isDisplayGrid ? 'grid grid-cols-2 gap-8 lg:grid-cols-3' : 'flex flex-col items-start gap-10'}`}
-                                >
-                                    {filteredProducts.map((product, index) => {
-                                        if (index + 1 > limit) return null;
-                                        return (
-                                            <ProductCard key={index} product={product} isDisplayGrid={isDisplayGrid} />
-                                        );
-                                    })}
-                                </div>
-                                {limit < filteredProducts.length && (
-                                    <div className="mt-20 text-center">
-                                        <button
-                                            className="w-[200px] border border-black bg-black p-2 text-sm tracking-wider text-white transition-all hover:bg-white hover:text-black lg:px-4 lg:py-3"
-                                            onClick={() => {
-                                                setIsLoadmore(true); // Bắt đầu quá trình tải
-                                                setTimeout(() => {
-                                                    setIsLoadmore(false);
-                                                    setLimit(limit + PAGE_SIZE);
-                                                }, 1000);
-                                            }}
-                                        >
-                                            {isLoadmore ? (
-                                                <span>
-                                                    <i className="fa-light fa-loader animate-spin text-base lg:text-lg"></i>
-                                                </span>
-                                            ) : (
-                                                <span>Show more</span>
-                                            )}
-                                        </button>
-
-                                        <p className="mt-2 text-xs tracking-wider text-gray-600 lg:text-sm">
-                                            Showing {limit} of {filteredProducts.length} products
-                                        </p>
-                                    </div>
-                                )}
-                                {/* <Pagination
-                                    className="pt-10"
-                                    currentPage={currentPage}
-                                    totalCount={filteredProducts.length}
-                                    pageSize={PAGE_SIZE}
-                                    onPageChange={(page) =>
-                                        setCurrentPage(page)
-                                    }
-                                /> */}
-                            </div>
-                        </div>
-                    </React.Fragment>
-                ) : (
-                    <div>
-                        <div className="flex w-full flex-wrap justify-center gap-y-10">
-                            {currentCategory?.child?.map((cate) => {
-                                return (
-                                    <React.Fragment key={cate._id}>
-                                        {!currentCategory?.child?.every((child) => child?.child?.length == 0) ? (
-                                            <React.Fragment>
-                                                {cate.child.map((cat) => {
-                                                    return <CategoryItem key={cat._id} category={cat} />;
-                                                })}
-                                            </React.Fragment>
-                                        ) : (
-                                            <CategoryItem category={cate} />
-                                        )}
-                                    </React.Fragment>
-                                );
-                            })}
-                        </div>
-                        <div className="mt-20">
-                            <Suspense fallback={null}>
-                                <SliderProducts
-                                    title="New arrival"
-                                    products={products.filter((prod) => prod?.isNew).slice(0, 6)}
-                                />
-                            </Suspense>
-                        </div>
-                    </div>
+                        )}
+                    </>
                 )}
             </div>
         </div>
@@ -542,9 +564,8 @@ const Shop = () => {
 };
 
 const CategoryItem = ({ category }) => {
-    console.log(category);
     return (
-        <div className="w-1/2 px-4 text-center lg:w-1/5 [&:hover_img]:scale-110">
+        <div className="w-1/2 px-4 text-center md:w-1/3 lg:w-1/5 [&:hover_img]:scale-110">
             <Link to={`/shop/${category?.slug}`} className="mx-auto inline-block aspect-square w-full overflow-hidden">
                 <img
                     src={category?.imageUrl}
@@ -558,6 +579,53 @@ const CategoryItem = ({ category }) => {
             >
                 {category.name}
             </Link>
+        </div>
+    );
+};
+
+const ShopPage = () => {
+    const { categories, products } = useDataStore();
+    const [limit, setLimit] = useState(PAGE_SIZE);
+    const [isLoadmore, setIsLoadmore] = useState(false);
+    return (
+        <div>
+            <div className="flex w-full flex-wrap justify-center gap-y-10">
+                {categories.map((category, index) => {
+                    if (index + 1 > limit) return null;
+                    return <CategoryItem key={category._id} category={category} />;
+                })}
+            </div>
+            {limit <= categories.length && (
+                <div className="mt-10 text-center lg:mt-20">
+                    <button
+                        className="w-[200px] border border-black bg-black px-4 py-2 text-xs tracking-wider text-white transition-all hover:bg-white hover:text-black lg:py-3 lg:text-sm"
+                        onClick={() => {
+                            setIsLoadmore(true);
+                            setTimeout(() => {
+                                setIsLoadmore(false);
+                                setLimit(limit + PAGE_SIZE);
+                            }, 1000);
+                        }}
+                    >
+                        {isLoadmore ? (
+                            <span>
+                                <i className="fa-light fa-loader animate-spin text-lg"></i>
+                            </span>
+                        ) : (
+                            <span>Show more</span>
+                        )}
+                    </button>
+
+                    <p className="mt-2 text-xs tracking-wider text-gray-600 lg:text-sm">
+                        Showing {limit} of {categories.length} products
+                    </p>
+                </div>
+            )}
+            <div className="mt-20">
+                <Suspense fallback={null}>
+                    <SliderProducts title="New arrival" products={products.filter((prod) => prod?.isNew).slice(0, 6)} />
+                </Suspense>
+            </div>
         </div>
     );
 };

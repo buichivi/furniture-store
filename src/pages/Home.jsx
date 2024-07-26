@@ -15,7 +15,7 @@ const Home = () => {
     return (
         <div>
             <div className="mb-[70px] bg-main">
-                <div className="container mx-auto h-screen px-5">
+                <div className="container mx-auto h-[70vh] px-5 lg:h-screen">
                     <Slider />
                 </div>
             </div>

@@ -60,7 +60,7 @@ const Search = ({ className = '' }) => {
                 placeholder="SEARCH"
                 className="h-auto w-full border border-gray-400 bg-transparent py-2 pl-12 pr-4 text-sm tracking-wider outline-none focus:bg-white"
             />
-            {qry && (
+            {qry && !loading && (
                 <XMarkIcon
                     className="absolute right-2 top-1/2 size-5 -translate-y-1/2"
                     onClick={(e) => {

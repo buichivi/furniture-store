@@ -99,7 +99,7 @@ const Blogs = () => {
                         </button>
 
                         <p className="mt-2 text-sm tracking-wider text-gray-600">
-                            Showing {limit} of {[...blogs, ...blogs, ...blogs].length} products
+                            Showing {limit} of {blogs.length} products
                         </p>
                     </div>
                 )}

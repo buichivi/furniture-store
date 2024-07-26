@@ -272,15 +272,42 @@ const Product = () => {
                                 </button>
                             </div>
                             <div className="flex items-center gap-4 text-base">
-                                <span className="cursor-pointer transition-colors hover:text-[#d10202]">
+                                <div
+                                    className="cursor-pointer transition-colors hover:text-[#d10202]"
+                                    onClick={() => {
+                                        window.open(
+                                            `https://www.facebook.com/sharer/sharer.php?u=${window.location.href}'&amp;src=sdkpreparse`,
+                                            'facebook-share-dialog',
+                                            `width=${window.innerWidth / 2}, height=${window.innerHeight * 0.8}`,
+                                        );
+                                    }}
+                                >
                                     <i className="fa-brands fa-facebook-f"></i>
-                                </span>
-                                <span className="ml-2 cursor-pointer transition-colors hover:text-[#d10202]">
+                                </div>
+                                <div
+                                    className="ml-2 cursor-pointer transition-colors hover:text-[#d10202]"
+                                    onClick={() => {
+                                        window.open(
+                                            `https://twitter.com/intent/tweet?text=${window.location.href}`,
+                                            'twitter-share-dialog',
+                                            `width=${window.innerWidth / 2}, height=${window.innerHeight * 0.8}`,
+                                        );
+                                    }}
+                                >
                                     <i className="fa-brands fa-x-twitter"></i>
-                                </span>
-                                <span className="ml-2 cursor-pointer transition-colors hover:text-[#d10202]">
+                                </div>
+                                <div
+                                    className="ml-2 cursor-pointer transition-colors hover:text-[#d10202]"
+                                    onClick={() => {
+                                        window.open(
+                                            `https://pinterest.com/pin/create/button/?media=${selectedColor?.images[0]}'}`,
+                                            'twitter-share-dialog',
+                                            `width=${window.innerWidth / 2}, height=${window.innerHeight * 0.8}`,
+                                        );
+                                    }}
+                                >
                                     <i className="fa-brands fa-pinterest-p"></i>
-                                </span>
+                                </div>
                             </div>
                         </div>
                         <div className="mt-5 flex flex-col gap-1 border-t pt-6">

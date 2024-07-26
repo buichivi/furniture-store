@@ -25,7 +25,6 @@ const public_routes = [
         element: Shop,
         loader: fakeLoader,
     },
-
     {
         path: 'shop',
         element: Shop,
