@@ -30,7 +30,6 @@ const MainLayout = ({ children }) => {
             }
         };
         window.addEventListener('scroll', scrollToTop);
-
         return () => {
             window.removeEventListener('scroll', scrollToTop);
         };
@@ -38,8 +37,8 @@ const MainLayout = ({ children }) => {
 
     useEffect(() => {
         if (location.pathname.split('/').at(-2) == 'search')
-            document.title = `Search results for "${location.pathname.split('/').at(-1).split('-')}"`;
-        else document.title = getPageTitle(location.pathname.split('/').at(-1).split('-'));
+            document.title = decodeURI(`Search results for "${location.pathname.split('/').at(-1).split('-')}"`);
+        else document.title = decodeURI(getPageTitle(location.pathname.split('/').at(-1).split('-')));
     }, [location.pathname]);
 
     return (

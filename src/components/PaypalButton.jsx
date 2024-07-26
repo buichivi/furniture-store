@@ -149,11 +149,10 @@ function PayPalButton({ address, setOrder }) {
                     createOrder={createOrder}
                     onApprove={onApprove}
                     onCancel={() => {
-                        alert('Transaction was cancelled');
+                        toast.error('Transaction was cancelled');
                     }}
                     onError={(err) => {
                         console.log('Error during the transaction:', err);
-                        alert('An error occurred during the transaction');
                     }}
                 />
             </PayPalScriptProvider>

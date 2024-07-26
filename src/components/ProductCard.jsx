@@ -26,6 +26,10 @@ const ProductCard = ({ product = {}, isDisplayGrid = true }) => {
     const { toggleOpen: toggleOpenCompare, setCompares, compareProducts } = useCompareProductsStore();
 
     useEffect(() => {
+        setSelectedColor(product?.colors[0])
+    }, [product])
+
+    useEffect(() => {
         setIsFavor(product?.isInWishlist || false);
     }, [product?.isInWishlist]);
 

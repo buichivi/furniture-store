@@ -70,7 +70,7 @@ const Slider = () => {
                                         <img
                                             src={image}
                                             alt=""
-                                            className={`slide-img absolute right-1/2 top-[65%] h-auto w-1/2 translate-x-1/2 transition-all duration-1000 lg:right-0 lg:top-[25%] lg:translate-x-0 lg:translate-y-0 ${
+                                            className={`slide-img absolute right-1/2 top-[65%] h-auto w-1/2 translate-x-1/2 transition-all duration-1000 md:top-[45%] lg:right-0 lg:top-[25%] lg:translate-x-0 lg:translate-y-0 ${
                                                 isActive
                                                     ? 'translate-y-0 opacity-100 lg:translate-x-0'
                                                     : 'translate-y-full opacity-0 lg:translate-x-full'

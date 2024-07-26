@@ -3,7 +3,7 @@ import SliderProductImages from '../components/SliderProductImages';
 import ReviewStars from '../components/ReviewStars';
 import Navigation from '../components/Navigation';
 import { numberWithCommas } from '../utils/format';
-import { Link, useLoaderData, useNavigate } from 'react-router-dom';
+import { Link, useLoaderData, useNavigate, useParams } from 'react-router-dom';
 import apiRequest from '../utils/apiRequest';
 import toast from 'react-hot-toast';
 import useCartStore from '../store/cartStore';
@@ -31,6 +31,7 @@ function getRandomProducts(products, product, count) {
 
 const Product = () => {
     const productData = useLoaderData();
+    const { productSlug } = useParams();
     const { setCart } = useCartStore();
     const { products, setWishlist } = useDataStore();
     const [isInWishlist, setIsInWishlist] = useState(false);
@@ -49,6 +50,15 @@ const Product = () => {
         const totalReview = product?.reviews?.length;
         return totalReview ? totalRating / totalReview : 0;
     }, [product]);
+
+    useEffect(() => {
+        apiRequest
+            .get('/products/' + productSlug)
+            .then((res) => {
+                setProduct(res.data.product);
+            })
+            .catch((err) => console.log(err));
+    }, [productSlug]);
 
     useEffect(() => {
         if (product?.colors?.length >= 1) {

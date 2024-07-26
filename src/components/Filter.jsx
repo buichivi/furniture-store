@@ -69,12 +69,11 @@ function isDescendant(parent, childSlug) {
 
 const Filter = ({ filters, setFilters, resetPrice, openState, setOpenState }) => {
     const { products, categories, categoryTree, setCategoryTree } = useDataStore();
-    const { categorySlug } = useParams();
+    const { categorySlug, brand, query, tag } = useParams();
     const [priceRange, setPriceRange] = useState([0, 2000]);
 
     const getListColors = () => {
         const colorsMap = new Map();
-
         products.forEach((product) => {
             product.colors.forEach((color) => {
                 colorsMap.set(color.name, color);
@@ -121,7 +120,15 @@ const Filter = ({ filters, setFilters, resetPrice, openState, setOpenState }) =>
             updateSelection(resetCategoryTree, cate._id, false);
         }
         setCategoryTree(resetCategoryTree);
-    }, [location.pathname]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [location]);
+
+    useEffect(() => {
+        if (!brand && !tag && !query && categorySlug) {
+            const currentCategory = categories.find((cate) => cate?.slug == categorySlug);
+            setCategoryTree(handleCategorySelect(currentCategory?._id, true, categoryTree));
+        }
+    }, [categorySlug, brand, tag, query]);
 
     return (
         <div className="shrink-0 overflow-hidden transition-all duration-500">
@@ -349,6 +356,7 @@ const Filter = ({ filters, setFilters, resetPrice, openState, setOpenState }) =>
 const TypeItem = ({ category, isChild = false }) => {
     const { categorySlug } = useParams();
     const { categoryTree, setCategoryTree } = useDataStore();
+
     const isChildren = useMemo(() => {
         return isDescendant(category, categorySlug);
     }, [categorySlug, category]);

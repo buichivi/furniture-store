@@ -192,7 +192,11 @@ const Checkout = () => {
                             }
                         } catch (err) {
                             console.error(err);
-                            if (popup.closed) clearInterval(timer);
+                            if (popup.closed) {
+                                toast.error('Transaction was cancelled');
+                                setIsCreatingOrder(false);
+                                clearInterval(timer);
+                            }
                         }
                     }, 500);
                 }

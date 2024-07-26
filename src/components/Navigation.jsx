@@ -39,11 +39,12 @@ const Navigation = ({
                             i++;
                         }
                         return {
-                            name:
+                            name: decodeURI(
                                 path
                                     .split('-')
                                     .map((p) => p.charAt(0).toUpperCase() + p.slice(1))
                                     .join(' ') || 'Home',
+                            ),
                             to,
                         };
                     })
@@ -99,7 +100,7 @@ const Navigation = ({
                     <h3
                         className={`text-center text-3xl font-semibold drop-shadow-lg lg:text-5xl ${!isSearchPage && 'capitalize'} font-lora tracking-wider text-white`}
                     >
-                        {pathNames.at(-1).split('-').join(' ')}
+                        {decodeURI(pathNames.at(-1).split('-').join(' '))}
                     </h3>
                 </div>
             ) : (

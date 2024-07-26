@@ -160,8 +160,9 @@ const Shop = () => {
 
     const currentCategory = useMemo(() => {
         if (categorySlug) return categoryTree.find((cate) => cate.slug == categorySlug);
-        return categoryTree;
-    }, [categorySlug, categoryTree]);
+        if (!tag && !brand && !query) return categoryTree;
+        return undefined;
+    }, [categorySlug, categoryTree, tag, brand, query]);
 
     const filteredProducts = useMemo(() => {
         let listProducts = [];
@@ -197,7 +198,20 @@ const Shop = () => {
                     return b.salePrice - a.salePrice;
                 }
             });
-    }, [products, filters, onSaleOnly, sort, query, tag, brand, searchedProducts, productTags, productBrands]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [
+        products,
+        filters,
+        onSaleOnly,
+        sort,
+        query,
+        tag,
+        brand,
+        searchedProducts,
+        productTags,
+        productBrands,
+        categorySlug,
+    ]);
 
     const isFiltering = useMemo(() => {
         return (
@@ -207,6 +221,8 @@ const Shop = () => {
             (filters?.priceRange?.length > 0 && filters?.priceRange[1] < 2000)
         );
     }, [filters]);
+
+    console.log(filteredProducts);
 
     return (
         <div className="mt-16 lg:mt-content-top">
