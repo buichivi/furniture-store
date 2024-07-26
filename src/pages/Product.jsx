@@ -310,7 +310,7 @@ const Product = () => {
                                     className="ml-2 cursor-pointer transition-colors hover:text-[#d10202]"
                                     onClick={() => {
                                         window.open(
-                                            `https://pinterest.com/pin/create/button/?media=${selectedColor?.images[0]}'}`,
+                                            `https://pinterest.com/pin/create/button/?media=${selectedColor?.images[0]}`,
                                             'twitter-share-dialog',
                                             `width=${window.innerWidth / 2}, height=${window.innerHeight * 0.8}`,
                                         );
