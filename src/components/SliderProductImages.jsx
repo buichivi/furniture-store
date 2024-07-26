@@ -111,28 +111,6 @@ const SliderProductImages = ({
                             </span>
                         </Tippy>
                     )}
-                    {/* {model3D && (
-                        <Tippy content="View 3D model" animation="shift-toward">
-                            <button
-                                className="absolute right-[15%] top-[3%] z-10 flex size-10 items-center justify-center gap-2 rounded-full text-sm hover:bg-[#d10202] hover:text-white"
-                                onClick={() => setIsView3DModel(!isView3DModel)}
-                            >
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="24"
-                                    height="24"
-                                    viewBox="0 0 24 24"
-                                    className="size-8"
-                                    fill="currentColor"
-                                >
-                                    <path
-                                        fill="currentColor"
-                                        d="m11.192 19.129l-4.884-2.837q-.38-.217-.594-.593t-.214-.805V9.221q0-.429.214-.805t.594-.593l4.884-2.836q.38-.218.808-.218t.808.218l4.884 2.836q.38.217.594.593t.214.805v5.673q0 .43-.214.805t-.594.593l-4.884 2.837q-.38.217-.808.217t-.808-.217M3 7V4.615q0-.67.472-1.143Q3.944 3 4.615 3H7v1H4.615q-.269 0-.442.173T4 4.615V7zm4 14H4.615q-.67 0-1.143-.472Q3 20.056 3 19.385V17h1v2.385q0 .269.173.442t.442.173H7zm10 0v-1h2.385q.269 0 .442-.173t.173-.442V17h1v2.385q0 .67-.472 1.143q-.472.472-1.143.472zm3-14V4.615q0-.269-.173-.442T19.385 4H17V3h2.385q.67 0 1.143.472q.472.472.472 1.143V7zM7.012 8.583l-.512.292v.606l5 2.844v5.83l.5.287l.5-.286v-5.831l5-2.844v-.606l-.512-.292L12 11.465z"
-                                    ></path>
-                                </svg>
-                            </button>
-                        </Tippy>
-                    )} */}
                     <div className="relative h-full w-full overflow-hidden">
                         {model3D && (
                             <Tippy content="View In Room" animation="shift-toward">
@@ -188,7 +166,9 @@ const SliderProductImages = ({
                                     );
                                 })}
                         </LightGallery>
-                        <div className={`${isView3DModel ? 'block' : 'hidden'}`}>
+                        <div
+                            className={`${isView3DModel ? 'block' : 'hidden'} flex size-full min-h-[400px] items-center justify-center`}
+                        >
                             <model-viewer
                                 ref={modelViewerRef}
                                 src={model3D}
@@ -196,8 +176,9 @@ const SliderProductImages = ({
                                 shadow-intensity="1"
                                 camera-controls
                                 auto-rotate
+                                loading={window.innerWidth <= 576 ? 'eager' : 'lazy'}
                                 touch-action="pan-y"
-                                style={{ width: '100%', height: '100%', minHeight: '400px' }}
+                                style={{ width: '100%', height: '100%', minHeight: '400px', flexShrink: 0 }}
                             >
                                 <button ref={viewInRoomBtn} slot="ar-button"></button>
                                 <div

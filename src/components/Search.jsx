@@ -19,6 +19,7 @@ const Search = ({ className = '' }) => {
     const { query } = useParams();
     const [isFocus, setIsFocus] = useState();
     const [qry, setQry] = useState(query ?? '');
+    const [prevQuery, setPreQuery] = useState('');
     const [searchedProducts, setSearchedProducts] = useState([]);
     const __query = useDebounced(qry, 700);
     const [loading, setLoading] = useState(false);
@@ -31,6 +32,7 @@ const Search = ({ className = '' }) => {
                     setLoading(true);
                     const response = await apiRequest.get('/products/search/' + __query);
                     setSearchedProducts(response.data?.products);
+                    setPreQuery(__query);
                     setLoading(false);
                 } catch (err) {
                     console.log(err);
@@ -106,7 +108,7 @@ const Search = ({ className = '' }) => {
                 </div>
                 {searchedProducts.length > LIMIT_RESULT && !loading && (
                     <div className="mt-4 text-center">
-                        <Link to={`/search/${__query}`} className="hover-text-effect text-sm font-bold uppercase">
+                        <Link to={`/search/${prevQuery}`} className="hover-text-effect text-sm font-bold uppercase">
                             View all <span>{searchedProducts.length}</span> results
                         </Link>
                     </div>
