@@ -88,7 +88,7 @@ const Login = () => {
                     <p className="mb-2 text-white">Good design is good business.</p>
                 </div>
                 <img
-                    src="https://images.unsplash.com/photo-1618220179428-22790b461013?q=80&w=1527&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                    src="/images/photo-1618220179428-22790b461013.avif"
                     alt=""
                     className="h-full w-full object-cover"
                 />

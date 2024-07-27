@@ -43,7 +43,9 @@ const Register = () => {
                 .required('This field is required'),
             firstName: Yup.string().required('This field is required'),
             lastName: Yup.string().required('This field is required'),
-            phoneNumber: Yup.string().required('This field is required'),
+            phoneNumber: Yup.string()
+                .matches(/^[0-9]{10}$/, 'Phone number should be 10 digits')
+                .required('Phone number is required'),
             avatar: Yup.mixed(),
         }),
         onSubmit: (values) => {

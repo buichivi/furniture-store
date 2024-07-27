@@ -1150,6 +1150,7 @@ const EditAddressForm = ({ address, setAddresses }) => {
 const InfomationForm = ({ logout }) => {
     const { currentUser, token, loginUser } = useAuthStore();
     const [password, setPassword] = useState('');
+    const navigate = useNavigate();
 
     const infomationForm = useFormik({
         initialValues: {
@@ -1221,6 +1222,7 @@ const InfomationForm = ({ logout }) => {
                     success: (res) => {
                         resetForm();
                         logout();
+                        navigate('/login');
                         return res.data?.message;
                     },
                     error: (error) => error?.response?.data?.error,

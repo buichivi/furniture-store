@@ -99,6 +99,7 @@ const Checkout = () => {
         if (promoCode?._id) {
             data.promoCode = promoCode._id;
         }
+        setIsCreatingOrder(true);
         toast.promise(apiRequest.post('/orders', { ...data }, { headers: { Authorization: `Bearer ${token}` } }), {
             loading: 'Creating order...',
             success: (res) => {
@@ -482,7 +483,11 @@ const Checkout = () => {
                                 </button>
                             )}
                             {payment == 'paypal' && address?._id != undefined && (
-                                <PayPalButton address={address} setOrder={setOrder} />
+                                <PayPalButton
+                                    address={address}
+                                    setOrder={setOrder}
+                                    setIsCreatingOrder={setIsCreatingOrder}
+                                />
                             )}
                             {payment == 'vnpay' && (
                                 <button
@@ -1131,7 +1136,8 @@ const SelectAddressShipping = ({ onChange, cities }) => {
     const [isAddNewAddress, setIsAddNewAddress] = useState(false);
 
     useEffect(() => {
-        setSelectedAddress(currentUser?.addresses?.find((add) => add?.isDefault) ?? {});
+        console.log('SET DEFAULT ADDRESS');
+        if (!selectedAddress?._id) setSelectedAddress(currentUser?.addresses?.find((add) => add?.isDefault) ?? {});
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentUser]);
 

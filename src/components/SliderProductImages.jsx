@@ -103,7 +103,7 @@ const SliderProductImages = ({
                                 className="absolute right-[3%] top-[3%] z-10 flex size-10 cursor-pointer items-center justify-center rounded-full bg-white text-lg transition-colors hover:bg-[#d10202] hover:text-white"
                                 onClick={() => {
                                     Array.from(imgThumbs.current.children).forEach((child) => {
-                                        if (child.dataset.src == selectedImg) child.click();
+                                        if (child.href == selectedImg) child.click();
                                     });
                                 }}
                             >

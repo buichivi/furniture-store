@@ -8,7 +8,7 @@ import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import useAuthStore from '../store/authStore';
 
-function PayPalButton({ address, setOrder }) {
+function PayPalButton({ address, setOrder, setIsCreatingOrder }) {
     const { cart, setCart } = useCartStore();
     const { promoCode, setPromoCode } = useDataStore();
     const { token } = useAuthStore();
@@ -119,11 +119,13 @@ function PayPalButton({ address, setOrder }) {
                 paymentMethod: 'paypal',
                 paymentStatus: 'paid',
             };
+            setIsCreatingOrder(true);
             toast.promise(apiRequest.post('/orders', { ...data }, { headers: { Authorization: 'Bearer ' + token } }), {
                 loading: 'Creating order...',
                 success: (res) => {
                     setCart({ items: [] });
                     setPromoCode({});
+                    setIsCreatingOrder(false);
                     navigate('/checkout#success');
                     setOrder(res.data?.order);
                     return res.data?.message;
@@ -162,6 +164,7 @@ function PayPalButton({ address, setOrder }) {
 PayPalButton.propTypes = {
     address: PropTypes.object,
     setOrder: PropTypes.func,
+    setIsCreatingOrder: PropTypes.func,
 };
 
 export default PayPalButton;

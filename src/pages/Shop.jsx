@@ -145,7 +145,10 @@ const Shop = () => {
         if (brand) {
             apiRequest
                 .get('/products/brand/' + brand)
-                .then((res) => setProductBrand(res.data?.products?.filter((prod) => prod.active)))
+                .then((res) => {
+                    console.log(res.data?.products);
+                    setProductBrand(res.data?.products?.filter((prod) => prod.active));
+                })
                 .catch((err) => console.log(err));
         }
     }, [brand]);
