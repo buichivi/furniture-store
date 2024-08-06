@@ -6,6 +6,12 @@ import React, { lazy, useEffect } from 'react';
 import { ProtectedRoute } from './layouts/components';
 import { Suspense } from 'react';
 import PropTypes from 'prop-types';
+import LocomotiveScroll from 'locomotive-scroll';
+
+// eslint-disable-next-line no-unused-vars
+const locomotiveScroll = new LocomotiveScroll({
+    lerp: 0.2,
+});
 
 // Global css
 import './index.css';
@@ -30,7 +36,7 @@ import 'tippy.js/animations/scale.css';
 
 // Sekeleton
 import 'react-loading-skeleton/dist/skeleton.css';
-import { useState } from 'react';
+// import { useState } from 'react';
 
 const TOAST_LIMIT = 3;
 
@@ -45,17 +51,17 @@ const Register = lazy(() => import('./pages/Register'));
 
 function App() {
     const { toasts } = useToasterStore();
-    const [isLoading, setIsLoading] = useState(false);
+    // const [isLoading, setIsLoading] = useState(false);
 
-    useEffect(() => {
-        setIsLoading(true);
-        const timerId = setTimeout(() => {
-            setIsLoading(false);
-        }, [4000]);
-        return () => {
-            clearTimeout(timerId);
-        };
-    }, []);
+    // useEffect(() => {
+    //     setIsLoading(true);
+    //     const timerId = setTimeout(() => {
+    //         setIsLoading(false);
+    //     }, [4000]);
+    //     return () => {
+    //         clearTimeout(timerId);
+    //     };
+    // }, []);
 
     const router = createBrowserRouter([
         {
@@ -136,10 +142,10 @@ function App() {
 
     return (
         <React.Fragment>
-            <InitalLoading
-                className={`${isLoading ? 'opacity-100' : 'opacity-0'} pointer-events-none transition-opacity duration-500`}
-            />
-            <RouterProvider router={router} fallbackElement={<InitalLoading />} />
+            {/*<InitalLoading
+                // className={`${isLoading ? 'opacity-100' : 'opacity-0'} pointer-events-none transition-opacity duration-500`}
+            /> */}
+            <RouterProvider router={router} />
             <Toaster
                 toastOptions={{
                     className:

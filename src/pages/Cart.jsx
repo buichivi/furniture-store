@@ -308,7 +308,7 @@ const CartItemQuantity = ({ productId, colorId, quantity }) => {
                     {
                         product: productId,
                         color: colorId,
-                        quantity: _qty,
+                        quantity: _qty >= 0 ? _qty : 0,
                     },
                     {
                         headers: { Authorization: `Bearer ${token}` },
@@ -347,7 +347,7 @@ const CartItemQuantity = ({ productId, colorId, quantity }) => {
                 type="number"
                 className="w-1/2 border-none bg-transparent outline-none"
                 value={qty}
-                onChange={(e) => setQty(Number(e.target.value))}
+                onChange={(e) => setQty(Number(e.target.value) || 0)}
             />
             <span className="cursor-pointer" onClick={() => setQty(qty + 1)}>
                 <i className="fa-light fa-plus"></i>

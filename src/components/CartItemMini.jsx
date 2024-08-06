@@ -23,7 +23,7 @@ const CartItemMini = ({ item = {} }) => {
                     {
                         product: item?.product?._id,
                         color: item?.color?._id,
-                        quantity: qty,
+                        quantity: qty >= 0 ? qty : 0,
                     },
                     {
                         headers: { Authorization: 'Bearer ' + token },
