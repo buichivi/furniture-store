@@ -2,6 +2,9 @@
 
 A modern e-commerce platform for buying and selling furniture online. This project uses a variety of tools and technologies to create a responsive, interactive, and efficient user experience.
 
+![image](https://github.com/user-attachments/assets/2865cbd5-cfc8-4997-b2c4-053f3204533d)
+
+
 ## Table of Contents
 
 -   [Tech Stack](#tech-stack)
