@@ -1,3 +1,4 @@
+
 # Furniture Store UI
 
 A modern e-commerce platform for buying and selling furniture online. This project uses a variety of tools and technologies to create a responsive, interactive, and efficient user experience.
@@ -35,13 +36,17 @@ A modern e-commerce platform for buying and selling furniture online. This proje
 -   **Responsive Design**: Fully responsive design with TailwindCSS, optimized for all devices.
 
 ## Installation
+1. Set up environment variables:
+```plaintext
+VITE_PAYPAL_CLIENT_ID=<Your paypal client id>
+```
 
-Clone the repository:
-
+2. Install dependences: 
 ```bash
-git clone https://github.com/buichivi/furniture-store.git
-cd furniture-store
-npm i
+npm install
+```
+3. Run the development server:
+```bash
 npm run dev
 ```
 
@@ -58,7 +63,7 @@ src/
 ├── utils/
 ```
 
-## Api Endpoint
+## Api Endpoints
 
 The UI interacts with the following backend API endpoints:
 
